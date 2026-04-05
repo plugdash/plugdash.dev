@@ -5,10 +5,10 @@ import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
 import CopyLink from "@plugdash/shortlink/CopyLink.astro";
 import PluginCard from "../components/PluginCard.astro";
 import { buildDemoPost } from "../data/demoPost";
-import { sortedPlugins } from "../data/plugins";
+import { resolvePlugins } from "../lib/content";
 import Base from "../layouts/Base.astro";
 
-const plugins = sortedPlugins();
+const plugins = await resolvePlugins();
 
 // Fixture post with a real message + URL so share buttons share something
 // worth sharing. The heart counter reads post.id, so it must be top-level.
@@ -42,23 +42,20 @@ const demoPost = buildDemoPost({
   </section>
 
   <section class="demo-strip container-narrow">
-    <div class="demo-row">
-      <div class="demo-cell">
+    <div class="demo-box">
+      <div class="demo-row">
         <ReadingTime post={demoPost} variant="inline" />
-      </div>
-      <div class="demo-cell">
+        <span class="demo-sep" aria-hidden="true">•</span>
         <ShareButtons post={demoPost} />
-      </div>
-      <div class="demo-cell">
+        <span class="demo-sep" aria-hidden="true">•</span>
         <HeartButton post={demoPost} />
-      </div>
-      <div class="demo-cell">
+        <span class="demo-sep" aria-hidden="true">•</span>
         <CopyLink post={demoPost} variant="pill" showUrl />
       </div>
+      <p class="demo-caption">
+        This page uses readtime, sharepost, heartpost, and shortlink plugins
+      </p>
     </div>
-    <p class="demo-caption">
-      This page uses the readtime, sharepost, heartpost, and shortlink plugins
-    </p>
   </section>
 
   <section class="grid-section container">
@@ -172,31 +169,32 @@ const demoPost = buildDemoPost({
   }
 
   .demo-strip {
-    padding: 1.25rem 1.5rem;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
     margin: 2rem auto;
+  }
+  .demo-box {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 1.25rem 1.5rem;
   }
   .demo-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    gap: 1rem;
     color: var(--muted);
     font-size: 0.9rem;
   }
-  .demo-cell {
-    display: inline-flex;
-    align-items: center;
-    padding: 0 1rem;
-    border-right: 1px solid var(--border);
-  }
-  .demo-cell:first-child { padding-left: 0; }
-  .demo-cell:last-child {
-    padding-right: 0;
-    border-right: none;
+  .demo-sep {
+    color: var(--muted);
+    opacity: 0.4;
+    user-select: none;
   }
   .demo-caption {
-    margin-top: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border);
     color: var(--muted);
     font-size: 0.8rem;
   }

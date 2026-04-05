@@ -1,9 +1,9 @@
 ---
 import PluginCard from "../../components/PluginCard.astro";
-import { sortedPlugins } from "../../data/plugins";
+import { resolvePlugins } from "../../lib/content";
 import Base from "../../layouts/Base.astro";
 
-const plugins = sortedPlugins();
+const plugins = await resolvePlugins();
 ---
 
 <Base title="Plugins - PlugDash" description="The full PlugDash catalog. Drop-in plugins for EmDash sites.">

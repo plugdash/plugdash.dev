@@ -16,6 +16,7 @@ import { sqlite } from "emdash/db";
 // The three underlying engagement plugins (heartpost, sharepost, shortlink)
 // are registered below.
 
+
 export default defineConfig({
 	output: "server",
 	adapter: node({ mode: "standalone" }),
@@ -34,14 +35,10 @@ export default defineConfig({
 				sharepostPlugin({ via: "abhinavs" }),
 				heartpostPlugin(),
 				shortlinkPlugin({ autoCreate: true }),
-				calloutPlugin(),
-				// autobuild only makes sense when a deploy hook URL is configured.
-				// Skipped in dev to avoid loading @plugdash/autobuild@0.1.1's
-				// sandbox entry, which has a packaging bug (stray import of a
-				// .d.mts types file). Re-enable in production by setting the env var.
-				...(import.meta.env.CF_PAGES_DEPLOY_HOOK
-					? [autobuildPlugin({ hookUrl: import.meta.env.CF_PAGES_DEPLOY_HOOK })]
-					: []),
+				// callout and autobuild intentionally omitted for now.
+				// callout's sandbox entry causes an undefined plugin in
+				// HookPipeline at load time (known issue, see PLAN.md).
+				// autobuild has a .d.mts runtime import bug.
 			],
 		}),
 	],

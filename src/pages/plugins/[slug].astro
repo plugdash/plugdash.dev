@@ -9,18 +9,15 @@ import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginCard from "../../components/PluginCard.astro";
 import { buildDemoPost } from "../../data/demoPost";
-import { getPlugin, plugins as allPlugins, sortedPlugins } from "../../data/plugins";
+import { resolvePlugin, resolvePlugins } from "../../lib/content";
 import Base from "../../layouts/Base.astro";
 
-export async function getStaticPaths() {
-  return allPlugins.map((p) => ({ params: { slug: p.slug } }));
-}
-
 const { slug } = Astro.params;
-const plugin = getPlugin(slug!);
+const plugin = await resolvePlugin(slug!);
 if (!plugin) {
   return Astro.redirect("/plugins");
 }
+const allPlugins = await resolvePlugins();
 
 function eyebrowText(p: typeof plugin) {
   if (!p) return "";
@@ -46,7 +43,7 @@ const relatedPlugins = plugin!.pairs
   .filter(Boolean) as typeof allPlugins;
 
 const p = plugin!;
-const navPlugins = sortedPlugins();
+const navPlugins = allPlugins;
 
 const pageToc = [
   { id: "overview", text: "Overview" },

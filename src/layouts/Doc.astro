@@ -4,7 +4,7 @@ import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
 import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
 import { buildDemoPost } from "../data/demoPost";
-import { docsBySection } from "../data/docs";
+import { resolveDocs } from "../lib/content";
 import Base from "./Base.astro";
 
 interface TocEntry {
@@ -25,7 +25,11 @@ interface Props {
 }
 
 const { title, description, section, currentSlug, tocEntries, readingTimeMinutes, wordCount } = Astro.props;
-const grouped = docsBySection();
+const docs = await resolveDocs();
+const grouped = {
+  "on-ramp": docs.filter((d) => d.section === "on-ramp"),
+  plugins: docs.filter((d) => d.section === "plugins"),
+};
 
 // Build a doc-shaped post so the plugin components work against it:
 // - tocgen reads entries for the sidebar

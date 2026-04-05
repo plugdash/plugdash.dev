@@ -1,33 +1,22 @@
 ---
+import PortableText from "../../components/PortableText.astro";
+import { resolveBlogPost, type BlogPost } from "../../lib/content";
 import Post from "../../layouts/Post.astro";
 
-export async function getStaticPaths() {
-  return [{ params: { slug: "the-plugdash-launch" } }];
-}
-
 const { slug } = Astro.params;
+if (!slug) return Astro.redirect("/");
 
-// Static launch post content - seeded to the EmDash `blog` collection on
-// launch day. Swap to getEmDashCollection("blog") once seeded.
-const posts: Record<string, {
-  title: string;
-  publishedAt: string;
-  description: string;
-  wordCount: number;
-  readingTimeMinutes: number;
-}> = {
-  "the-plugdash-launch": {
-    title: "The PlugDash launch: eight plugins, one live site",
-    publishedAt: "2026-04-05",
-    description:
-      "Announcing PlugDash: eight MIT-licensed plugins for EmDash, all installed on the catalog site itself.",
-    wordCount: 612,
-    readingTimeMinutes: 3,
-  },
-};
-
-const entry = posts[slug!];
+// Try the seeded collection first. If the admin isn't seeded yet, fall back
+// to the hardcoded launch post below so the site still renders.
+let entry: BlogPost | undefined = await resolveBlogPost(slug);
+if (!entry && slug === "the-plugdash-launch") {
+  entry = fallbackPost();
+}
 if (!entry) return Astro.redirect("/");
+
+const publishedAt = entry.publishedAt
+  ? entry.publishedAt.toISOString().slice(0, 10)
+  : "2026-04-05";
 
 // Post object shaped like EmDash's collection items so companion components
 // can read from post.data.metadata.* and post.id.
@@ -41,10 +30,10 @@ const post = {
   data: {
     slug,
     title: entry.title,
-    publishedAt: entry.publishedAt,
+    publishedAt,
     metadata: {
-      wordCount: entry.wordCount,
-      readingTimeMinutes: entry.readingTimeMinutes,
+      wordCount: entry.wordCount ?? 600,
+      readingTimeMinutes: entry.readingTimeMinutes ?? 3,
       shareUrls: {
         twitter: `https://twitter.com/intent/tweet?text=${enc(entry.title)}&url=${enc(url)}&via=abhinavs`,
         linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`,
@@ -55,79 +44,94 @@ const post = {
       shortlink: { url: `https://plugdash.dev/l/${slug}` },
       heartpost: { count: 0 },
       tocgen: {
-        entries: [
-          { id: "what-plugdash-is", text: "What PlugDash is", level: 2, children: [] },
-          { id: "the-eight-launch-plugins", text: "The eight launch plugins", level: 2, children: [] },
-          { id: "why-the-site-runs-on-emdash", text: "Why the site runs on EmDash", level: 2, children: [] },
-          { id: "whats-next", text: "What's next", level: 2, children: [] },
-        ],
+        entries: extractHeadings(entry.content),
       },
     },
   },
 };
+
+function extractHeadings(blocks: unknown[]): Array<{ id: string; text: string; level: 2 | 3; children: never[] }> {
+  return blocks
+    .filter((b): b is Record<string, unknown> => typeof b === "object" && b !== null && (b as any)._type === "block")
+    .filter((b) => b.style === "h2" || b.style === "h3")
+    .map((b) => {
+      const text = ((b.children as Array<{ text?: string }> | undefined) ?? [])
+        .map((c) => c.text ?? "")
+        .join("");
+      return {
+        id: slugify(text),
+        text,
+        level: (b.style === "h3" ? 3 : 2) as 2 | 3,
+        children: [],
+      };
+    });
+}
+
+function slugify(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function fallbackPost(): BlogPost {
+  return {
+    id: "blog-the-plugdash-launch",
+    slug: "the-plugdash-launch",
+    title: "The PlugDash launch: eight plugins, one live site",
+    description:
+      "Announcing PlugDash: eight MIT-licensed plugins for EmDash, all installed on the catalog site itself.",
+    readingTimeMinutes: 3,
+    wordCount: 612,
+    publishedAt: new Date("2026-04-05"),
+    content: [
+      { _type: "block", style: "normal", children: [{ _type: "span", text: "Today PlugDash ships with eight plugins for EmDash. All MIT, all on npm, all installed on this site. If a plugin works here, it works for you." }] },
+      { _type: "block", style: "h2", children: [{ _type: "span", text: "What PlugDash is" }] },
+      { _type: "block", style: "normal", children: [{ _type: "span", text: "PlugDash is a plugin catalog for EmDash, the open-source CMS built on Astro and Cloudflare. Each plugin in the catalog solves a small, specific problem your blog has on day one - reading time, share buttons, a heart counter, short links, a table of contents, callouts, and publish-triggered rebuilds." }] },
+      { _type: "block", style: "normal", children: [{ _type: "span", text: "Every plugin ships with a companion Astro component. You install the plugin, add one import to your layout, and your readers see the result. No configuration needed to ship something good. Full CSS token customisation when you want to change the look." }] },
+      { _type: "block", style: "h2", children: [{ _type: "span", text: "The eight launch plugins" }] },
+      { _type: "block", style: "normal", children: [
+        { _type: "span", marks: ["code"], text: "@plugdash/readtime" },
+        { _type: "span", text: " calculates reading time on publish. " },
+        { _type: "span", marks: ["code"], text: "@plugdash/sharepost" },
+        { _type: "span", text: " generates share URLs for X, LinkedIn, WhatsApp, Bluesky, and email. " },
+        { _type: "span", marks: ["code"], text: "@plugdash/heartpost" },
+        { _type: "span", text: " is a KV-backed heart counter. " },
+        { _type: "span", marks: ["code"], text: "@plugdash/shortlink" },
+        { _type: "span", text: " gives every post a short URL. " },
+        { _type: "span", marks: ["code"], text: "@plugdash/tocgen" },
+        { _type: "span", text: " parses headings and writes a nested table of contents. " },
+        { _type: "span", marks: ["code"], text: "@plugdash/callout" },
+        { _type: "span", text: " adds info, warning, tip, and danger blocks to the Portable Text editor. " },
+        { _type: "span", marks: ["code"], text: "@plugdash/engage" },
+        { _type: "span", text: " bundles heart, share, and copy into one component. " },
+        { _type: "span", marks: ["code"], text: "@plugdash/autobuild" },
+        { _type: "span", text: " fires a deploy hook on publish so the admin becomes the thing that moves the site." },
+      ]},
+      { _type: "block", style: "h2", children: [{ _type: "span", text: "Why the site runs on EmDash" }] },
+      { _type: "block", style: "normal", children: [{ _type: "span", text: "A plugin catalog that does not use its own plugins is not a catalog. It is a brochure. PlugDash runs on EmDash with all eight plugins registered and active. The reading time on this post, the engagement bar at the bottom, the table of contents sidebar on desktop, the callout blocks - all of them are live plugins running on this page. The site is the proof." }] },
+      { _type: "block", style: "h2", children: [{ _type: "span", text: "What's next" }] },
+      { _type: "block", style: "normal", children: [
+        { _type: "span", text: "The next batch focuses on migration and interop. " },
+        { _type: "span", marks: ["code"], text: "fromsubstack" },
+        { _type: "span", text: " lets you move a Substack archive into EmDash in one step. " },
+        { _type: "span", marks: ["code"], text: "tomarkdown" },
+        { _type: "span", text: " and " },
+        { _type: "span", marks: ["code"], text: "tojson" },
+        { _type: "span", text: " export your EmDash content back out - the anti-lock-in pair. After that: " },
+        { _type: "span", marks: ["code"], text: "socialcard" },
+        { _type: "span", text: " for auto-generated OG images and " },
+        { _type: "span", marks: ["code"], text: "insights" },
+        { _type: "span", text: " for native, no-external-script analytics." },
+      ]},
+      { _type: "block", style: "normal", children: [{ _type: "span", text: "Ship something small. Ship it open. Ship it running on itself." }] },
+    ],
+  };
+}
 ---
 
 <Post
   post={post}
   title={entry.title}
   description={entry.description}
-  publishedAt={entry.publishedAt}
+  publishedAt={publishedAt}
 >
-  <p>
-    Today PlugDash ships with eight plugins for EmDash. All MIT, all on
-    npm, all installed on this site. If a plugin works here, it works
-    for you.
-  </p>
-
-  <h2 id="what-plugdash-is">What PlugDash is</h2>
-  <p>
-    PlugDash is a plugin catalog for EmDash, the open-source CMS built on
-    Astro and Cloudflare. Each plugin in the catalog solves a small,
-    specific problem your blog has on day one - reading time, share
-    buttons, a heart counter, short links, a table of contents, callouts,
-    and publish-triggered rebuilds.
-  </p>
-  <p>
-    Every plugin ships with a companion Astro component. You install the
-    plugin, add one import to your layout, and your readers see the
-    result. No configuration needed to ship something good. Full CSS
-    token customisation when you want to change the look.
-  </p>
-
-  <h2 id="the-eight-launch-plugins">The eight launch plugins</h2>
-  <p>
-    <code>@plugdash/readtime</code> calculates reading time on publish.
-    <code>@plugdash/sharepost</code> generates share URLs for X, LinkedIn,
-    WhatsApp, Bluesky, and email. <code>@plugdash/heartpost</code> is a
-    KV-backed heart counter. <code>@plugdash/shortlink</code> gives every
-    post a short URL. <code>@plugdash/tocgen</code> parses headings and
-    writes a nested table of contents. <code>@plugdash/callout</code> adds
-    info, warning, tip, and danger blocks to the Portable Text editor.
-    <code>@plugdash/engage</code> bundles heart, share, and copy into one
-    component. <code>@plugdash/autobuild</code> fires a deploy hook on
-    publish so the admin becomes the thing that moves the site.
-  </p>
-
-  <h2 id="why-the-site-runs-on-emdash">Why the site runs on EmDash</h2>
-  <p>
-    A plugin catalog that does not use its own plugins is not a catalog.
-    It is a brochure. PlugDash runs on EmDash with all eight
-    plugins registered and active. The reading time on this post, the
-    engagement bar at the bottom, the table of contents sidebar on
-    desktop, the callout blocks - all of them are live plugins running
-    on this page. The site is the proof.
-  </p>
-
-  <h2 id="whats-next">What's next</h2>
-  <p>
-    The next batch focuses on migration and interop. <code>fromsubstack</code>
-    lets you move a Substack archive into EmDash in one step.
-    <code>tomarkdown</code> and <code>tojson</code> export your EmDash
-    content back out - the anti-lock-in pair. After that:
-    <code>socialcard</code> for auto-generated OG images and
-    <code>insights</code> for native, no-external-script analytics.
-  </p>
-  <p>
-    Ship something small. Ship it open. Ship it running on itself.
-  </p>
+  <PortableText value={entry.content as any} />
 </Post>

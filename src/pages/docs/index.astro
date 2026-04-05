@@ -1,15 +1,20 @@
 ---
-import { docsBySection } from "../../data/docs";
-import { getPlugin, sortedPlugins } from "../../data/plugins";
+import { resolveDocs, resolvePlugins } from "../../lib/content";
 import Base from "../../layouts/Base.astro";
 
-const grouped = docsBySection();
+const docs = await resolveDocs();
+const plugins = await resolvePlugins();
+const grouped = {
+  "on-ramp": docs.filter((d) => d.section === "on-ramp"),
+  plugins: docs.filter((d) => d.section === "plugins"),
+};
 // Order the plugin docs the same way the rest of the site orders plugins
 // (status + editorial importance), not alphabetically.
-const pluginOrder = sortedPlugins().map((p) => p.slug);
+const pluginOrder = plugins.map((p) => p.slug);
 const pluginDocs = [...grouped.plugins].sort(
   (a, b) => pluginOrder.indexOf(a.slug) - pluginOrder.indexOf(b.slug),
 );
+const getPlugin = (slug: string) => plugins.find((p) => p.slug === slug);
 ---
 
 <Base title="Docs - PlugDash" description="PlugDash documentation. One page per plugin.">
