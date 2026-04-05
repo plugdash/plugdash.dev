@@ -31,12 +31,24 @@ const plugin = getPlugin("readtime")!;
   <InstallCommand command={plugin.installCommand} />
 
   <h2 id="register">Register</h2>
-  <p>Add to the <code>plugins</code> array in <code>astro.config.mjs</code>:</p>
-  <pre><code>{`import { readtimePlugin } from "@plugdash/readtime"
+  <p>
+    Open <code>astro.config.mjs</code> at the root of your Astro project.
+    Import the plugin at the top, then add it to the <code>plugins</code>
+    array of the <code>emdash()</code> integration - the one that sits
+    inside Astro's top-level <code>integrations</code> array:
+  </p>
+  <pre><code>{`// astro.config.mjs
+import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { readtimePlugin } from "@plugdash/readtime"
 
-emdash({
-  plugins: [
-    readtimePlugin({ collections: ["blog"] }),
+export default defineConfig({
+  integrations: [
+    emdash({
+      plugins: [
+        readtimePlugin({ collections: ["blog"] }),
+      ],
+    }),
   ],
 })`}</code></pre>
 

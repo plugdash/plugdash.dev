@@ -36,7 +36,8 @@
 				{ "slug": "pairs", "label": "Pairs with (comma-separated)", "type": "string" },
 				{ "slug": "pairs_note", "label": "Pairs note", "type": "text" },
 				{ "slug": "demo_caption", "label": "Demo caption", "type": "string", "required": true },
-				{ "slug": "setup_note", "label": "Setup note", "type": "text", "required": true }
+				{ "slug": "setup_note", "label": "Setup note", "type": "text", "required": true },
+				{ "slug": "metadata", "label": "Metadata (plugin-written)", "type": "json" }
 			]
 		},
 		{
@@ -51,7 +52,8 @@
 				{ "slug": "summary", "label": "Summary", "type": "text", "searchable": true },
 				{ "slug": "order", "label": "Order", "type": "integer", "required": true, "defaultValue": 0 },
 				{ "slug": "reading_time_minutes", "label": "Reading time (minutes)", "type": "integer" },
-				{ "slug": "word_count", "label": "Word count", "type": "integer" }
+				{ "slug": "word_count", "label": "Word count", "type": "integer" },
+				{ "slug": "metadata", "label": "Metadata (plugin-written)", "type": "json" }
 			]
 		},
 		{
@@ -65,7 +67,8 @@
 				{ "slug": "description", "label": "Description", "type": "text", "required": true, "searchable": true },
 				{ "slug": "content", "label": "Content", "type": "portableText", "searchable": true },
 				{ "slug": "reading_time_minutes", "label": "Reading time (minutes)", "type": "integer" },
-				{ "slug": "word_count", "label": "Word count", "type": "integer" }
+				{ "slug": "word_count", "label": "Word count", "type": "integer" },
+				{ "slug": "metadata", "label": "Metadata (plugin-written)", "type": "json" }
 			]
 		}
 	],

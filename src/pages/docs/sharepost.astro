@@ -31,11 +31,24 @@ const plugin = getPlugin("sharepost")!;
   <InstallCommand command={plugin.installCommand} />
 
   <h2 id="register">Register</h2>
-  <pre><code>{`import { sharepostPlugin } from "@plugdash/sharepost"
+  <p>
+    Open <code>astro.config.mjs</code> at the root of your Astro project.
+    Import the plugin at the top, then add it to the <code>plugins</code>
+    array of the <code>emdash()</code> integration - the one that sits
+    inside Astro's top-level <code>integrations</code> array:
+  </p>
+  <pre><code>{`// astro.config.mjs
+import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { sharepostPlugin } from "@plugdash/sharepost"
 
-emdash({
-  plugins: [
-    sharepostPlugin({ via: "abhinavs" }),
+export default defineConfig({
+  integrations: [
+    emdash({
+      plugins: [
+        sharepostPlugin({ via: "abhinavs" }),
+      ],
+    }),
   ],
 })`}</code></pre>
   <p>The <code>via</code> option is your Twitter/X handle (without the @).

@@ -35,11 +35,24 @@ const plugin = getPlugin("tocgen")!;
   <InstallCommand command={plugin.installCommand} />
 
   <h2 id="register">Register</h2>
-  <pre><code>{`import { tocgenPlugin } from "@plugdash/tocgen"
+  <p>
+    Open <code>astro.config.mjs</code> at the root of your Astro project.
+    Import the plugin at the top, then add it to the <code>plugins</code>
+    array of the <code>emdash()</code> integration - the one that sits
+    inside Astro's top-level <code>integrations</code> array:
+  </p>
+  <pre><code>{`// astro.config.mjs
+import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { tocgenPlugin } from "@plugdash/tocgen"
 
-emdash({
-  plugins: [
-    tocgenPlugin({ minHeadings: 3 }),
+export default defineConfig({
+  integrations: [
+    emdash({
+      plugins: [
+        tocgenPlugin({ minHeadings: 3 }),
+      ],
+    }),
   ],
 })`}</code></pre>
 

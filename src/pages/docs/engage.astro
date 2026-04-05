@@ -48,15 +48,30 @@ const tocEntries = [
   <pre><code>npm install @plugdash/heartpost @plugdash/sharepost @plugdash/shortlink</code></pre>
 
   <h2 id="register">Register the three plugins (not engage)</h2>
-  <pre><code>{`import { heartpostPlugin } from "@plugdash/heartpost"
+  <p>
+    Open <code>astro.config.mjs</code> at the root of your Astro project.
+    Import all three plugins at the top, then add them to the
+    <code>plugins</code> array of the <code>emdash()</code> integration -
+    the one that sits inside Astro's top-level <code>integrations</code>
+    array. <strong>Do not import or register anything from
+    <code>@plugdash/engage</code> here.</strong>
+  </p>
+  <pre><code>{`// astro.config.mjs
+import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { heartpostPlugin } from "@plugdash/heartpost"
 import { sharepostPlugin } from "@plugdash/sharepost"
 import { shortlinkPlugin } from "@plugdash/shortlink"
 
-emdash({
-  plugins: [
-    heartpostPlugin(),
-    sharepostPlugin({ via: "abhinavs" }),
-    shortlinkPlugin({ autoCreate: true }),
+export default defineConfig({
+  integrations: [
+    emdash({
+      plugins: [
+        heartpostPlugin(),
+        sharepostPlugin({ via: "abhinavs" }),
+        shortlinkPlugin({ autoCreate: true }),
+      ],
+    }),
   ],
 })`}</code></pre>
 

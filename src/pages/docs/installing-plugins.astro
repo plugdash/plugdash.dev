@@ -46,13 +46,34 @@ const tocEntries = [
   <InstallCommand command="npm install @plugdash/readtime" />
 
   <h3 id="step-2-register">Step 2: register in astro.config.mjs</h3>
-  <pre><code>{`import { readtimePlugin } from "@plugdash/readtime"
+  <p>
+    Open <code>astro.config.mjs</code> at the root of your Astro project.
+    Import the plugin at the top of the file, then add it to the
+    <code>plugins</code> array of the <code>emdash()</code> integration -
+    the one that sits inside Astro's top-level <code>integrations</code>
+    array. The full file looks like this:
+  </p>
+  <pre><code>{`// astro.config.mjs
+import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { readtimePlugin } from "@plugdash/readtime"
 
-emdash({
-  plugins: [
-    readtimePlugin({ collections: ["blog"] }),
+export default defineConfig({
+  integrations: [
+    emdash({
+      plugins: [
+        readtimePlugin({ collections: ["blog"] }),
+      ],
+    }),
   ],
 })`}</code></pre>
+  <p>
+    Two things to keep straight: <code>emdash()</code> is an Astro
+    integration, so it goes in Astro's <code>integrations</code> array.
+    Each plugdash plugin goes inside <code>emdash()</code>'s own
+    <code>plugins</code> array - not alongside <code>emdash()</code>
+    itself.
+  </p>
   <p>
     The plugin's options object (here, <code>{`{ collections: ["blog"] }`}</code>)
     seeds defaults into the plugin's KV store the first time it runs. After
