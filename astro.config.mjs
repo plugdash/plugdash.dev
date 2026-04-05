@@ -1,5 +1,6 @@
-import node from "@astrojs/node";
+import cloudflare from "@astrojs/cloudflare";
 import react from "@astrojs/react";
+import { d1, r2 } from "@emdash-cms/cloudflare";
 import { autobuildPlugin } from "@plugdash/autobuild";
 import { calloutPlugin } from "@plugdash/callout";
 import { heartpostPlugin } from "@plugdash/heartpost";
@@ -8,8 +9,7 @@ import { sharepostPlugin } from "@plugdash/sharepost";
 import { shortlinkPlugin } from "@plugdash/shortlink";
 import { tocgenPlugin } from "@plugdash/tocgen";
 import { defineConfig } from "astro/config";
-import emdash, { local } from "emdash/astro";
-import { sqlite } from "emdash/db";
+import emdash from "emdash/astro";
 
 // engage is NOT registered here. It is a convenience bundle with no plugin
 // logic - Post.astro imports EngagementBar.astro from @plugdash/engage directly.
@@ -19,16 +19,13 @@ import { sqlite } from "emdash/db";
 
 export default defineConfig({
 	output: "server",
-	adapter: node({ mode: "standalone" }),
+	adapter: cloudflare({ imageService: "compile" }),
 	image: { layout: "constrained", responsiveStyles: true },
 	integrations: [
 		react(),
 		emdash({
-			database: sqlite({ url: "file:./data.db" }),
-			storage: local({
-				directory: "./uploads",
-				baseUrl: "/_emdash/api/media/file",
-			}),
+			database: d1({ binding: "DB", session: "auto" }),
+			storage: r2({ binding: "MEDIA" }),
 			plugins: [
 				readtimePlugin(),
 				tocgenPlugin(),
