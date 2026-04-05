@@ -16,5 +16,11 @@
 			"binding": "MEDIA",
 			"bucket_name": "plugdash-media"
 		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "SESSION",
+			"id": "8ae545e2837745e183cc3bfb7ba228c6"
+		}
 	]
 }
