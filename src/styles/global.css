@@ -91,21 +91,6 @@ p {
   opacity: 0.5;
 }
 
-/* Force a space between the number and label in ReadingTime.
- * The component uses a thin-space (&thinsp;) or a stripped whitespace
- * that flex layout collapses; a non-breaking space guarantees it. */
-.plugdash-rt .plugdash-rt-minutes::after {
-  content: "\00a0";
-}
-
-/* CopyLink pill variant: show the URL first, then the copy/check icon.
- * The component renders icon -> check -> url span; flex `order` moves
- * the url span to the front without touching the plugin markup. */
-.plugdash-copy--pill .plugdash-copy-url {
-  order: -1;
-  margin-right: 0.3rem;
-}
-
 /* Layout containers */
 .container {
   width: 100%;

@@ -18,14 +18,14 @@
   "dependencies": {
     "@astrojs/node": "^9.0.0",
     "@astrojs/react": "^4.0.0",
-    "@plugdash/autobuild": "^0.1.1",
-    "@plugdash/callout": "^0.1.0",
-    "@plugdash/engage": "^0.1.0",
-    "@plugdash/heartpost": "^0.1.0",
-    "@plugdash/readtime": "^0.1.0",
-    "@plugdash/sharepost": "^0.1.0",
-    "@plugdash/shortlink": "^0.1.0",
-    "@plugdash/tocgen": "^0.1.0",
+    "@plugdash/autobuild": "^0.2.0",
+    "@plugdash/callout": "^0.1.1",
+    "@plugdash/engage": "^1.0.0",
+    "@plugdash/heartpost": "^0.2.0",
+    "@plugdash/readtime": "^0.2.0",
+    "@plugdash/sharepost": "^0.2.0",
+    "@plugdash/shortlink": "^0.2.0",
+    "@plugdash/tocgen": "^0.2.0",
     "astro": "^5.0.0",
     "emdash": "^0.1.0",
     "react": "^19.0.0",
@@ -36,6 +36,8 @@
     "@types/node": "^22.0.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["better-sqlite3"]
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
   }
 }

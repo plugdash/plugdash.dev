@@ -30,15 +30,13 @@ export default defineConfig({
 				baseUrl: "/_emdash/api/media/file",
 			}),
 			plugins: [
-				readtimePlugin({ collections: ["blog"] }),
-				tocgenPlugin({ minHeadings: 3 }),
-				sharepostPlugin({ via: "abhinavs" }),
+				readtimePlugin(),
+				tocgenPlugin(),
+				sharepostPlugin(),
 				heartpostPlugin(),
-				shortlinkPlugin({ autoCreate: true }),
-				// callout and autobuild intentionally omitted for now.
-				// callout's sandbox entry causes an undefined plugin in
-				// HookPipeline at load time (known issue, see PLAN.md).
-				// autobuild has a .d.mts runtime import bug.
+				shortlinkPlugin(),
+				calloutPlugin(),
+				autobuildPlugin({ hookUrl: import.meta.env.CF_PAGES_DEPLOY_HOOK }),
 			],
 		}),
 	],
