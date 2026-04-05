@@ -1,0 +1,17 @@
+{
+	"name": "plugdash",
+	"compatibility_date": "2026-01-01",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "plugdash",
+			"database_id": "68818891-709c-47b2-ab29-6cb79b03d0b9"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "MEDIA",
+			"bucket_name": "plugdash-media"
+		}
+	]
+}

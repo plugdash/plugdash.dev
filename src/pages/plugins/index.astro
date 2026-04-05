@@ -1,0 +1,62 @@
+---
+import PluginCard from "../../components/PluginCard.astro";
+import { sortedPlugins } from "../../data/plugins";
+import Base from "../../layouts/Base.astro";
+
+const plugins = sortedPlugins();
+---
+
+<Base title="Plugins - PlugDash" description="The full PlugDash catalog. Drop-in plugins for EmDash sites.">
+  <section class="page container">
+    <header class="page-header">
+      <p class="eyebrow">The catalog</p>
+      <h1>Plugins</h1>
+      <p class="page-sub">
+        Every PlugDash plugin. Stable ones first. All MIT, all on npm.
+      </p>
+    </header>
+
+    <div class="plugin-grid">
+      {plugins.map((p) => (
+        <PluginCard
+          name={p.name}
+          tagline={p.tagline}
+          status={p.status}
+          installCommand={p.installCommand}
+          slug={p.slug}
+        />
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page {
+    padding: 3rem 1.5rem 4rem;
+  }
+  .page-header {
+    margin-bottom: 2rem;
+    max-width: 48rem;
+  }
+  .page-header .eyebrow {
+    margin-bottom: 0.5rem;
+  }
+  .page-header h1 {
+    font-size: 2.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .page-sub {
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+  .plugin-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .plugin-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

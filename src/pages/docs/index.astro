@@ -1,0 +1,72 @@
+---
+import { docsBySection } from "../../data/docs";
+import Base from "../../layouts/Base.astro";
+
+const grouped = docsBySection();
+---
+
+<Base title="Docs - PlugDash" description="PlugDash documentation. One page per plugin.">
+  <section class="page container-narrow">
+    <header class="page-header">
+      <p class="eyebrow">Documentation</p>
+      <h1>Docs</h1>
+      <p class="page-sub">
+        Start with the on-ramp. Each plugin has its own page with
+        install, component usage, props, and CSS tokens.
+      </p>
+    </header>
+
+    <section class="docs-section">
+      <h2>On-ramp</h2>
+      <ul class="docs-list">
+        {grouped["on-ramp"].map((d) => (
+          <li>
+            <a href={d.href}><span class="docs-list-title">{d.title}</span></a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="docs-section">
+      <h2>Plugins</h2>
+      <ul class="docs-list">
+        {grouped.plugins.map((d) => (
+          <li>
+            <a href={d.href}><span class="docs-list-title">{d.title}</span></a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </section>
+</Base>
+
+<style>
+  .page { padding: 3rem 1.5rem 4rem; }
+  .page-header { margin-bottom: 2rem; }
+  .page-header .eyebrow { margin-bottom: 0.5rem; }
+  .page-header h1 { font-size: 2.25rem; margin-bottom: 0.75rem; }
+  .page-sub { color: var(--muted); font-size: 1.05rem; }
+  .docs-section { margin-bottom: 2rem; }
+  .docs-section h2 {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+  .docs-list { list-style: none; padding: 0; margin: 0; }
+  .docs-list li {
+    border-bottom: 1px solid var(--border);
+  }
+  .docs-list li:first-child { border-top: 1px solid var(--border); }
+  .docs-list a {
+    display: block;
+    padding: 0.75rem 0;
+    color: var(--text);
+  }
+  .docs-list-title {
+    font-weight: 500;
+  }
+  .docs-list a:hover .docs-list-title { color: var(--accent); }
+</style>

@@ -1,0 +1,80 @@
+---
+import HeartButton from "@plugdash/heartpost/HeartButton.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { demoPost } from "../../data/demoPost";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("heartpost")!;
+
+const tocEntries = [
+  { id: "what-it-does", text: "What it does", level: 2 as const, children: [] },
+  { id: "install", text: "Install", level: 2 as const, children: [] },
+  { id: "register", text: "Register", level: 2 as const, children: [] },
+  { id: "add-the-component", text: "Add the component", level: 2 as const, children: [] },
+  { id: "live-demo", text: "Live demo", level: 2 as const, children: [] },
+  { id: "props", text: "Props", level: 2 as const, children: [] },
+  { id: "css-tokens", text: "CSS custom properties", level: 2 as const, children: [] },
+  { id: "known-limits", text: "Known limits", level: 2 as const, children: [] },
+  { id: "for-agents", text: "For agents", level: 2 as const, children: [] },
+];
+---
+
+<Doc
+  tocEntries={tocEntries}
+  currentSlug="heartpost"
+  readingTimeMinutes={2}
+  wordCount={240}
+  title="heartpost"
+  section="@plugdash/heartpost"
+  description="KV-backed heart counter. One click, one count."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    Registers a POST route that increments a counter in
+    Cloudflare KV (or local KV in dev), keyed by post ID and a
+    browser-side fingerprint to prevent duplicate clicks. Ships
+    <code>HeartButton.astro</code> with optimistic updates.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <pre><code>{`import { heartpostPlugin } from "@plugdash/heartpost"
+
+emdash({
+  plugins: [heartpostPlugin()],
+})`}</code></pre>
+
+  <h2 id="add-the-component">Add the component</h2>
+  <pre><code>{`---
+import HeartButton from "@plugdash/heartpost/HeartButton.astro"
+---
+<HeartButton post={post} />`}</code></pre>
+
+  <h2 id="live-demo">Live demo</h2>
+  <div class="demo-inline" style="display:flex;align-items:center;gap:1rem">
+    <HeartButton post={demoPost} />
+    <span style="color:var(--muted);font-size:0.875rem">One click, one count, no account.</span>
+  </div>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="known-limits">Known limits (as of 0.1.0)</h2>
+  <ul>
+    <li><strong>No unheart</strong>: the plugin exposes an increment route but no decrement route. A click only counts up.</li>
+    <li><strong>No persisted "I liked this" state</strong>: the button's filled appearance does not persist across page reloads. The fingerprint prevents double-counting server-side, but the UI does not read it back on render.</li>
+  </ul>
+  <p>
+    Both are scoped for the next release. For now, treat the heart as a
+    one-shot counter, not a toggle.
+  </p>
+
+  <h2 id="for-agents">For agents</h2>
+  <p>After install, click the heart on any rendered post and verify the
+  count increments. The KV key pattern is
+  <code>heartpost:[postId]:[fingerprint]</code>. The plugin declares no
+  capabilities - KV is auto-available to every plugin.</p>
+</Doc>

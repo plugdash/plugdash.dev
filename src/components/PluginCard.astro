@@ -1,0 +1,71 @@
+---
+import InstallCommand from "./InstallCommand.astro";
+
+interface Props {
+  name: string;
+  tagline: string;
+  status?: "beta" | "stable";
+  installCommand: string;
+  slug: string;
+  class?: string;
+}
+
+const { name, tagline, status = "beta", installCommand, slug, class: className = "" } = Astro.props;
+---
+
+<article class={`plugin-card ${className}`}>
+  <header class="plugin-card-head">
+    <h3 class="plugin-card-name">
+      <a href={`/plugins/${slug}`}>{name}</a>
+    </h3>
+    <span class="status-badge" data-status={status}>{status}</span>
+  </header>
+  <p class="plugin-card-tagline">{tagline}</p>
+  <div class="plugin-card-install">
+    <InstallCommand command={installCommand} />
+  </div>
+</article>
+
+<style>
+  .plugin-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    background: var(--surface);
+    transition: border-color var(--plugdash-transition);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .plugin-card:hover {
+    border-color: var(--muted);
+  }
+  .plugin-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .plugin-card-name {
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin: 0;
+  }
+  .plugin-card-name a {
+    color: var(--text-strong);
+    font-family: var(--plugdash-font-mono);
+    font-weight: 500;
+  }
+  .plugin-card-name a:hover {
+    color: var(--accent);
+  }
+  .plugin-card-tagline {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .plugin-card-install {
+    margin-top: auto;
+  }
+</style>

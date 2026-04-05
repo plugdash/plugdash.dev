@@ -1,0 +1,119 @@
+---
+import InstallCommand from "../../components/InstallCommand.astro";
+import Doc from "../../layouts/Doc.astro";
+
+const tocEntries = [
+  { id: "what-plugdash-is", text: "What plugdash is", level: 2 as const, children: [] },
+  { id: "how-emdash-plugins-work", text: "How EmDash plugins work", level: 2 as const, children: [] },
+  { id: "install-readtime", text: "Install readtime", level: 2 as const, children: [
+    { id: "step-1-install", text: "Step 1: install", level: 3 as const, children: [] },
+    { id: "step-2-register", text: "Step 2: register", level: 3 as const, children: [] },
+    { id: "step-3-add-the-component", text: "Step 3: add the component", level: 3 as const, children: [] },
+  ] },
+  { id: "change-the-look", text: "Change the look", level: 2 as const, children: [] },
+  { id: "next-steps", text: "Next steps", level: 2 as const, children: [] },
+];
+---
+
+<Doc
+  tocEntries={tocEntries}
+  currentSlug="getting-started"
+  readingTimeMinutes={4}
+  wordCount={520}
+  title="Getting started"
+  section="on-ramp"
+  description="Install your first plugdash plugin in five minutes."
+>
+  <h2 id="what-plugdash-is">What PlugDash is</h2>
+  <p>
+    PlugDash is a plugin catalog for EmDash. Every plugin ships as an npm
+    package, a companion Astro component, and a short list of CSS tokens
+    you can override. Install one, import one component, and your readers
+    see the result.
+  </p>
+  <p>
+    This site runs on EmDash with every PlugDash plugin installed. The
+    reading time on this page, the sidebar you're reading it from, the
+    engagement bar on blog posts - all of them are plugins. If they work
+    here, they work for you.
+  </p>
+
+  <h2 id="how-emdash-plugins-work">How EmDash plugins work</h2>
+  <p>
+    An EmDash plugin is a small module that runs inside your Astro site.
+    It listens to lifecycle hooks (like "a post was just published") and
+    writes data back to your content - usually onto
+    <code>post.data.metadata</code>. That data is then read by a companion
+    component that renders it in your theme.
+  </p>
+  <p>
+    You do not need to know how the hook fires. You just install the
+    plugin, register it in <code>astro.config.mjs</code>, and drop the
+    companion component into your layout.
+  </p>
+
+  <h2 id="install-readtime">Install readtime</h2>
+  <p>
+    readtime is the simplest plugin in the catalog. It calculates reading
+    time on every publish and ships a component that shows it. Use it as
+    your worked example.
+  </p>
+
+  <h3 id="step-1-install">Step 1: install</h3>
+  <InstallCommand command="npm install @plugdash/readtime" />
+
+  <h3 id="step-2-register">Step 2: register</h3>
+  <p>In your <code>astro.config.mjs</code>:</p>
+  <pre><code>{`import { readtimePlugin } from "@plugdash/readtime"
+
+emdash({
+  plugins: [
+    readtimePlugin({ collections: ["blog"] }),
+  ],
+})`}</code></pre>
+
+  <h3 id="step-3-add-the-component">Step 3: add the component</h3>
+  <p>In your post layout:</p>
+  <pre><code>{`---
+import ReadingTime from "@plugdash/readtime/ReadingTime.astro"
+---
+<ReadingTime post={post} />`}</code></pre>
+  <p>
+    Publish a post in the EmDash admin. Reload the page. The reading time
+    appears. No other configuration needed.
+  </p>
+
+  <h2 id="change-the-look">Change the look</h2>
+  <p>
+    Every PlugDash component reads from CSS custom properties under the
+    <code>--plugdash-*</code> namespace. To restyle, override them in your
+    global stylesheet:
+  </p>
+  <pre><code>{`:root {
+  --plugdash-accent: #6366f1;
+  --plugdash-muted: #888;
+  --plugdash-rt-radius: 4px;
+}`}</code></pre>
+  <p>
+    If you need more than tokens can give you, copy the component's
+    <code>.astro</code> file out of <code>node_modules/@plugdash/*/src/</code>
+    into your theme and modify it freely. Components are intentionally
+    simple and have no upstream coupling.
+  </p>
+
+  <h2 id="next-steps">Next steps</h2>
+  <p>
+    Each plugin has its own doc with install, props, CSS tokens, and a
+    live demo of its companion component:
+  </p>
+  <ul>
+    <li><a href="/docs/readtime">readtime</a> - reading time estimates</li>
+    <li><a href="/docs/tocgen">tocgen</a> - nested table of contents</li>
+    <li><a href="/docs/callout">callout</a> - info, warning, tip, danger blocks</li>
+    <li><a href="/docs/sharepost">sharepost</a> - share buttons with no JS libraries</li>
+    <li><a href="/docs/heartpost">heartpost</a> - KV-backed heart counter</li>
+    <li><a href="/docs/shortlink">shortlink</a> - short URLs per post</li>
+    <li><a href="/docs/engage">engage</a> - heart + share + copy bundle</li>
+    <li><a href="/docs/autobuild">autobuild</a> - publish-triggered rebuilds</li>
+  </ul>
+</Doc>

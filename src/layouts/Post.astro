@@ -1,0 +1,113 @@
+---
+import EngagementBar from "@plugdash/engage/EngagementBar.astro";
+import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
+import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
+import Base from "./Base.astro";
+
+interface Props {
+  post: Record<string, unknown>;
+  title: string;
+  description?: string;
+  publishedAt?: string;
+}
+
+const { post, title, description, publishedAt } = Astro.props;
+const date = publishedAt ? new Date(publishedAt) : null;
+const dateLabel = date
+  ? date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+  : null;
+---
+
+<Base title={title} description={description}>
+  <article class="post">
+    <div class="post-layout container">
+      <aside class="post-toc">
+        <TableOfContents post={post} sticky />
+      </aside>
+
+      <div class="post-body">
+        <header class="post-header">
+          <h1>{title}</h1>
+          <div class="post-meta">
+            <ReadingTime post={post} variant="inline" />
+            {dateLabel && <span class="post-date">{dateLabel}</span>}
+          </div>
+        </header>
+
+        <div class="post-content">
+          <slot />
+        </div>
+
+        <footer class="post-footer">
+          <EngagementBar post={post} attribution />
+        </footer>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .post {
+    padding: 3rem 0 4rem;
+  }
+  .post-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 1024px) {
+    .post-layout {
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 3rem;
+    }
+  }
+  .post-toc {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .post-toc {
+      display: block;
+    }
+  }
+  .post-body {
+    max-width: 680px;
+  }
+  .post-header {
+    margin-bottom: 2rem;
+  }
+  .post-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .post-date::before {
+    content: "- ";
+  }
+  .post-content :global(h2) {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .post-content :global(h3) {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .post-content :global(p) {
+    margin-block: 1rem;
+  }
+  .post-content :global(ul),
+  .post-content :global(ol) {
+    margin-block: 1rem;
+    padding-left: 1.5rem;
+  }
+  .post-footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+</style>

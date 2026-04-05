@@ -1,0 +1,36 @@
+{
+  "name": "plugdash.dev",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "node ./dist/server/entry.mjs",
+    "bootstrap": "emdash init && emdash seed",
+    "seed": "emdash seed",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.0.0",
+    "@astrojs/react": "^4.0.0",
+    "@plugdash/autobuild": "^0.1.1",
+    "@plugdash/callout": "^0.1.0",
+    "@plugdash/engage": "^0.1.0",
+    "@plugdash/heartpost": "^0.1.0",
+    "@plugdash/readtime": "^0.1.0",
+    "@plugdash/sharepost": "^0.1.0",
+    "@plugdash/shortlink": "^0.1.0",
+    "@plugdash/tocgen": "^0.1.0",
+    "astro": "^5.0.0",
+    "better-sqlite3": "^11.0.0",
+    "emdash": "^0.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.0",
+    "@types/node": "^22.0.0"
+  }
+}

@@ -1,0 +1,81 @@
+---
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("autobuild")!;
+
+const tocEntries = [
+  { id: "what-it-does", text: "What it does", level: 2 as const, children: [] },
+  { id: "install", text: "Install", level: 2 as const, children: [] },
+  { id: "register", text: "Register", level: 2 as const, children: [] },
+  { id: "how-it-fires", text: "How it fires", level: 2 as const, children: [] },
+  { id: "no-component", text: "No component", level: 2 as const, children: [] },
+  { id: "props", text: "Props", level: 2 as const, children: [] },
+  { id: "for-agents", text: "For agents", level: 2 as const, children: [] },
+];
+---
+
+<Doc
+  tocEntries={tocEntries}
+  currentSlug="autobuild"
+  readingTimeMinutes={3}
+  wordCount={320}
+  title="autobuild"
+  section="@plugdash/autobuild"
+  description="Publish in the admin, live in 60 seconds."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    On every content publish and delete, POSTs (or GETs) a deploy hook
+    URL - typically a Cloudflare Pages, Netlify, or Vercel build webhook.
+    Debounces rapid publishes so a batch of edits triggers one deploy,
+    not ten. No UI, no companion component.
+  </p>
+  <p>
+    This is the plugin that makes plugdash.dev's core promise real - the
+    admin becomes the thing that moves the site.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <pre><code>{`import { autobuildPlugin } from "@plugdash/autobuild"
+
+emdash({
+  plugins: [
+    autobuildPlugin({
+      hookUrl: import.meta.env.CF_PAGES_DEPLOY_HOOK,
+      allowedHosts: ["api.cloudflare.com"],
+    }),
+  ],
+})`}</code></pre>
+  <p>
+    Get the hook URL from your Cloudflare Pages project under
+    <strong>Settings -> Builds & deployments -> Deploy hooks</strong>.
+    Store it as <code>CF_PAGES_DEPLOY_HOOK</code> in the Pages dashboard
+    environment variables (mark it encrypted).
+  </p>
+
+  <h2 id="how-it-fires">How it fires</h2>
+  <pre><code>publish in admin -&gt; hook fires -&gt; deploy kicks off -&gt; live</code></pre>
+
+  <h2 id="no-component">No component</h2>
+  <p>
+    autobuild has no companion component. It is pure infrastructure.
+  </p>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="for-agents">For agents</h2>
+  <p>
+    After install, the env var <code>CF_PAGES_DEPLOY_HOOK</code> must be
+    set for the plugin to do anything. Gate registration on the env var
+    being present - when it is missing, skip the plugin entirely.
+    Verify by publishing a content edit in the admin and confirming a
+    new build starts within the <code>debounceMs</code> window (default
+    5 seconds).
+  </p>
+</Doc>

@@ -1,0 +1,82 @@
+---
+import EngagementBar from "@plugdash/engage/EngagementBar.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { demoPost } from "../../data/demoPost";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("engage")!;
+
+const tocEntries = [
+  { id: "what-it-does", text: "What it does", level: 2 as const, children: [] },
+  { id: "install", text: "Install", level: 2 as const, children: [] },
+  { id: "register-the-three-plugins-not-engage", text: "Register the three plugins (not engage)", level: 2 as const, children: [] },
+  { id: "add-the-component", text: "Add the component", level: 2 as const, children: [] },
+  { id: "live-demo", text: "Live demo", level: 2 as const, children: [] },
+  { id: "props", text: "Props", level: 2 as const, children: [] },
+  { id: "css-tokens", text: "CSS custom properties", level: 2 as const, children: [] },
+  { id: "for-agents", text: "For agents", level: 2 as const, children: [] },
+];
+---
+
+<Doc
+  tocEntries={tocEntries}
+  currentSlug="engage"
+  readingTimeMinutes={3}
+  wordCount={340}
+  title="engage"
+  section="@plugdash/engage"
+  description="Heart + share + copy in one component."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    Composes <code>heartpost</code>, <code>sharepost</code>, and
+    <code>shortlink</code> into a single <code>EngagementBar.astro</code>
+    component. engage has no plugin logic of its own - it is a
+    convenience package that exports one Astro component.
+  </p>
+  <p>
+    <strong>Do not register engage in astro.config.mjs.</strong> Register
+    the three underlying plugins instead, then import
+    <code>EngagementBar</code> directly.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+  <p>Also install the three plugins it composes:</p>
+  <pre><code>npm install @plugdash/heartpost @plugdash/sharepost @plugdash/shortlink</code></pre>
+
+  <h2 id="register">Register the three plugins (not engage)</h2>
+  <pre><code>{`import { heartpostPlugin } from "@plugdash/heartpost"
+import { sharepostPlugin } from "@plugdash/sharepost"
+import { shortlinkPlugin } from "@plugdash/shortlink"
+
+emdash({
+  plugins: [
+    heartpostPlugin(),
+    sharepostPlugin({ via: "abhinavs" }),
+    shortlinkPlugin({ autoCreate: true }),
+  ],
+})`}</code></pre>
+
+  <h2 id="add-the-component">Add the component</h2>
+  <pre><code>{`---
+import EngagementBar from "@plugdash/engage/EngagementBar.astro"
+---
+<EngagementBar post={post} />`}</code></pre>
+
+  <h2 id="live-demo">Live demo</h2>
+  <div class="demo-inline">
+    <EngagementBar post={demoPost} attribution />
+  </div>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="for-agents">For agents</h2>
+  <p>engage has no capabilities, no hooks, and no metadata of its own.
+  Its component reads from all three underlying plugins'
+  metadata/KV routes. If a user installs engage without the three
+  underlying plugins, the component will render with empty counts and
+  broken share URLs.</p>
+</Doc>

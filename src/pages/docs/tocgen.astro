@@ -1,0 +1,63 @@
+---
+import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { demoPost, pluginDocToc } from "../../data/demoPost";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("tocgen")!;
+---
+
+<Doc
+  tocEntries={pluginDocToc}
+  currentSlug="tocgen"
+  readingTimeMinutes={2}
+  wordCount={260}
+  title="tocgen"
+  section="@plugdash/tocgen"
+  description="Nested table of contents from Portable Text headings."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    Walks your Portable Text body on publish, picks out h2/h3/h4 blocks,
+    and writes a nested <code>entries</code> tree to
+    <code>post.data.metadata.tocgen</code>. Short posts (fewer than
+    <code>minHeadings</code>) are skipped. Ships
+    <code>TableOfContents.astro</code> with a sticky sidebar variant.
+  </p>
+  <p>
+    The docs sidebar on the right is <code>tocgen</code> running on this
+    page. If you can see it, the plugin works.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <pre><code>{`import { tocgenPlugin } from "@plugdash/tocgen"
+
+emdash({
+  plugins: [
+    tocgenPlugin({ minHeadings: 3 }),
+  ],
+})`}</code></pre>
+
+  <h2 id="add-the-component">Add the component</h2>
+  <pre><code>{`---
+import TableOfContents from "@plugdash/tocgen/TableOfContents.astro"
+---
+<TableOfContents post={post} sticky />`}</code></pre>
+
+  <h2 id="live-demo">Live demo</h2>
+  <div class="demo-inline">
+    <TableOfContents post={demoPost} />
+  </div>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="for-agents">For agents</h2>
+  <p>After install, publish a post with at least <code>minHeadings</code>
+  h2 headings. Verify <code>post.data.metadata.tocgen.entries</code> is a
+  non-empty array. Heading IDs come from slugifying the heading text.</p>
+</Doc>

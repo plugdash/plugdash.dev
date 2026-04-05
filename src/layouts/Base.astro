@@ -1,0 +1,123 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const { title, description, ogImage } = Astro.props;
+const siteTitle = title.includes("plugdash") ? title : `${title} - plugdash`;
+const desc = description ??
+  "Plugin catalog for EmDash. Drop-in plugins that make EmDash sites feel considered.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{siteTitle}</title>
+    <meta name="description" content={desc} />
+    <meta property="og:title" content={siteTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:type" content="website" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script is:inline>
+      // Apply saved theme before paint to avoid flash. Default is dark (no attribute).
+      try {
+        const saved = localStorage.getItem("plugdash-theme");
+        if (saved === "light") {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a href="/" class="site-logo" aria-label="PlugDash home">
+          <svg viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M56,64v96a32,32,0,0,0,32,32h80a32,32,0,0,0,32-32V64Z" fill="currentColor" opacity="0.2"/>
+            <line x1="168" y1="16" x2="168" y2="64" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+            <path d="M88,16V64" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+            <path d="M128,192v48" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+            <path d="M32,64H224" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+            <path d="M56,64v96a32,32,0,0,0,32,32h80a32,32,0,0,0,32-32V64" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+            <polyline points="132 160 144 128 112 128 124 96" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+          </svg>
+          <span>PlugDash</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/plugins">plugins</a>
+          <a href="/docs">docs</a>
+          <a href="https://github.com/plugdash/plugdash" rel="noopener">github</a>
+          <button
+            type="button"
+            class="theme-toggle"
+            id="theme-toggle"
+            aria-label="Toggle colour theme"
+            title="Toggle colour theme"
+          >
+            <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+            </svg>
+            <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path>
+            </svg>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container site-footer-inner">
+        <div class="site-footer-meta">
+          plugdash.dev - built on EmDash - MIT license
+        </div>
+        <nav class="site-footer-nav" aria-label="For agents">
+          <span class="site-footer-label">For agents</span>
+          <a href="/llms.txt">llms.txt</a>
+          <a href="/agents.md">agents.md</a>
+          <a href="/skill.md">skill.md</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script is:inline>
+      (function () {
+        const btn = document.getElementById("theme-toggle");
+        if (!btn) return;
+        const html = document.documentElement;
+        btn.addEventListener("click", () => {
+          const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
+          if (next === "light") {
+            html.setAttribute("data-theme", "light");
+          } else {
+            html.removeAttribute("data-theme");
+          }
+          try {
+            localStorage.setItem("plugdash-theme", next);
+          } catch (e) {}
+        });
+      })();
+    </script>
+  </body>
+</html>

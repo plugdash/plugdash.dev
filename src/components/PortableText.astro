@@ -1,0 +1,116 @@
+---
+/**
+ * Minimal Portable Text renderer for plugdash.dev content. Handles the
+ * standard text block types plus the callout custom block type registered
+ * by @plugdash/callout. For anything richer, render via EmDash's own
+ * portable text renderer upstream.
+ */
+import Callout from "@plugdash/callout/Callout.astro";
+import PortableText from "./PortableText.astro";
+
+type Span = { _type: "span"; text: string; marks?: string[] };
+type TextBlock = {
+  _type: "block";
+  style?: string;
+  children?: Span[];
+  listItem?: "bullet" | "number";
+  level?: number;
+  _key?: string;
+};
+type CalloutBlock = {
+  _type: "callout";
+  variant?: "info" | "warning" | "tip" | "danger";
+  title?: string;
+  body?: unknown;
+  _key?: string;
+};
+type CodeBlock = {
+  _type: "code";
+  code?: string;
+  language?: string;
+  _key?: string;
+};
+type Block = TextBlock | CalloutBlock | CodeBlock | { _type: string; _key?: string };
+
+interface Props {
+  value: Block[] | undefined | null;
+}
+
+const { value } = Astro.props;
+const blocks = Array.isArray(value) ? value : [];
+
+function renderSpans(spans: Span[] | undefined): string {
+  if (!spans) return "";
+  return spans
+    .map((span) => {
+      const text = escapeHtml(span.text ?? "");
+      const marks = span.marks ?? [];
+      let out = text;
+      if (marks.includes("code")) out = `<code>${out}</code>`;
+      if (marks.includes("em")) out = `<em>${out}</em>`;
+      if (marks.includes("strong")) out = `<strong>${out}</strong>`;
+      return out;
+    })
+    .join("");
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function headingTag(style: string | undefined): string {
+  if (style === "h2" || style === "h3" || style === "h4") return style;
+  if (style === "h1") return "h2"; // demote h1 - page provides it
+  return "p";
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+---
+
+{blocks.map((block) => {
+  if (block._type === "block") {
+    const b = block as TextBlock;
+    const inner = renderSpans(b.children);
+    if (b.listItem) {
+      // Rendering lists correctly requires grouping - fall back to paragraph wrap
+      return <li set:html={inner} />;
+    }
+    const tag = headingTag(b.style);
+    if (tag === "h2" || tag === "h3" || tag === "h4") {
+      const plain = (b.children ?? []).map((c) => c.text ?? "").join("");
+      const id = slugify(plain);
+      const Tag = tag;
+      return <Tag id={id} set:html={inner} />;
+    }
+    return <p set:html={inner} />;
+  }
+
+  if (block._type === "callout") {
+    const c = block as CalloutBlock;
+    const variant = c.variant ?? "info";
+    return (
+      <Callout variant={variant} title={c.title}>
+        <PortableText value={c.body as Block[] | undefined} />
+      </Callout>
+    );
+  }
+
+  if (block._type === "code") {
+    const c = block as CodeBlock;
+    return (
+      <pre><code class={c.language ? `language-${c.language}` : ""}>{c.code ?? ""}</code></pre>
+    );
+  }
+
+  return null;
+})}

@@ -1,0 +1,59 @@
+/* Base colour tokens - dark is default.
+ * Accent: Tailwind orange-500 (#f97316) to match EmDash. */
+:root {
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --border: #222222;
+  --text: #b8b8b8;
+  --text-strong: #e8e8e8;
+  --muted: #777777;
+  --accent: #f97316;
+  --accent-light: #fb923c;
+  --accent-fg: #ffffff;
+}
+
+[data-theme="light"] {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --border: #e5e5e5;
+  --text: #3f3f3f;
+  --text-strong: #111111;
+  --muted: #6b6b6b;
+}
+
+/* plugdash component tokens - consumed by all @plugdash/* companion components */
+:root {
+  --plugdash-font-ui: "Manrope", system-ui, sans-serif;
+  --plugdash-font-mono: "IBM Plex Mono", monospace;
+  --plugdash-muted: var(--muted);
+  --plugdash-accent: var(--accent);
+  --plugdash-accent-fg: var(--accent-fg);
+  --plugdash-border: var(--border);
+  --plugdash-surface: var(--surface);
+  --plugdash-transition: 150ms ease;
+
+  --plugdash-meta-size: 0.875rem;
+  --plugdash-meta-font: inherit;
+
+  --plugdash-share-gap: 0.5rem;
+  --plugdash-share-padding: 0.4rem 0.75rem;
+  --plugdash-share-radius: 4px;
+
+  --plugdash-toc-size: 0.875rem;
+  --plugdash-toc-indent: 1rem;
+  --plugdash-toc-hover: var(--accent);
+
+  --plugdash-tag-size: 0.8rem;
+  --plugdash-tag-color: var(--accent);
+  --plugdash-tag-radius: 3px;
+
+  --plugdash-engage-gap: 0.375rem;
+  --plugdash-engage-size: 2rem;
+  --plugdash-engage-radius: 9999px;
+  --plugdash-engage-border: rgb(from currentColor r g b / 0.15);
+  --plugdash-engage-bg: rgb(from currentColor r g b / 0.04);
+  --plugdash-engage-bg-hover: rgb(from currentColor r g b / 0.08);
+
+  --plugdash-paywall-padding: 2rem;
+  --plugdash-tip-radius: 8px;
+}

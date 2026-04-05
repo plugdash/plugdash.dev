@@ -1,0 +1,76 @@
+---
+import Doc from "../../layouts/Doc.astro";
+
+const tocEntries = [
+  { id: "what-it-is", text: "What it is", level: 2 as const, children: [] },
+  { id: "what-makes-it-different", text: "What makes it different", level: 2 as const, children: [] },
+  { id: "the-stack", text: "The stack", level: 2 as const, children: [] },
+  { id: "plugins-and-the-admin", text: "Plugins and the admin", level: 2 as const, children: [] },
+  { id: "where-to-go-next", text: "Where to go next", level: 2 as const, children: [] },
+];
+---
+
+<Doc
+  tocEntries={tocEntries}
+  currentSlug="what-is-emdash"
+  title="What is EmDash"
+  section="on-ramp"
+  description="A short intro to EmDash, the open-source CMS built on Astro and Cloudflare."
+  readingTimeMinutes={3}
+  wordCount={340}
+>
+  <h2 id="what-it-is">What it is</h2>
+  <p>
+    EmDash is an open-source CMS built on Astro and Cloudflare. You install
+    it into an existing Astro project, get a full admin at
+    <code>/_emdash/admin</code>, and your content is authored against
+    collections you define - like a typed database you edit through a UI.
+    It runs on Cloudflare D1 for storage and R2 for media, or SQLite
+    locally in development.
+  </p>
+
+  <h2 id="what-makes-it-different">What makes it different</h2>
+  <p>
+    Unlike traditional CMSes that sit in a separate process and speak to
+    your site through an API, EmDash runs <em>inside</em> your Astro app.
+    There is no external service, no API key, no CORS dance. Content is
+    served by the same server that renders your pages.
+  </p>
+  <p>
+    That architecture is what makes PlugDash plugins possible. A plugin
+    is just a module that hooks into the publish lifecycle and writes to
+    the same database your site reads from. No webhooks required.
+  </p>
+
+  <h2 id="the-stack">The stack</h2>
+  <ul>
+    <li><strong>Astro</strong> for rendering (server output mode)</li>
+    <li><strong>Cloudflare Pages</strong> or Node for hosting</li>
+    <li><strong>D1</strong> (or SQLite locally) for the content database</li>
+    <li><strong>R2</strong> for media storage</li>
+    <li><strong>Portable Text</strong> for rich content bodies</li>
+    <li><strong>React</strong> for the admin UI</li>
+  </ul>
+
+  <h2 id="plugins-and-the-admin">Plugins and the admin</h2>
+  <p>
+    EmDash plugins can declare capabilities (read/write content, fetch
+    from external networks, register API routes, register editor block
+    types), subscribe to lifecycle hooks (<code>content:afterSave</code>,
+    <code>content:afterDelete</code>), and ship companion Astro components
+    that render plugin data in your theme.
+  </p>
+  <p>
+    The admin surfaces plugins automatically. When you install
+    <code>@plugdash/callout</code>, the callout block shows up in the
+    editor. When you install <code>@plugdash/readtime</code>, reading-time
+    metadata appears on every post.
+  </p>
+
+  <h2 id="where-to-go-next">Where to go next</h2>
+  <ul>
+    <li><a href="https://emdashcms.com">emdashcms.com</a> - official docs</li>
+    <li><a href="/docs/getting-started">PlugDash getting started</a> - install your first plugin</li>
+    <li><a href="/docs/installing-plugins">Installing plugins</a> - code vs admin walkthrough</li>
+  </ul>
+</Doc>

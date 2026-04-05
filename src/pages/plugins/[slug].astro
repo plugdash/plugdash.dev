@@ -1,0 +1,488 @@
+---
+import Callout from "@plugdash/callout/Callout.astro";
+import EngagementBar from "@plugdash/engage/EngagementBar.astro";
+import HeartButton from "@plugdash/heartpost/HeartButton.astro";
+import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
+import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
+import CopyLink from "@plugdash/shortlink/CopyLink.astro";
+import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginCard from "../../components/PluginCard.astro";
+import { buildDemoPost } from "../../data/demoPost";
+import { getPlugin, plugins as allPlugins } from "../../data/plugins";
+import Base from "../../layouts/Base.astro";
+
+export async function getStaticPaths() {
+  return allPlugins.map((p) => ({ params: { slug: p.slug } }));
+}
+
+const { slug } = Astro.params;
+const plugin = getPlugin(slug!);
+if (!plugin) {
+  return Astro.redirect("/plugins");
+}
+
+function eyebrowText(p: typeof plugin) {
+  if (!p) return "";
+  if (p.slug === "engage") return "The engagement bundle";
+  if (p.slug === "autobuild") return "Pure infrastructure";
+  if (p.wordpressEquivalent) return `The EmDash alternative to ${p.wordpressEquivalent}`;
+  return "Only on EmDash";
+}
+
+const eyebrow = eyebrowText(plugin);
+
+// Fixture post for live demos with a real share message and URL per plugin.
+const demoPost = buildDemoPost({
+  id: `demo-${plugin!.slug}`,
+  slug: "the-plugdash-launch",
+  title: `Shipping with @plugdash/${plugin!.name}`,
+  url: `https://plugdash.dev/plugins/${plugin!.slug}`,
+  message: `${plugin!.tagline} - @plugdash/${plugin!.name}`,
+});
+
+const relatedPlugins = plugin!.pairs
+  .map((name) => allPlugins.find((p) => p.slug === name))
+  .filter(Boolean) as typeof allPlugins;
+
+const p = plugin!;
+---
+
+<Base
+  title={`${p.name} - EmDash plugin - plugdash`}
+  description={`${p.tagline}${p.wordpressEquivalent ? ` The EmDash alternative to ${p.wordpressEquivalent}.` : ` Available for EmDash via ${p.npmPackage}.`}`}
+>
+  <article class="plugin-page container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/plugins">plugins</a> / {p.name}
+    </nav>
+
+    <header class="plugin-header">
+      <p class="eyebrow">{eyebrow}</p>
+      <h1 class="plugin-headline">{p.headline}</h1>
+      <p class="plugin-sub">{p.sub}</p>
+      <div class="install-strip">
+        <InstallCommand command={p.installCommand} />
+        <span class="status-badge" data-status={p.status}>{p.status}</span>
+        <a href={p.githubUrl} class="gh-link" rel="noopener">GitHub</a>
+      </div>
+    </header>
+
+    <section class="demo-band">
+      <div class="demo-content container-narrow">
+        {p.slug === "readtime" && (
+          <div class="demo-variants">
+            <ReadingTime post={demoPost} variant="badge" />
+            <ReadingTime post={demoPost} variant="pill" />
+            <ReadingTime post={demoPost} variant="inline" />
+            <ReadingTime post={demoPost} variant="minimal" />
+          </div>
+        )}
+        {p.slug === "callout" && (
+          <div class="demo-callouts">
+            <Callout variant="info" title="Info">
+              <p>Background context readers might want but don't strictly need.</p>
+            </Callout>
+            <Callout variant="tip" title="Tip">
+              <p>The non-obvious thing that makes the task easier.</p>
+            </Callout>
+            <Callout variant="warning" title="Warning">
+              <p>Something that will bite them if they skip it.</p>
+            </Callout>
+            <Callout variant="danger" title="Danger">
+              <p>Something that will break things if they get it wrong.</p>
+            </Callout>
+          </div>
+        )}
+        {p.slug === "sharepost" && (
+          <div class="demo-row">
+            <ShareButtons post={demoPost} variant="circle" />
+            <span class="demo-label">circle</span>
+            <ShareButtons post={demoPost} variant="pill" />
+            <span class="demo-label">pill</span>
+          </div>
+        )}
+        {p.slug === "heartpost" && (
+          <div class="demo-row">
+            <HeartButton post={demoPost} />
+            <span class="demo-label">one click, one count, no account</span>
+          </div>
+        )}
+        {p.slug === "shortlink" && (
+          <div class="demo-row">
+            <CopyLink post={demoPost} variant="circle" />
+            <CopyLink post={demoPost} variant="pill" />
+            <CopyLink post={demoPost} variant="inline" />
+          </div>
+        )}
+        {p.slug === "tocgen" && (
+          <div class="demo-toc">
+            <TableOfContents post={demoPost} />
+          </div>
+        )}
+        {p.slug === "engage" && (
+          <div class="demo-engage">
+            <EngagementBar post={demoPost} attribution />
+          </div>
+        )}
+        {p.slug === "autobuild" && (
+          <div class="demo-sequence">
+            <pre><code>{p.configExample}</code></pre>
+            <div class="sequence">
+              <span class="seq-step">publish in admin</span>
+              <span class="seq-arrow">-&gt;</span>
+              <span class="seq-step">hook fires</span>
+              <span class="seq-arrow">-&gt;</span>
+              <span class="seq-step">deploy kicks off</span>
+              <span class="seq-arrow">-&gt;</span>
+              <span class="seq-step">live</span>
+            </div>
+          </div>
+        )}
+        <p class="demo-caption">
+          {p.slug === "autobuild" ? "No UI. Pure infrastructure." : "This is the default. No configuration."}
+        </p>
+      </div>
+    </section>
+
+    <section class="setup container-narrow">
+      <h2>Setup</h2>
+      <ol class="setup-steps">
+        <li>
+          <h3>Install and register</h3>
+          <pre><code>{p.installCommand}</code></pre>
+          {p.configExample && <pre><code>{p.configExample}</code></pre>}
+        </li>
+        {p.componentImport && (
+          <li>
+            <h3>Add to your layout</h3>
+            <pre><code>{`${p.componentImport}\n\n${p.componentUsage}`}</code></pre>
+          </li>
+        )}
+      </ol>
+      <p class="setup-note">{p.setupNote}</p>
+    </section>
+
+    <details class="customise container-narrow">
+      <summary>
+        <h2>It looks right. But it's yours to change.</h2>
+      </summary>
+      <div class="customise-body">
+        {p.slug === "autobuild" ? (
+          <>
+            <h3>AutobuildConfig</h3>
+            <table class="prop-table">
+              <thead><tr><th>option</th><th>type</th><th>default</th><th>description</th></tr></thead>
+              <tbody>
+                {p.props?.map((prop) => (
+                  <tr>
+                    <td><code>{prop.name}</code></td>
+                    <td><code>{prop.type}</code></td>
+                    <td>{prop.default ? <code>{prop.default}</code> : ""}</td>
+                    <td>{prop.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        ) : (
+          <>
+            {p.props && p.props.length > 0 && (
+              <>
+                <h3>Props</h3>
+                <table class="prop-table">
+                  <thead><tr><th>prop</th><th>type</th><th>default</th><th>description</th></tr></thead>
+                  <tbody>
+                    {p.props.map((prop) => (
+                      <tr>
+                        <td><code>{prop.name}</code></td>
+                        <td><code>{prop.type}</code></td>
+                        <td>{prop.default ? <code>{prop.default}</code> : ""}</td>
+                        <td>{prop.description}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+            {p.cssTokens && p.cssTokens.length > 0 && (
+              <>
+                <h3>CSS custom properties</h3>
+                <table class="prop-table">
+                  <thead><tr><th>token</th><th>description</th></tr></thead>
+                  <tbody>
+                    {p.cssTokens.map((t) => (
+                      <tr>
+                        <td><code>{t.name}</code></td>
+                        <td>{t.description}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+            <p class="customise-note">
+              Components are intentionally simple. Copy <code>src/{p.companionComponent}</code>
+              into your theme and modify freely - no upstream coupling.
+            </p>
+          </>
+        )}
+      </div>
+    </details>
+
+    {relatedPlugins.length > 0 && (
+      <section class="pairs container">
+        <h2>Pairs well with</h2>
+        {p.pairsNote && <p class="pairs-note">{p.pairsNote}</p>}
+        <div class="plugin-grid">
+          {relatedPlugins.map((r) => (
+            <PluginCard
+              name={r.name}
+              tagline={r.tagline}
+              status={r.status}
+              installCommand={r.installCommand}
+              slug={r.slug}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+</Base>
+
+<style>
+  .plugin-page {
+    padding: 2rem 1.5rem 4rem;
+  }
+  .breadcrumb {
+    margin-bottom: 1.5rem;
+  }
+  .plugin-header {
+    max-width: 48rem;
+    margin-bottom: 2.5rem;
+  }
+  .plugin-header .eyebrow {
+    margin-bottom: 0.75rem;
+  }
+  .plugin-headline {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 500;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  .plugin-sub {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  .install-strip {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .gh-link {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .gh-link:hover {
+    color: var(--text);
+  }
+
+  .demo-band {
+    background: #0a0a0a;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 0;
+    margin: 0 calc(-1 * 1.5rem) 2.5rem;
+    color: #e8e8e8;
+  }
+  :global([data-theme="light"]) .demo-band {
+    background: #111;
+    color: #e8e8e8;
+  }
+  .demo-band .demo-content {
+    text-align: center;
+  }
+  .demo-variants,
+  .demo-row,
+  .demo-engage {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+  .demo-callouts {
+    display: grid;
+    gap: 1rem;
+    text-align: left;
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+  .demo-label {
+    color: #888;
+    font-size: 0.8rem;
+  }
+  .demo-toc {
+    max-width: 30rem;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .demo-sequence {
+    max-width: 40rem;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .demo-sequence pre {
+    background: #050505;
+    border-color: #222;
+    color: #ddd;
+    margin-bottom: 1.5rem;
+  }
+  .sequence {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--plugdash-font-mono);
+    font-size: 0.85rem;
+    color: #aaa;
+  }
+  .seq-step {
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 0.3rem 0.6rem;
+  }
+  .seq-arrow {
+    color: #555;
+  }
+  .demo-caption {
+    margin-top: 1.5rem;
+    color: #888;
+    font-size: 0.85rem;
+  }
+
+  .setup {
+    padding: 2rem 1.5rem;
+  }
+  .setup h2 {
+    margin-bottom: 1.25rem;
+  }
+  .setup-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .setup-steps > li {
+    margin-bottom: 1.75rem;
+  }
+  .setup-steps h3 {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  .setup-steps pre {
+    margin-block: 0.5rem;
+  }
+  .setup-note {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-top: 1rem;
+  }
+
+  .customise {
+    padding: 1rem 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1rem auto 2rem;
+    background: var(--surface);
+  }
+  .customise summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  /* list-style: none on summary hides the marker in modern Chrome/Safari */
+  .customise summary::before {
+    content: "+";
+    color: var(--muted);
+    font-family: var(--plugdash-font-mono);
+    font-size: 1.25rem;
+    line-height: 1;
+    width: 1rem;
+  }
+  .customise[open] summary::before {
+    content: "-";
+  }
+  .customise summary h2 {
+    display: inline;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+  }
+  .customise-body {
+    margin-top: 1.25rem;
+  }
+  .customise-body h3 {
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .prop-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  .prop-table th,
+  .prop-table td {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .prop-table th {
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .customise-note {
+    color: var(--muted);
+    font-size: 0.875rem;
+    margin-top: 1rem;
+  }
+
+  .pairs {
+    padding: 2rem 1.5rem 0;
+  }
+  .pairs h2 {
+    margin-bottom: 0.5rem;
+  }
+  .pairs-note {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    max-width: 42rem;
+  }
+  .plugin-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .plugin-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

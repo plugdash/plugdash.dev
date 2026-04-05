@@ -1,0 +1,266 @@
+@import "./tokens.css";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--plugdash-font-ui);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--plugdash-transition);
+}
+
+a:hover {
+  color: var(--accent-light);
+}
+
+code, pre, kbd, samp {
+  font-family: var(--plugdash-font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+:not(pre) > code {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.125rem 0.35rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--plugdash-font-ui);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+}
+
+h1 { font-size: 2.5rem; letter-spacing: -0.02em; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.25rem; }
+
+p {
+  margin-block: 0.75rem;
+}
+
+::selection {
+  background: var(--border);
+  color: var(--text-strong);
+}
+
+/* Force a space between the number and label in ReadingTime.
+ * The component uses a thin-space (&thinsp;) or a stripped whitespace
+ * that flex layout collapses; a non-breaking space guarantees it. */
+.plugdash-rt .plugdash-rt-minutes::after {
+  content: "\00a0";
+}
+
+/* CopyLink pill variant: show the URL first, then the copy/check icon.
+ * The component renders icon -> check -> url span; flex `order` moves
+ * the url span to the front without touching the plugin markup. */
+.plugdash-copy--pill .plugdash-copy-url {
+  order: -1;
+  margin-right: 0.3rem;
+}
+
+/* Layout containers */
+.container {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.container-narrow {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Site header */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 0;
+}
+
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-strong);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.site-logo svg {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.site-nav a {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.site-nav a:hover {
+  color: var(--text);
+}
+
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: color var(--plugdash-transition), border-color var(--plugdash-transition);
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+.theme-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Default (dark mode) - show sun (click to go light) */
+.theme-icon-moon { display: none; }
+.theme-icon-sun { display: block; }
+
+/* Light mode - show moon (click to go dark) */
+[data-theme="light"] .theme-icon-sun { display: none; }
+[data-theme="light"] .theme-icon-moon { display: block; }
+
+/* Site footer */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.site-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.site-footer-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+.site-footer-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.site-footer-nav a {
+  color: var(--muted);
+  font-family: var(--plugdash-font-mono);
+  font-size: 0.8rem;
+}
+/* agent-facing files are mono on purpose - they are file paths, not brand */
+.site-footer-nav a:hover {
+  color: var(--text);
+}
+@media (max-width: 640px) {
+  .site-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Status badge used on plugin cards and pages */
+.status-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.status-badge[data-status="stable"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Eyebrow text - small, muted, not uppercase so brand names (EmDash,
+ * PlugDash) keep their intended capitalization */
+.eyebrow {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.breadcrumb {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.breadcrumb a {
+  color: var(--muted);
+}
+
+.breadcrumb a:hover {
+  color: var(--text);
+}

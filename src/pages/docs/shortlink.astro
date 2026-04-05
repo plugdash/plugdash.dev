@@ -1,0 +1,62 @@
+---
+import CopyLink from "@plugdash/shortlink/CopyLink.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { demoPost, pluginDocToc } from "../../data/demoPost";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("shortlink")!;
+---
+
+<Doc
+  tocEntries={pluginDocToc}
+  currentSlug="shortlink"
+  readingTimeMinutes={2}
+  wordCount={260}
+  title="shortlink"
+  section="@plugdash/shortlink"
+  description="Short URLs per post, stored in KV."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    On publish, generates a short code for each post and stores the
+    mapping in KV under <code>shortlink:[code]:data</code>. Registers a
+    redirect route so <code>/l/[code]</code> sends visitors to the full
+    post URL. Ships <code>CopyLink.astro</code> with three variants and a
+    green check confirmation on copy.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <pre><code>{`import { shortlinkPlugin } from "@plugdash/shortlink"
+
+emdash({
+  plugins: [
+    shortlinkPlugin({ autoCreate: true }),
+  ],
+})`}</code></pre>
+
+  <h2 id="add-the-component">Add the component</h2>
+  <pre><code>{`---
+import CopyLink from "@plugdash/shortlink/CopyLink.astro"
+---
+<CopyLink post={post} />`}</code></pre>
+
+  <h2 id="live-demo">Live demo</h2>
+  <div class="demo-inline" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+    <CopyLink post={demoPost} variant="circle" />
+    <CopyLink post={demoPost} variant="pill" />
+    <CopyLink post={demoPost} variant="inline" />
+  </div>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="for-agents">For agents</h2>
+  <p>After install, publish a post and verify
+  <code>post.data.metadata.shortlink.url</code> is populated. Hit the
+  short URL in a browser and confirm it redirects to the canonical post.
+  Codes are generated at publish time, not lazily.</p>
+</Doc>

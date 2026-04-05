@@ -1,0 +1,217 @@
+---
+import HeartButton from "@plugdash/heartpost/HeartButton.astro";
+import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
+import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
+import CopyLink from "@plugdash/shortlink/CopyLink.astro";
+import PluginCard from "../components/PluginCard.astro";
+import { buildDemoPost } from "../data/demoPost";
+import { sortedPlugins } from "../data/plugins";
+import Base from "../layouts/Base.astro";
+
+const plugins = sortedPlugins();
+
+// Fixture post with a real message + URL so share buttons share something
+// worth sharing. The heart counter reads post.id, so it must be top-level.
+const demoPost = buildDemoPost({
+  id: "plugdash-home",
+  slug: "index",
+  title: "PlugDash - drop-in plugins for EmDash",
+  url: "https://plugdash.dev",
+  message: "PlugDash: drop-in plugins that make EmDash sites feel considered. Reading time, shares, hearts, short links - all working out of the box.",
+  heartCount: 4,
+});
+---
+
+<Base title="PlugDash - drop-in plugins for EmDash">
+  <section class="hero container">
+    <p class="eyebrow">For writers, bloggers, and teams running EmDash</p>
+    <h1 class="hero-headline">
+      The plugins your readers<br />notice without knowing why.
+    </h1>
+    <p class="hero-sub">
+      Drop-in plugins that make EmDash sites feel considered.
+      Reading time. Social sharing. Hearts. Short links.
+      Everything works out of the box.
+    </p>
+    <div class="hero-cta">
+      <a href="/plugins" class="btn btn-primary">Browse plugins</a>
+      <a href="https://github.com/plugdash/plugdash" class="btn btn-ghost" rel="noopener">
+        github.com/plugdash/plugdash
+      </a>
+    </div>
+  </section>
+
+  <section class="demo-strip container-narrow">
+    <div class="demo-row">
+      <div class="demo-cell">
+        <ReadingTime post={demoPost} variant="inline" />
+      </div>
+      <div class="demo-cell">
+        <ShareButtons post={demoPost} />
+      </div>
+      <div class="demo-cell">
+        <HeartButton post={demoPost} />
+      </div>
+      <div class="demo-cell">
+        <CopyLink post={demoPost} variant="pill" showUrl />
+      </div>
+    </div>
+    <p class="demo-caption">
+      This page uses the readtime, sharepost, heartpost, and shortlink plugins
+    </p>
+  </section>
+
+  <section class="grid-section container">
+    <h2 class="grid-heading">Everything your readers expect</h2>
+    <div class="plugin-grid">
+      {plugins.map((p) => (
+        <PluginCard
+          name={p.name}
+          tagline={p.homeCardCopy}
+          status={p.status}
+          installCommand={p.installCommand}
+          slug={p.slug}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="built container-narrow">
+    <h2 class="grid-heading">Built to be kept</h2>
+    <p>
+      Every PlugDash component works out of the box. Install the plugin,
+      add one import to your layout, and your readers see the result.
+      No configuration required to ship something good.
+    </p>
+    <p>
+      Change what matters to you. Every component has four variants,
+      three sizes, and a CSS token system that bends to your theme
+      without fighting it.
+    </p>
+    <p>
+      This site runs on EmDash with every plugin installed. The reading
+      time you see on this post, the share buttons at the bottom, the
+      heart - all PlugDash. If it works here, it works.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding: 4rem 1.5rem 2rem;
+    text-align: left;
+  }
+  .hero .eyebrow {
+    margin-bottom: 1rem;
+  }
+  .hero-headline {
+    font-size: clamp(2rem, 5.5vw, 3.25rem);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+    max-width: 26ch;
+  }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 1.1rem;
+    line-height: 1.55;
+    max-width: 48rem;
+    margin-bottom: 1.75rem;
+  }
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 6px;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background var(--plugdash-transition), border-color var(--plugdash-transition), color var(--plugdash-transition);
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-fg);
+  }
+  .btn-primary:hover {
+    background: var(--accent-light);
+    color: var(--accent-fg);
+  }
+  .btn-ghost {
+    background: none;
+    color: var(--muted);
+    border-color: var(--border);
+  }
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--muted);
+  }
+
+  .demo-strip {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 2rem auto;
+  }
+  .demo-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .demo-cell {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 1rem;
+    border-right: 1px solid var(--border);
+  }
+  .demo-cell:first-child { padding-left: 0; }
+  .demo-cell:last-child {
+    padding-right: 0;
+    border-right: none;
+  }
+  .demo-caption {
+    margin-top: 0.75rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .grid-section {
+    padding: 3rem 1.5rem;
+  }
+  .grid-heading {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .plugin-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .plugin-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .built {
+    padding: 2rem 1.5rem 4rem;
+  }
+  .built p {
+    color: var(--text);
+    margin-block: 1rem;
+    line-height: 1.65;
+  }
+  .built p + p {
+    color: var(--muted);
+  }
+</style>

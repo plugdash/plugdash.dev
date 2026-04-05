@@ -1,0 +1,249 @@
+---
+import EngagementBar from "@plugdash/engage/EngagementBar.astro";
+import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
+import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
+import { buildDemoPost } from "../data/demoPost";
+import { docsBySection } from "../data/docs";
+import Base from "./Base.astro";
+
+interface TocEntry {
+  id: string;
+  text: string;
+  level: 2 | 3 | 4;
+  children?: TocEntry[];
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  section?: string;
+  currentSlug: string;
+  tocEntries: TocEntry[];
+  readingTimeMinutes?: number;
+  wordCount?: number;
+}
+
+const { title, description, section, currentSlug, tocEntries, readingTimeMinutes, wordCount } = Astro.props;
+const grouped = docsBySection();
+
+// Build a doc-shaped post so the plugin components work against it:
+// - tocgen reads entries for the sidebar
+// - readtime reads readingTimeMinutes/wordCount for the header badge
+// - heartpost/sharepost/shortlink read metadata for the engagement bar
+const url = `https://plugdash.dev/docs/${currentSlug}`;
+const shareMessage = `${title} - PlugDash docs`;
+const docPost = buildDemoPost({
+  id: `doc-${currentSlug}`,
+  slug: currentSlug,
+  title,
+  url,
+  message: shareMessage,
+  heartCount: 0,
+});
+// Override tocgen entries + readtime with doc-specific values
+docPost.data.metadata.tocgen = { entries: tocEntries as any };
+if (typeof readingTimeMinutes === "number") {
+  docPost.data.metadata.readingTimeMinutes = readingTimeMinutes;
+}
+if (typeof wordCount === "number") {
+  docPost.data.metadata.wordCount = wordCount;
+}
+docPost.data.metadata.shortlink = { url };
+---
+
+<Base title={title} description={description}>
+  <article class="doc">
+    <div class="doc-layout container">
+      <nav class="doc-nav" aria-label="Docs">
+        <div class="doc-nav-group">
+          <div class="doc-nav-label">On-ramp</div>
+          <ul>
+            {grouped["on-ramp"].map((d) => (
+              <li>
+                <a href={d.href} aria-current={d.slug === currentSlug ? "page" : undefined}>
+                  {d.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="doc-nav-group">
+          <div class="doc-nav-label">Plugins</div>
+          <ul>
+            {grouped.plugins.map((d) => (
+              <li>
+                <a href={d.href} aria-current={d.slug === currentSlug ? "page" : undefined}>
+                  {d.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+
+      <div class="doc-body">
+        <header class="doc-header">
+          {section && <div class="eyebrow">{section}</div>}
+          <h1>{title}</h1>
+          {typeof readingTimeMinutes === "number" && (
+            <div class="doc-meta">
+              <ReadingTime post={docPost} variant="inline" />
+            </div>
+          )}
+        </header>
+        <div class="doc-content">
+          <slot />
+        </div>
+        <footer class="doc-footer">
+          <EngagementBar post={docPost} attribution />
+        </footer>
+      </div>
+
+      <aside class="doc-toc">
+        <TableOfContents post={docPost} sticky />
+      </aside>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .doc {
+    padding: 2rem 0 4rem;
+  }
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 1024px) {
+    .doc-layout {
+      grid-template-columns: 200px minmax(0, 1fr) 200px;
+      gap: 2.5rem;
+    }
+  }
+
+  .doc-nav {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .doc-nav {
+      display: block;
+      position: sticky;
+      top: 1rem;
+      align-self: start;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+    }
+  }
+  .doc-nav-group {
+    margin-bottom: 1.25rem;
+  }
+  .doc-nav-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .doc-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .doc-nav li {
+    margin: 0;
+  }
+  .doc-nav a {
+    display: block;
+    padding: 0.3rem 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .doc-nav a:hover {
+    color: var(--text);
+  }
+  .doc-nav a[aria-current="page"] {
+    color: var(--accent);
+  }
+
+  .doc-toc {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .doc-toc {
+      display: block;
+    }
+  }
+
+  .doc-body {
+    max-width: 680px;
+    min-width: 0;
+  }
+  .doc-header {
+    margin-bottom: 2rem;
+  }
+  .doc-header .eyebrow {
+    margin-bottom: 0.5rem;
+  }
+  .doc-header h1 {
+    font-size: 2rem;
+  }
+  .doc-meta {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .doc-footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .doc-content :global(h2) {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .doc-content :global(h3) {
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .doc-content :global(p) {
+    margin-block: 1rem;
+  }
+  .doc-content :global(ul),
+  .doc-content :global(ol) {
+    margin-block: 1rem;
+    padding-left: 1.5rem;
+  }
+  .doc-content :global(pre) {
+    margin-block: 1rem;
+  }
+  .doc-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin-block: 1rem;
+  }
+  .doc-content :global(th),
+  .doc-content :global(td) {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .doc-content :global(th) {
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .doc-content :global(.demo-inline) {
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    margin-block: 1rem;
+  }
+</style>

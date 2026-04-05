@@ -1,0 +1,75 @@
+---
+import Callout from "@plugdash/callout/Callout.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { demoPost, pluginDocToc } from "../../data/demoPost";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("callout")!;
+---
+
+<Doc
+  tocEntries={pluginDocToc}
+  currentSlug="callout"
+  readingTimeMinutes={2}
+  wordCount={240}
+  title="callout"
+  section="@plugdash/callout"
+  description="Info, warning, tip, and danger blocks for the EmDash editor."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    Registers a <code>callout</code> block type in the EmDash Portable
+    Text editor. Authors pick one of four variants - info, warning, tip,
+    danger - and optionally add a title. Ships
+    <code>Callout.astro</code> for rendering in your theme.
+  </p>
+  <p>
+    callout is a Native plugin (it registers an editor block) - it runs
+    unsandboxed.
+  </p>
+
+  <Callout variant="tip" title="Tip">
+    <p>Use the tip variant for the non-obvious thing that makes a task
+    easier. This block is the plugin rendering itself on its own doc page.</p>
+  </Callout>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <pre><code>{`import { calloutPlugin } from "@plugdash/callout"
+
+emdash({
+  plugins: [calloutPlugin()],
+})`}</code></pre>
+
+  <h2 id="add-the-component">Add the component</h2>
+  <p>Use the component in your Portable Text renderer for blocks with
+  <code>_type === "callout"</code>:</p>
+  <pre><code>{`import Callout from "@plugdash/callout/Callout.astro"
+<Callout variant="info" title="Heads up">
+  <p>Content goes here.</p>
+</Callout>`}</code></pre>
+
+  <h2 id="live-demo">Live demo</h2>
+  <div class="demo-inline" style="display:flex;flex-direction:column;gap:0.75rem">
+    <Callout variant="info" title="Info">
+      <p>Background context readers might want but don't strictly need.</p>
+    </Callout>
+    <Callout variant="warning" title="Warning">
+      <p>Something that will bite them if they skip it.</p>
+    </Callout>
+    <Callout variant="danger" title="Danger">
+      <p>Something that will break things if they get it wrong.</p>
+    </Callout>
+  </div>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="for-agents">For agents</h2>
+  <p>After install, open the EmDash admin editor and confirm the
+  <code>callout</code> block type appears in the block menu. The plugin
+  does not write metadata - it only registers the block type.</p>
+</Doc>

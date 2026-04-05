@@ -1,0 +1,67 @@
+---
+import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { demoPost, pluginDocToc } from "../../data/demoPost";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("readtime")!;
+---
+
+<Doc
+  tocEntries={pluginDocToc}
+  currentSlug="readtime"
+  readingTimeMinutes={2}
+  wordCount={280}
+  title="readtime"
+  section="@plugdash/readtime"
+  description="Reading time and word count for EmDash posts."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    Calculates reading time in minutes from the word count of your post's
+    Portable Text body. Writes two fields to metadata on every publish:
+    <code>readingTimeMinutes</code> (integer, min 1) and
+    <code>wordCount</code> (integer). Ships
+    <code>ReadingTime.astro</code> with four variants.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <p>Add to the <code>plugins</code> array in <code>astro.config.mjs</code>:</p>
+  <pre><code>{`import { readtimePlugin } from "@plugdash/readtime"
+
+emdash({
+  plugins: [
+    readtimePlugin({ collections: ["blog"] }),
+  ],
+})`}</code></pre>
+
+  <h2 id="add-the-component">Add the component</h2>
+  <pre><code>{`---
+import ReadingTime from "@plugdash/readtime/ReadingTime.astro"
+---
+<ReadingTime post={post} />`}</code></pre>
+
+  <h2 id="live-demo">Live demo</h2>
+  <p>All four variants, rendered against a fixture post:</p>
+  <div class="demo-inline">
+    <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center">
+      <ReadingTime post={demoPost} variant="badge" />
+      <ReadingTime post={demoPost} variant="pill" />
+      <ReadingTime post={demoPost} variant="inline" />
+      <ReadingTime post={demoPost} variant="minimal" />
+    </div>
+  </div>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="for-agents">For agents</h2>
+  <p>After install and registration, verify setup by publishing a test post
+  and checking that <code>post.data.metadata.readingTimeMinutes</code> is
+  populated. If it is not, confirm the post status is "published" and the
+  post's collection appears in the <code>collections</code> option.</p>
+</Doc>
