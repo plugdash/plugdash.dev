@@ -12,7 +12,7 @@
  * rewrite.
  */
 
-export type PluginStatus = "beta" | "stable";
+export type PluginStatus = "alpha" | "beta";
 
 export interface Plugin {
   slug: string;
@@ -52,7 +52,7 @@ export const plugins: Plugin[] = [
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/readtime",
     capabilities: "read:content, write:metadata",
     hooks: "content:afterSave",
-    status: "stable",
+    status: "beta",
     installCommand: "npm install @plugdash/readtime",
     configExample:
       'import readtime from "@plugdash/readtime"\n// in emdash plugins array:\nreadtime({ collections: ["blog"] })',
@@ -93,7 +93,7 @@ export const plugins: Plugin[] = [
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/callout",
     capabilities: "blocks:register",
     hooks: "editor:registerBlock",
-    status: "stable",
+    status: "beta",
     installCommand: "npm install @plugdash/callout",
     configExample: 'import callout from "@plugdash/callout"\n// in emdash plugins array:\ncallout()',
     wordpressEquivalent: "",
@@ -127,7 +127,7 @@ export const plugins: Plugin[] = [
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/sharepost",
     capabilities: "read:content, write:metadata",
     hooks: "content:afterSave",
-    status: "stable",
+    status: "beta",
     installCommand: "npm install @plugdash/sharepost",
     configExample: 'import sharepost from "@plugdash/sharepost"\n// in emdash plugins array:\nsharepost({ via: "abhinavs" })',
     wordpressEquivalent: "AddToAny",
@@ -162,7 +162,7 @@ export const plugins: Plugin[] = [
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/heartpost",
     capabilities: "kv:read, kv:write",
     hooks: "api:register",
-    status: "beta",
+    status: "alpha",
     installCommand: "npm install @plugdash/heartpost",
     configExample: 'import heartpost from "@plugdash/heartpost"\n// in emdash plugins array:\nheartpost()',
     wordpressEquivalent: "WP ULike",
@@ -196,7 +196,7 @@ export const plugins: Plugin[] = [
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/shortlink",
     capabilities: "kv:read, kv:write",
     hooks: "content:afterSave, api:register",
-    status: "beta",
+    status: "alpha",
     installCommand: "npm install @plugdash/shortlink",
     configExample: 'import shortlink from "@plugdash/shortlink"\n// in emdash plugins array:\nshortlink({ autoCreate: true })',
     wordpressEquivalent: "Pretty Links",
@@ -229,7 +229,7 @@ export const plugins: Plugin[] = [
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/tocgen",
     capabilities: "read:content, write:metadata",
     hooks: "content:afterSave",
-    status: "stable",
+    status: "beta",
     installCommand: "npm install @plugdash/tocgen",
     configExample: 'import tocgen from "@plugdash/tocgen"\n// in emdash plugins array:\ntocgen({ minHeadings: 3 })',
     wordpressEquivalent: "Table of Contents Plus",
@@ -264,7 +264,7 @@ export const plugins: Plugin[] = [
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/engage",
     capabilities: "none - convenience package only",
     hooks: "none - convenience package only",
-    status: "stable",
+    status: "beta",
     installCommand: "npm install @plugdash/engage",
     configExample:
       "// engage is not registered in astro.config.mjs.\n// Register heartpost, sharepost, and shortlink instead,\n// then import EngagementBar.astro directly:",
@@ -302,7 +302,7 @@ export const plugins: Plugin[] = [
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/autobuild",
     capabilities: "read:content, network:fetch",
     hooks: "content:afterSave, content:afterDelete",
-    status: "stable",
+    status: "beta",
     installCommand: "npm install @plugdash/autobuild",
     configExample:
       'import autobuild from "@plugdash/autobuild"\n// in emdash plugins array:\nautobuild({\n  hookUrl: import.meta.env.CF_PAGES_DEPLOY_HOOK,\n  allowedHosts: ["api.cloudflare.com"],\n})',
@@ -331,11 +331,29 @@ export function getPlugin(slug: string): Plugin | undefined {
   return plugins.find((p) => p.slug === slug);
 }
 
+// Display order: primary sort by status (beta before alpha), then by
+// editorial importance within each tier. Plugins that show on every
+// post rank above bundles and infra.
+const importanceOrder = [
+  "readtime",
+  "sharepost",
+  "tocgen",
+  "callout",
+  "engage",
+  "autobuild",
+  "heartpost",
+  "shortlink",
+];
+
 export function sortedPlugins(): Plugin[] {
-  const rank = (p: Plugin) => (p.status === "stable" ? 0 : 1);
+  const statusRank = (p: Plugin) => (p.status === "beta" ? 0 : 1);
+  const importanceRank = (p: Plugin) => {
+    const i = importanceOrder.indexOf(p.slug);
+    return i === -1 ? importanceOrder.length : i;
+  };
   return [...plugins].sort((a, b) => {
-    const r = rank(a) - rank(b);
+    const r = statusRank(a) - statusRank(b);
     if (r !== 0) return r;
-    return a.name.localeCompare(b.name);
+    return importanceRank(a) - importanceRank(b);
   });
 }

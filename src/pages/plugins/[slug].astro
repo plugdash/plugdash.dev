@@ -9,7 +9,7 @@ import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginCard from "../../components/PluginCard.astro";
 import { buildDemoPost } from "../../data/demoPost";
-import { getPlugin, plugins as allPlugins } from "../../data/plugins";
+import { getPlugin, plugins as allPlugins, sortedPlugins } from "../../data/plugins";
 import Base from "../../layouts/Base.astro";
 
 export async function getStaticPaths() {
@@ -46,30 +46,81 @@ const relatedPlugins = plugin!.pairs
   .filter(Boolean) as typeof allPlugins;
 
 const p = plugin!;
+const navPlugins = sortedPlugins();
+
+const pageToc = [
+  { id: "overview", text: "Overview" },
+  { id: "demo", text: "Demo" },
+  { id: "setup", text: "Setup" },
+  { id: "customise", text: "Customise" },
+  ...(relatedPlugins.length > 0 ? [{ id: "pairs", text: "Pairs well with" }] : []),
+];
+
+// A post-shaped object for this page so the plugin components we ship
+// read from it the same way they read from any EmDash post.
+const pageUrl = `https://plugdash.dev/plugins/${p.slug}`;
+const pagePost = buildDemoPost({
+  id: `plugin-page-${p.slug}`,
+  slug: p.slug,
+  title: `${p.name} - EmDash plugin - plugdash`,
+  url: pageUrl,
+  message: `${p.tagline} - @plugdash/${p.name}`,
+  heartCount: 0,
+});
+pagePost.data.metadata.wordCount = 320;
+pagePost.data.metadata.readingTimeMinutes = 2;
+pagePost.data.metadata.shortlink = { url: pageUrl };
 ---
 
 <Base
   title={`${p.name} - EmDash plugin - plugdash`}
   description={`${p.tagline}${p.wordpressEquivalent ? ` The EmDash alternative to ${p.wordpressEquivalent}.` : ` Available for EmDash via ${p.npmPackage}.`}`}
 >
-  <article class="plugin-page container">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/plugins">plugins</a> / {p.name}
-    </nav>
+  <article class="plugin-page">
+    <div class="plugin-layout container">
+      <nav class="plugin-nav" aria-label="Plugins">
+        <div class="plugin-nav-group">
+          <div class="plugin-nav-label">Plugins</div>
+          <ul>
+            {navPlugins.map((pl) => (
+              <li>
+                <a
+                  href={`/plugins/${pl.slug}`}
+                  aria-current={pl.slug === p.slug ? "page" : undefined}
+                >
+                  {pl.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
 
-    <header class="plugin-header">
-      <p class="eyebrow">{eyebrow}</p>
-      <h1 class="plugin-headline">{p.headline}</h1>
-      <p class="plugin-sub">{p.sub}</p>
-      <div class="install-strip">
-        <InstallCommand command={p.installCommand} />
-        <span class="status-badge" data-status={p.status}>{p.status}</span>
-        <a href={p.githubUrl} class="gh-link" rel="noopener">GitHub</a>
-      </div>
-    </header>
+      <div class="plugin-body">
+        <a href="/plugins" class="breadcrumb-pkg" aria-label="Back to plugins">
+          {p.npmPackage}
+        </a>
 
-    <section class="demo-band">
-      <div class="demo-content container-narrow">
+        <header class="plugin-header" id="overview">
+          <p class="eyebrow">{eyebrow}</p>
+          <h1 class="plugin-headline">{p.headline}</h1>
+          <div class="plugin-meta">
+            <ReadingTime post={pagePost} variant="inline" showWords />
+            <span class="meta-sep" aria-hidden="true">•</span>
+            <ShareButtons post={pagePost} variant="circle" size="sm" />
+          </div>
+          <p class="plugin-sub">{p.sub}</p>
+          <div class="install-strip">
+            <InstallCommand command={p.installCommand} />
+            <span class="meta-sep" aria-hidden="true">•</span>
+            <span class="status-badge" data-status={p.status}>{p.status}</span>
+            <span class="meta-sep" aria-hidden="true">•</span>
+            <a href={p.githubUrl} class="gh-link" rel="noopener">GitHub</a>
+          </div>
+        </header>
+
+        <section class="demo-band" id="demo">
+      <div class="demo-content">
         {p.slug === "readtime" && (
           <div class="demo-variants">
             <ReadingTime post={demoPost} variant="badge" />
@@ -80,18 +131,26 @@ const p = plugin!;
         )}
         {p.slug === "callout" && (
           <div class="demo-callouts">
-            <Callout variant="info" title="Info">
-              <p>Background context readers might want but don't strictly need.</p>
-            </Callout>
-            <Callout variant="tip" title="Tip">
-              <p>The non-obvious thing that makes the task easier.</p>
-            </Callout>
-            <Callout variant="warning" title="Warning">
-              <p>Something that will bite them if they skip it.</p>
-            </Callout>
-            <Callout variant="danger" title="Danger">
-              <p>Something that will break things if they get it wrong.</p>
-            </Callout>
+            <Callout
+              variant="info"
+              title="Info"
+              body="Background context readers might want but don't strictly need."
+            />
+            <Callout
+              variant="tip"
+              title="Tip"
+              body="The non-obvious thing that makes the task easier."
+            />
+            <Callout
+              variant="warning"
+              title="Warning"
+              body="Something that will bite them if they skip it."
+            />
+            <Callout
+              variant="danger"
+              title="Danger"
+              body="Something that will break things if they get it wrong."
+            />
           </div>
         )}
         {p.slug === "sharepost" && (
@@ -145,7 +204,7 @@ const p = plugin!;
       </div>
     </section>
 
-    <section class="setup container-narrow">
+        <section class="setup" id="setup">
       <h2>Setup</h2>
       <ol class="setup-steps">
         <li>
@@ -163,7 +222,7 @@ const p = plugin!;
       <p class="setup-note">{p.setupNote}</p>
     </section>
 
-    <details class="customise container-narrow">
+        <details class="customise" id="customise">
       <summary>
         <h2>It looks right. But it's yours to change.</h2>
       </summary>
@@ -230,8 +289,8 @@ const p = plugin!;
       </div>
     </details>
 
-    {relatedPlugins.length > 0 && (
-      <section class="pairs container">
+        {relatedPlugins.length > 0 && (
+          <section class="pairs" id="pairs">
         <h2>Pairs well with</h2>
         {p.pairsNote && <p class="pairs-note">{p.pairsNote}</p>}
         <div class="plugin-grid">
@@ -245,21 +304,175 @@ const p = plugin!;
             />
           ))}
         </div>
-      </section>
-    )}
+          </section>
+        )}
+
+        <footer class="plugin-footer">
+          <EngagementBar post={pagePost} />
+          <a href="https://plugdash.dev" class="plugin-attribution" rel="noopener">
+            built with plugdash
+          </a>
+        </footer>
+      </div>
+
+      <aside class="plugin-toc" aria-label="On this page">
+        <div class="plugin-toc-label">On this page</div>
+        <ul>
+          {pageToc.map((t) => (
+            <li><a href={`#${t.id}`}>{t.text}</a></li>
+          ))}
+        </ul>
+      </aside>
+    </div>
   </article>
 </Base>
 
 <style>
   .plugin-page {
-    padding: 2rem 1.5rem 4rem;
+    padding: 2rem 0 4rem;
   }
-  .breadcrumb {
-    margin-bottom: 1.5rem;
+  .plugin-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 1024px) {
+    .plugin-layout {
+      grid-template-columns: 200px minmax(0, 1fr) 200px;
+      gap: 2.5rem;
+    }
+  }
+  .plugin-body {
+    min-width: 0;
+  }
+
+  .plugin-nav {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .plugin-nav {
+      display: block;
+      position: sticky;
+      top: 1rem;
+      align-self: start;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+    }
+  }
+  .plugin-nav-group {
+    margin-bottom: 1.25rem;
+  }
+  .plugin-nav-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .plugin-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .plugin-nav li {
+    margin: 0;
+  }
+  .plugin-nav a {
+    display: block;
+    padding: 0.3rem 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .plugin-nav a:hover {
+    color: var(--text);
+  }
+  .plugin-nav a[aria-current="page"] {
+    color: var(--accent);
+  }
+
+  .plugin-toc {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .plugin-toc {
+      display: block;
+      position: sticky;
+      top: 1rem;
+      align-self: start;
+    }
+  }
+  .plugin-toc-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .plugin-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .plugin-toc li {
+    margin: 0;
+  }
+  .plugin-toc a {
+    display: block;
+    padding: 0.3rem 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .plugin-toc a:hover {
+    color: var(--text);
+  }
+
+  .breadcrumb-pkg {
+    display: inline-block;
+    font-family: var(--plugdash-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .breadcrumb-pkg:hover {
+    color: var(--text);
   }
   .plugin-header {
-    max-width: 48rem;
     margin-bottom: 2.5rem;
+  }
+  .plugin-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0.75rem 0 1.25rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .meta-sep {
+    color: var(--muted);
+    opacity: 0.5;
+    user-select: none;
+  }
+  .plugin-footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .plugin-attribution {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .plugin-attribution:hover {
+    color: var(--text);
   }
   .plugin-header .eyebrow {
     margin-bottom: 0.75rem;
@@ -291,16 +504,12 @@ const p = plugin!;
   }
 
   .demo-band {
-    background: #0a0a0a;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 3rem 0;
-    margin: 0 calc(-1 * 1.5rem) 2.5rem;
-    color: #e8e8e8;
-  }
-  :global([data-theme="light"]) .demo-band {
-    background: #111;
-    color: #e8e8e8;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2.5rem 1.5rem;
+    margin: 0 0 2.5rem;
+    color: var(--text);
   }
   .demo-band .demo-content {
     text-align: center;
@@ -322,7 +531,7 @@ const p = plugin!;
     margin: 0 auto;
   }
   .demo-label {
-    color: #888;
+    color: var(--muted);
     font-size: 0.8rem;
   }
   .demo-toc {
@@ -336,9 +545,9 @@ const p = plugin!;
     text-align: left;
   }
   .demo-sequence pre {
-    background: #050505;
-    border-color: #222;
-    color: #ddd;
+    background: var(--bg);
+    border-color: var(--border);
+    color: var(--text);
     margin-bottom: 1.5rem;
   }
   .sequence {
@@ -349,24 +558,24 @@ const p = plugin!;
     gap: 0.5rem;
     font-family: var(--plugdash-font-mono);
     font-size: 0.85rem;
-    color: #aaa;
+    color: var(--text);
   }
   .seq-step {
-    border: 1px solid #333;
+    border: 1px solid var(--border);
     border-radius: 4px;
     padding: 0.3rem 0.6rem;
   }
   .seq-arrow {
-    color: #555;
+    color: var(--muted);
   }
   .demo-caption {
     margin-top: 1.5rem;
-    color: #888;
+    color: var(--muted);
     font-size: 0.85rem;
   }
 
   .setup {
-    padding: 2rem 1.5rem;
+    padding: 2rem 0;
   }
   .setup h2 {
     margin-bottom: 1.25rem;
@@ -398,7 +607,7 @@ const p = plugin!;
     padding: 1rem 1.5rem;
     border: 1px solid var(--border);
     border-radius: 8px;
-    margin: 1rem auto 2rem;
+    margin: 1rem 0 2rem;
     background: var(--surface);
   }
   .customise summary {
@@ -464,7 +673,7 @@ const p = plugin!;
   }
 
   .pairs {
-    padding: 2rem 1.5rem 0;
+    padding: 2rem 0 0;
   }
   .pairs h2 {
     margin-bottom: 0.5rem;

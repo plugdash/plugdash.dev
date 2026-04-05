@@ -62,7 +62,7 @@ const demoPost = buildDemoPost({
   </section>
 
   <section class="grid-section container">
-    <h2 class="grid-heading">Everything your readers expect</h2>
+    <h2 class="grid-heading">Everything a blog expects</h2>
     <div class="plugin-grid">
       {plugins.map((p) => (
         <PluginCard
@@ -76,23 +76,40 @@ const demoPost = buildDemoPost({
     </div>
   </section>
 
-  <section class="built container-narrow">
-    <h2 class="grid-heading">Built to be kept</h2>
-    <p>
-      Every PlugDash component works out of the box. Install the plugin,
-      add one import to your layout, and your readers see the result.
-      No configuration required to ship something good.
-    </p>
-    <p>
-      Change what matters to you. Every component has four variants,
-      three sizes, and a CSS token system that bends to your theme
-      without fighting it.
-    </p>
-    <p>
-      This site runs on EmDash with every plugin installed. The reading
-      time you see on this post, the share buttons at the bottom, the
-      heart - all PlugDash. If it works here, it works.
-    </p>
+  <section class="built container">
+    <header class="built-header">
+      <h2 class="grid-heading">Built to be kept</h2>
+      <p class="built-lede">Install it. Change it. Prove it on the page you are reading.</p>
+    </header>
+    <div class="built-grid">
+      <article class="built-card">
+        <span class="built-num">01</span>
+        <h3>Works on install</h3>
+        <p>
+          Defaults that look considered, not default. Add one import to
+          your layout and your readers see the result. No config required
+          to ship something good.
+        </p>
+      </article>
+      <article class="built-card">
+        <span class="built-num">02</span>
+        <h3>Yours to change</h3>
+        <p>
+          Every visual value is a CSS custom property. Variants for tone,
+          sizes for density, tokens that bend to your theme without
+          fighting it.
+        </p>
+      </article>
+      <article class="built-card">
+        <span class="built-num">03</span>
+        <h3>Proven on this page</h3>
+        <p>
+          This site runs EmDash with every PlugDash plugin installed.
+          The reading time, the share buttons, the heart - all running
+          live. If it ships here, it ships.
+        </p>
+      </article>
+    </div>
   </section>
 </Base>
 
@@ -144,11 +161,12 @@ const demoPost = buildDemoPost({
     color: var(--accent-fg);
   }
   .btn-ghost {
-    background: none;
+    background: var(--surface);
     color: var(--muted);
     border-color: var(--border);
   }
   .btn-ghost:hover {
+    background: var(--surface);
     color: var(--text);
     border-color: var(--muted);
   }
@@ -204,14 +222,54 @@ const demoPost = buildDemoPost({
   }
 
   .built {
-    padding: 2rem 1.5rem 4rem;
+    padding: 3rem 1.5rem 5rem;
   }
-  .built p {
-    color: var(--text);
-    margin-block: 1rem;
-    line-height: 1.65;
+  .built-header {
+    margin-bottom: 2rem;
+    max-width: 40rem;
   }
-  .built p + p {
+  .built-lede {
     color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.55;
+    margin-top: 0.5rem;
+  }
+  .built-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .built-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+  }
+  .built-card {
+    position: relative;
+    padding: 1.5rem 1.25rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+  .built-num {
+    display: inline-block;
+    font-family: var(--plugdash-font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.75rem;
+  }
+  .built-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-strong);
+  }
+  .built-card p {
+    color: var(--muted);
+    font-size: 0.925rem;
+    line-height: 1.6;
+    margin: 0;
   }
 </style>

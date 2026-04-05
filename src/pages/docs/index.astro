@@ -1,12 +1,19 @@
 ---
 import { docsBySection } from "../../data/docs";
+import { getPlugin, sortedPlugins } from "../../data/plugins";
 import Base from "../../layouts/Base.astro";
 
 const grouped = docsBySection();
+// Order the plugin docs the same way the rest of the site orders plugins
+// (status + editorial importance), not alphabetically.
+const pluginOrder = sortedPlugins().map((p) => p.slug);
+const pluginDocs = [...grouped.plugins].sort(
+  (a, b) => pluginOrder.indexOf(a.slug) - pluginOrder.indexOf(b.slug),
+);
 ---
 
 <Base title="Docs - PlugDash" description="PlugDash documentation. One page per plugin.">
-  <section class="page container-narrow">
+  <section class="page container">
     <header class="page-header">
       <p class="eyebrow">Documentation</p>
       <h1>Docs</h1>
@@ -17,56 +24,198 @@ const grouped = docsBySection();
     </header>
 
     <section class="docs-section">
-      <h2>On-ramp</h2>
-      <ul class="docs-list">
-        {grouped["on-ramp"].map((d) => (
-          <li>
-            <a href={d.href}><span class="docs-list-title">{d.title}</span></a>
-          </li>
+      <div class="docs-section-head">
+        <h2>On-ramp</h2>
+        <span class="docs-section-count">{grouped["on-ramp"].length} steps</span>
+      </div>
+      <div class="onramp-grid">
+        {grouped["on-ramp"].map((d, i) => (
+          <a href={d.href} class="onramp-card">
+            <span class="onramp-num">{String(i + 1).padStart(2, "0")}</span>
+            <h3>{d.title}</h3>
+            {d.summary && <p>{d.summary}</p>}
+            <span class="onramp-arrow" aria-hidden="true">-&gt;</span>
+          </a>
         ))}
-      </ul>
+      </div>
     </section>
 
     <section class="docs-section">
-      <h2>Plugins</h2>
-      <ul class="docs-list">
-        {grouped.plugins.map((d) => (
-          <li>
-            <a href={d.href}><span class="docs-list-title">{d.title}</span></a>
-          </li>
-        ))}
-      </ul>
+      <div class="docs-section-head">
+        <h2>Plugins</h2>
+        <span class="docs-section-count">{pluginDocs.length} plugins</span>
+      </div>
+      <div class="plugin-doc-grid">
+        {pluginDocs.map((d) => {
+          const plugin = getPlugin(d.slug);
+          return (
+            <a href={d.href} class="plugin-doc-card">
+              <div class="plugin-doc-head">
+                <span class="plugin-doc-name">@plugdash/{d.title}</span>
+                {plugin && (
+                  <span class="status-badge" data-status={plugin.status}>{plugin.status}</span>
+                )}
+              </div>
+              {plugin && <p class="plugin-doc-tagline">{plugin.tagline}</p>}
+            </a>
+          );
+        })}
+      </div>
     </section>
   </section>
 </Base>
 
 <style>
-  .page { padding: 3rem 1.5rem 4rem; }
-  .page-header { margin-bottom: 2rem; }
-  .page-header .eyebrow { margin-bottom: 0.5rem; }
-  .page-header h1 { font-size: 2.25rem; margin-bottom: 0.75rem; }
-  .page-sub { color: var(--muted); font-size: 1.05rem; }
-  .docs-section { margin-bottom: 2rem; }
+  .page {
+    padding: 3rem 1.5rem 5rem;
+    max-width: 960px;
+  }
+  .page-header {
+    margin-bottom: 3rem;
+    max-width: 40rem;
+  }
+  .page-header .eyebrow {
+    margin-bottom: 0.5rem;
+  }
+  .page-header h1 {
+    font-size: 2.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .page-sub {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+
+  .docs-section {
+    margin-bottom: 3rem;
+  }
+  .docs-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
   .docs-section h2 {
     font-size: 0.75rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
-    margin-bottom: 0.75rem;
+    margin: 0;
   }
-  .docs-list { list-style: none; padding: 0; margin: 0; }
-  .docs-list li {
-    border-bottom: 1px solid var(--border);
+  .docs-section-count {
+    font-family: var(--plugdash-font-mono);
+    font-size: 0.7rem;
+    color: var(--muted);
   }
-  .docs-list li:first-child { border-top: 1px solid var(--border); }
-  .docs-list a {
+
+  /* On-ramp: numbered cards, one guided path */
+  .onramp-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  @media (min-width: 720px) {
+    .onramp-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+  }
+  .onramp-card {
+    position: relative;
     display: block;
-    padding: 0.75rem 0;
+    padding: 1.25rem 1.25rem 2.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
     color: var(--text);
+    transition: border-color var(--plugdash-transition), transform var(--plugdash-transition);
   }
-  .docs-list-title {
+  .onramp-card:hover {
+    border-color: var(--muted);
+  }
+  .onramp-num {
+    display: inline-block;
+    font-family: var(--plugdash-font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+  }
+  .onramp-card h3 {
+    font-family: var(--plugdash-font-ui);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-strong);
+    margin: 0 0 0.35rem;
+  }
+  .onramp-card p {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 0;
+  }
+  .onramp-arrow {
+    position: absolute;
+    right: 1rem;
+    bottom: 0.85rem;
+    font-family: var(--plugdash-font-mono);
+    font-size: 0.85rem;
+    color: var(--muted);
+    transition: color var(--plugdash-transition), transform var(--plugdash-transition);
+  }
+  .onramp-card:hover .onramp-arrow {
+    color: var(--accent);
+    transform: translateX(2px);
+  }
+
+  /* Plugin docs grid */
+  .plugin-doc-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  @media (min-width: 720px) {
+    .plugin-doc-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+  }
+  .plugin-doc-card {
+    display: block;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color var(--plugdash-transition);
+  }
+  .plugin-doc-card:hover {
+    border-color: var(--muted);
+  }
+  .plugin-doc-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+  }
+  .plugin-doc-name {
+    font-family: var(--plugdash-font-mono);
+    font-size: 0.95rem;
     font-weight: 500;
+    color: var(--text-strong);
   }
-  .docs-list a:hover .docs-list-title { color: var(--accent); }
+  .plugin-doc-card:hover .plugin-doc-name {
+    color: var(--accent);
+  }
+  .plugin-doc-tagline {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 0;
+  }
 </style>

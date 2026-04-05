@@ -1,12 +1,12 @@
 /* Base colour tokens - dark is default.
  * Accent: Tailwind orange-500 (#f97316) to match EmDash. */
 :root {
-  --bg: #0a0a0a;
-  --surface: #111111;
-  --border: #222222;
-  --text: #b8b8b8;
-  --text-strong: #e8e8e8;
-  --muted: #777777;
+  --bg: #1c2028;
+  --surface: #262b35;
+  --border: #363c48;
+  --text: #c5cbd6;
+  --text-strong: #f0f2f5;
+  --muted: #8992a0;
   --accent: #f97316;
   --accent-light: #fb923c;
   --accent-fg: #ffffff;
@@ -24,7 +24,8 @@
 /* plugdash component tokens - consumed by all @plugdash/* companion components */
 :root {
   --plugdash-font-ui: "Manrope", system-ui, sans-serif;
-  --plugdash-font-mono: "IBM Plex Mono", monospace;
+  --plugdash-font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --plugdash-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --plugdash-muted: var(--muted);
   --plugdash-accent: var(--accent);
   --plugdash-accent-fg: var(--accent-fg);

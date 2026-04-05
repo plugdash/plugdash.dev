@@ -4,13 +4,13 @@ import InstallCommand from "./InstallCommand.astro";
 interface Props {
   name: string;
   tagline: string;
-  status?: "beta" | "stable";
+  status?: "alpha" | "beta";
   installCommand: string;
   slug: string;
   class?: string;
 }
 
-const { name, tagline, status = "beta", installCommand, slug, class: className = "" } = Astro.props;
+const { name, tagline, status = "alpha", installCommand, slug, class: className = "" } = Astro.props;
 ---
 
 <article class={`plugin-card ${className}`}>

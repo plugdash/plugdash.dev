@@ -50,7 +50,7 @@ export function buildDemoPost(opts: {
           bluesky: `https://bsky.app/intent/compose?text=${enc(message)}`,
           email: `mailto:?subject=${enc(title)}&body=${enc(message)}`,
         },
-        shortlink: { url: "https://plugdash.dev/l/abc123" },
+        shortlink: { url },
         heartpost: { count: opts.heartCount ?? 42 },
         tocgen: {
           entries: [

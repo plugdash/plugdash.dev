@@ -3,12 +3,13 @@ export interface DocEntry {
   title: string;
   href: string;
   section: "on-ramp" | "plugins";
+  summary?: string;
 }
 
 export const docs: DocEntry[] = [
-  { slug: "getting-started", title: "Getting started", href: "/docs/getting-started", section: "on-ramp" },
-  { slug: "what-is-emdash", title: "What is EmDash", href: "/docs/what-is-emdash", section: "on-ramp" },
-  { slug: "installing-plugins", title: "Installing plugins", href: "/docs/installing-plugins", section: "on-ramp" },
+  { slug: "getting-started", title: "Getting started", href: "/docs/getting-started", section: "on-ramp", summary: "Spin up a plugdash-ready EmDash site in under ten minutes." },
+  { slug: "what-is-emdash", title: "What is EmDash", href: "/docs/what-is-emdash", section: "on-ramp", summary: "The CMS plugdash plugs into. What it is, what it is not." },
+  { slug: "installing-plugins", title: "Installing plugins", href: "/docs/installing-plugins", section: "on-ramp", summary: "Add a plugin, register it, drop the component into your layout." },
   { slug: "readtime", title: "readtime", href: "/docs/readtime", section: "plugins" },
   { slug: "tocgen", title: "tocgen", href: "/docs/tocgen", section: "plugins" },
   { slug: "callout", title: "callout", href: "/docs/callout", section: "plugins" },

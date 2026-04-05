@@ -1,6 +1,7 @@
 ---
 import EngagementBar from "@plugdash/engage/EngagementBar.astro";
 import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
+import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
 import { buildDemoPost } from "../data/demoPost";
 import { docsBySection } from "../data/docs";
@@ -85,17 +86,21 @@ docPost.data.metadata.shortlink = { url };
         <header class="doc-header">
           {section && <div class="eyebrow">{section}</div>}
           <h1>{title}</h1>
-          {typeof readingTimeMinutes === "number" && (
-            <div class="doc-meta">
-              <ReadingTime post={docPost} variant="inline" />
-            </div>
-          )}
+          <div class="doc-meta">
+            {typeof readingTimeMinutes === "number" && (
+              <ReadingTime post={docPost} variant="inline" showWords />
+            )}
+            <ShareButtons post={docPost} variant="circle" size="sm" />
+          </div>
         </header>
         <div class="doc-content">
           <slot />
         </div>
         <footer class="doc-footer">
-          <EngagementBar post={docPost} attribution />
+          <EngagementBar post={docPost} />
+          <a href="https://plugdash.dev" class="doc-attribution" rel="noopener">
+            built with plugdash
+          </a>
         </footer>
       </div>
 
@@ -190,7 +195,11 @@ docPost.data.metadata.shortlink = { url };
     font-size: 2rem;
   }
   .doc-meta {
-    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.75rem;
     color: var(--muted);
     font-size: 0.875rem;
   }
@@ -198,6 +207,18 @@ docPost.data.metadata.shortlink = { url };
     margin-top: 3rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .doc-attribution {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .doc-attribution:hover {
+    color: var(--text);
   }
   .doc-content :global(h2) {
     margin-top: 2rem;

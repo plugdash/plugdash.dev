@@ -9,7 +9,7 @@
 html {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--plugdash-font-ui);
+  font-family: var(--plugdash-font-body);
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -78,6 +78,19 @@ p {
   color: var(--text-strong);
 }
 
+/* Replace the middot separator in ReadingTime with a bullet (•) to
+ * match the separator used elsewhere on the site. Zero out the span's
+ * text, then render the bullet via ::before. */
+.plugdash-rt-sep {
+  font-size: 0 !important;
+}
+.plugdash-rt-sep::before {
+  content: " • ";
+  font-size: 0.875rem;
+  color: var(--muted);
+  opacity: 0.5;
+}
+
 /* Force a space between the number and label in ReadingTime.
  * The component uses a thin-space (&thinsp;) or a stripped whitespace
  * that flex layout collapses; a non-breaking space guarantees it. */
@@ -112,6 +125,7 @@ p {
 .site-header {
   border-bottom: 1px solid var(--border);
   padding: 1rem 0;
+  font-family: var(--plugdash-font-ui);
 }
 
 .site-header-inner {
@@ -153,8 +167,7 @@ p {
 
 .theme-toggle {
   background: none;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: none;
   color: var(--muted);
   cursor: pointer;
   padding: 0.35rem;
@@ -163,12 +176,11 @@ p {
   justify-content: center;
   width: 32px;
   height: 32px;
-  transition: color var(--plugdash-transition), border-color var(--plugdash-transition);
+  transition: color var(--plugdash-transition);
 }
 
 .theme-toggle:hover {
   color: var(--text);
-  border-color: var(--muted);
 }
 
 .theme-icon {
@@ -238,11 +250,6 @@ p {
   color: var(--muted);
 }
 
-.status-badge[data-status="stable"] {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
 /* Eyebrow text - small, muted, not uppercase so brand names (EmDash,
  * PlugDash) keep their intended capitalization */
 .eyebrow {
@@ -263,4 +270,28 @@ p {
 
 .breadcrumb a:hover {
   color: var(--text);
+}
+
+/* Share button brand-colour hovers. The sharepost plugin adds a
+ * plugdash-share-btn--[platform] class per button but intentionally
+ * ships no brand colours - each site opts in here. */
+.plugdash-share-btn--twitter:hover {
+  color: #1d9bf0;
+  border-color: #1d9bf0 !important;
+}
+.plugdash-share-btn--linkedin:hover {
+  color: #0a66c2;
+  border-color: #0a66c2 !important;
+}
+.plugdash-share-btn--bluesky:hover {
+  color: #0085ff;
+  border-color: #0085ff !important;
+}
+.plugdash-share-btn--whatsapp:hover {
+  color: #25d366;
+  border-color: #25d366 !important;
+}
+.plugdash-share-btn--email:hover {
+  color: var(--accent);
+  border-color: var(--accent) !important;
 }
