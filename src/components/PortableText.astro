@@ -6,7 +6,7 @@
  * portable text renderer upstream.
  */
 import Callout from "@plugdash/callout/Callout.astro";
-import PortableText from "./PortableText.astro";
+const Self = Astro.self;
 
 type Span = { _type: "span"; text: string; marks?: string[] };
 type TextBlock = {
@@ -100,7 +100,7 @@ function slugify(text: string): string {
     const variant = c.variant ?? "info";
     return (
       <Callout variant={variant} title={c.title}>
-        <PortableText value={c.body as Block[] | undefined} />
+        <Self value={c.body as Block[] | undefined} />
       </Callout>
     );
   }

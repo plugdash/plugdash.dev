@@ -22,5 +22,12 @@
 			"binding": "SESSION",
 			"id": "8ae545e2837745e183cc3bfb7ba228c6"
 		}
+	],
+	"ratelimits": [
+		{
+			"name": "HEART_LIMITER",
+			"namespace_id": "0",
+			"simple": { "limit": 10, "period": 60 }
+		}
 	]
 }

@@ -14,6 +14,7 @@ export interface Post {
   content?: PortableTextBlock[];
   reading_time_minutes?: number;
   word_count?: number;
+  metadata?: unknown;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -30,6 +31,7 @@ export interface Doc {
   order: number;
   reading_time_minutes?: number;
   word_count?: number;
+  metadata?: unknown;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -58,6 +60,7 @@ export interface Plugin {
   pairs_note?: string;
   demo_caption: string;
   setup_note: string;
+  metadata?: unknown;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;

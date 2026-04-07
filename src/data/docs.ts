@@ -4,6 +4,8 @@ export interface DocEntry {
   href: string;
   section: "on-ramp" | "plugins";
   summary?: string;
+  /** Plugin-populated metadata from the emdash collection entry */
+  metadata?: Record<string, unknown>;
 }
 
 export const docs: DocEntry[] = [

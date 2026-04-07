@@ -38,6 +38,8 @@ export interface Plugin {
   cssTokens?: Array<{ name: string; description: string }>;
   componentImport?: string;
   componentUsage?: string;
+  /** Plugin-populated metadata from the emdash collection entry */
+  metadata?: Record<string, unknown>;
 }
 
 export const plugins: Plugin[] = [

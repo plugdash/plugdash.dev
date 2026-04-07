@@ -1,5 +1,6 @@
 ---
 import InstallCommand from "./InstallCommand.astro";
+import PluginIcon from "./PluginIcon.astro";
 
 interface Props {
   name: string;
@@ -15,9 +16,12 @@ const { name, tagline, status = "alpha", installCommand, slug, class: className 
 
 <article class={`plugin-card ${className}`}>
   <header class="plugin-card-head">
-    <h3 class="plugin-card-name">
-      <a href={`/plugins/${slug}`}>{name}</a>
-    </h3>
+    <div class="plugin-card-title">
+      <span class="plugin-card-icon"><PluginIcon slug={slug} size={20} /></span>
+      <h3 class="plugin-card-name">
+        <a href={`/plugins/${slug}`}>{name}</a>
+      </h3>
+    </div>
     <span class="status-badge" data-status={status}>{status}</span>
   </header>
   <p class="plugin-card-tagline">{tagline}</p>
@@ -28,6 +32,7 @@ const { name, tagline, status = "alpha", installCommand, slug, class: className 
 
 <style>
   .plugin-card {
+    position: relative;
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1.25rem;
@@ -46,6 +51,22 @@ const { name, tagline, status = "alpha", installCommand, slug, class: className 
     justify-content: space-between;
     gap: 0.75rem;
   }
+  .plugin-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .plugin-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--border);
+    color: var(--text-strong);
+    flex-shrink: 0;
+  }
   .plugin-card-name {
     font-size: 1.05rem;
     font-weight: 500;
@@ -55,6 +76,12 @@ const { name, tagline, status = "alpha", installCommand, slug, class: className 
     color: var(--text-strong);
     font-family: var(--plugdash-font-mono);
     font-weight: 500;
+  }
+  .plugin-card-name a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
   }
   .plugin-card-name a:hover {
     color: var(--accent);
@@ -67,5 +94,7 @@ const { name, tagline, status = "alpha", installCommand, slug, class: className 
   }
   .plugin-card-install {
     margin-top: auto;
+    position: relative;
+    z-index: 1;
   }
 </style>

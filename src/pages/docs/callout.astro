@@ -1,8 +1,8 @@
 ---
-import Callout from "@plugdash/callout/Callout.astro";
+import CalloutBlock from "@plugdash/callout/Callout.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
-import { demoPost, pluginDocToc } from "../../data/demoPost";
+import { pluginDocToc } from "../../data/demoPost";
 import { getPlugin } from "../../data/plugins";
 import Doc from "../../layouts/Doc.astro";
 
@@ -30,10 +30,10 @@ const plugin = getPlugin("callout")!;
     unsandboxed.
   </p>
 
-  <Callout variant="tip" title="Tip">
+  <CalloutBlock variant="tip" title="Tip">
     <p>Use the tip variant for the non-obvious thing that makes a task
     easier. This block is the plugin rendering itself on its own doc page.</p>
-  </Callout>
+  </CalloutBlock>
 
   <h2 id="install">Install</h2>
   <InstallCommand command={plugin.installCommand} />
@@ -68,15 +68,15 @@ export default defineConfig({
 
   <h2 id="live-demo">Live demo</h2>
   <div class="demo-inline" style="display:flex;flex-direction:column;gap:0.75rem">
-    <Callout variant="info" title="Info">
+    <CalloutBlock variant="info" title="Info">
       <p>Background context readers might want but don't strictly need.</p>
-    </Callout>
-    <Callout variant="warning" title="Warning">
+    </CalloutBlock>
+    <CalloutBlock variant="warning" title="Warning">
       <p>Something that will bite them if they skip it.</p>
-    </Callout>
-    <Callout variant="danger" title="Danger">
+    </CalloutBlock>
+    <CalloutBlock variant="danger" title="Danger">
       <p>Something that will break things if they get it wrong.</p>
-    </Callout>
+    </CalloutBlock>
   </div>
 
   <PluginReference plugin={plugin} />

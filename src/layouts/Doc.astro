@@ -4,7 +4,7 @@ import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
 import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
 import { buildDemoPost } from "../data/demoPost";
-import { resolveDocs } from "../lib/content";
+import { resolveDocs, resolveDocEntry } from "../lib/content";
 import Base from "./Base.astro";
 
 interface TocEntry {
@@ -31,29 +31,23 @@ const grouped = {
   plugins: docs.filter((d) => d.section === "plugins"),
 };
 
-// Build a doc-shaped post so the plugin components work against it:
-// - tocgen reads entries for the sidebar
-// - readtime reads readingTimeMinutes/wordCount for the header badge
-// - heartpost/sharepost/shortlink read metadata for the engagement bar
+// Try the emdash collection for plugin-populated metadata (shareUrls,
+// shortlink, heartpost). Fall back to buildDemoPost fixtures when unseeded.
 const url = `https://plugdash.dev/docs/${currentSlug}`;
-const shareMessage = `${title} - PlugDash docs`;
+const docEntry = await resolveDocEntry(currentSlug);
+const meta = docEntry?.metadata ?? {};
 const docPost = buildDemoPost({
   id: `doc-${currentSlug}`,
   slug: currentSlug,
   title,
   url,
-  message: shareMessage,
+  message: `${title} - PlugDash docs`,
   heartCount: 0,
+  readingTimeMinutes,
+  wordCount,
+  tocEntries: tocEntries as any,
+  metadata: meta,
 });
-// Override tocgen entries + readtime with doc-specific values
-docPost.data.metadata.tocgen = { entries: tocEntries as any };
-if (typeof readingTimeMinutes === "number") {
-  docPost.data.metadata.readingTimeMinutes = readingTimeMinutes;
-}
-if (typeof wordCount === "number") {
-  docPost.data.metadata.wordCount = wordCount;
-}
-docPost.data.metadata.shortlink = { url };
 ---
 
 <Base title={title} description={description}>
@@ -103,7 +97,7 @@ docPost.data.metadata.shortlink = { url };
         <footer class="doc-footer">
           <EngagementBar post={docPost} />
           <a href="https://plugdash.dev" class="doc-attribution" rel="noopener">
-            built with plugdash
+            built with plugdash.dev
           </a>
         </footer>
       </div>

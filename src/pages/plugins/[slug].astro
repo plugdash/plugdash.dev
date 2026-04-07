@@ -53,20 +53,17 @@ const pageToc = [
   ...(relatedPlugins.length > 0 ? [{ id: "pairs", text: "Pairs well with" }] : []),
 ];
 
-// A post-shaped object for this page so the plugin components we ship
-// read from it the same way they read from any EmDash post.
-const pageUrl = `https://plugdash.dev/plugins/${p.slug}`;
 const pagePost = buildDemoPost({
   id: `plugin-page-${p.slug}`,
   slug: p.slug,
   title: `${p.name} - EmDash plugin - plugdash`,
-  url: pageUrl,
+  url: `https://plugdash.dev/plugins/${p.slug}`,
   message: `${p.tagline} - @plugdash/${p.name}`,
   heartCount: 0,
+  wordCount: 320,
+  readingTimeMinutes: 2,
+  metadata: p.metadata,
 });
-pagePost.data.metadata.wordCount = 320;
-pagePost.data.metadata.readingTimeMinutes = 2;
-pagePost.data.metadata.shortlink = { url: pageUrl };
 ---
 
 <Base
@@ -307,7 +304,7 @@ pagePost.data.metadata.shortlink = { url: pageUrl };
         <footer class="plugin-footer">
           <EngagementBar post={pagePost} />
           <a href="https://plugdash.dev" class="plugin-attribution" rel="noopener">
-            built with plugdash
+            built with plugdash.dev
           </a>
         </footer>
       </div>

@@ -1,6 +1,7 @@
 ---
 import { resolveDocs, resolvePlugins } from "../../lib/content";
 import Base from "../../layouts/Base.astro";
+import PluginIcon from "../../components/PluginIcon.astro";
 
 const docs = await resolveDocs();
 const plugins = await resolvePlugins();
@@ -56,6 +57,7 @@ const getPlugin = (slug: string) => plugins.find((p) => p.slug === slug);
           return (
             <a href={d.href} class="plugin-doc-card">
               <div class="plugin-doc-head">
+                <span class="plugin-doc-icon"><PluginIcon slug={d.slug} size={18} /></span>
                 <span class="plugin-doc-name">@plugdash/{d.title}</span>
                 {plugin && (
                   <span class="status-badge" data-status={plugin.status}>{plugin.status}</span>
@@ -204,11 +206,22 @@ const getPlugin = (slug: string) => plugins.find((p) => p.slug === slug);
   .plugin-doc-head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.5rem;
     margin-bottom: 0.4rem;
   }
+  .plugin-doc-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    background: var(--border);
+    color: var(--text-strong);
+    flex-shrink: 0;
+  }
   .plugin-doc-name {
+    flex: 1;
     font-family: var(--plugdash-font-mono);
     font-size: 0.95rem;
     font-weight: 500;

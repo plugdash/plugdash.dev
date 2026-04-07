@@ -1,8 +1,14 @@
-// Shared fixture post for live demos across the site. Shaped like EmDash's
-// content items so companion components read from post.data.metadata.*
+// Fixture post builder for static pages (docs, plugin pages, homepage).
+// When a collection entry has plugin-populated metadata, pass it via the
+// `metadata` option and it takes priority over computed fallbacks.
+//
+// For real emdash content (blog posts), metadata comes from the collection
+// entry directly - see resolveBlogPost() in lib/content.ts.
 
-// Standard TOC structure for per-plugin doc pages. Pages with different
-// headings should define their own entries.
+import { generateAllShareUrls } from "@plugdash/sharepost/utils";
+import type { Platform } from "@plugdash/sharepost/utils";
+
+// Standard TOC structure for per-plugin doc pages.
 export const pluginDocToc = [
   { id: "what-it-does", text: "What it does", level: 2 as const, children: [] },
   { id: "install", text: "Install", level: 2 as const, children: [] },
@@ -14,9 +20,29 @@ export const pluginDocToc = [
   { id: "for-agents", text: "For agents", level: 2 as const, children: [] },
 ];
 
-// Builds a fixture post with a real message + URL so share buttons produce
-// something worth sharing. Use buildDemoPost() when the demo should reflect
-// a specific page title/URL; otherwise use the default `demoPost`.
+// Extend the standard TOC with extra entries inserted before "for-agents".
+export function extendPluginDocToc(...extras: Array<{ id: string; text: string }>) {
+  const base = pluginDocToc.slice(0, -1);
+  const last = pluginDocToc[pluginDocToc.length - 1];
+  return [
+    ...base,
+    ...extras.map((e) => ({ ...e, level: 2 as const, children: [] as never[] })),
+    last,
+  ];
+}
+
+const ALL_PLATFORMS: Platform[] = ["twitter", "linkedin", "whatsapp", "bluesky", "email"];
+
+interface TocEntry {
+  id: string;
+  text: string;
+  level: number;
+  children: unknown[];
+}
+
+// Builds a fixture post for static pages. When the collection entry has
+// plugin-populated metadata, pass it via `metadata` and those fields
+// take priority over computed fallbacks.
 export function buildDemoPost(opts: {
   id?: string;
   slug?: string;
@@ -24,16 +50,19 @@ export function buildDemoPost(opts: {
   url?: string;
   message?: string;
   heartCount?: number;
+  readingTimeMinutes?: number;
+  wordCount?: number;
+  tocEntries?: TocEntry[];
+  /** Plugin-populated metadata from the collection - overrides computed values */
+  metadata?: Record<string, unknown>;
 } = {}) {
   const id = opts.id ?? "the-plugdash-launch";
   const slug = opts.slug ?? id;
   const title = opts.title ?? "PlugDash - drop-in plugins for EmDash";
   const url = opts.url ?? "https://plugdash.dev";
-  const message = opts.message ?? `${title} - ${url}`;
-  const enc = encodeURIComponent;
+  const meta = opts.metadata ?? {};
 
   return {
-    // Top-level system fields (HeartButton reads post.id, not post.data.id)
     id,
     status: "published",
     slug,
@@ -41,27 +70,18 @@ export function buildDemoPost(opts: {
       slug,
       title,
       metadata: {
-        wordCount: 1240,
-        readingTimeMinutes: 5,
-        shareUrls: {
-          twitter: `https://twitter.com/intent/tweet?text=${enc(message)}&url=${enc(url)}&via=abhinavs`,
-          linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`,
-          whatsapp: `https://wa.me/?text=${enc(message)}`,
-          bluesky: `https://bsky.app/intent/compose?text=${enc(message)}`,
-          email: `mailto:?subject=${enc(title)}&body=${enc(message)}`,
-        },
-        shortlink: { url },
-        heartpost: { count: opts.heartCount ?? 42 },
-        tocgen: {
-          entries: [
-            { id: "what-it-does", text: "What it does", level: 2, children: [] },
-            { id: "install", text: "Install", level: 2, children: [] },
-            { id: "register", text: "Register", level: 2, children: [] },
-            { id: "add-the-component", text: "Add the component", level: 2, children: [] },
-            { id: "props", text: "Props", level: 2, children: [] },
-            { id: "customise", text: "Customise", level: 2, children: [] },
-            { id: "for-agents", text: "For agents", level: 2, children: [] },
-          ],
+        wordCount: meta.wordCount ?? opts.wordCount ?? 1240,
+        readingTimeMinutes: meta.readingTimeMinutes ?? opts.readingTimeMinutes ?? 5,
+        shareUrls: meta.shareUrls ?? generateAllShareUrls({
+          title,
+          url,
+          platforms: ALL_PLATFORMS,
+          via: "abhinavs",
+        }),
+        shortlink: meta.shortlink ?? { url },
+        heartpost: meta.heartpost ?? { count: opts.heartCount ?? 42 },
+        tocgen: meta.tocgen ?? {
+          entries: opts.tocEntries ?? pluginDocToc,
         },
       },
     },

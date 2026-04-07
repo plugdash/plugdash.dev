@@ -1,4 +1,7 @@
 ---
+import { generateAllShareUrls } from "@plugdash/sharepost/utils";
+import { extractHeadings, deduplicateAnchors, nestHeadings } from "@plugdash/tocgen/utils";
+import type { PortableTextBlock } from "@portabletext/types";
 import PortableText from "../../components/PortableText.astro";
 import { resolveBlogPost, type BlogPost } from "../../lib/content";
 import Post from "../../layouts/Post.astro";
@@ -18,13 +21,12 @@ const publishedAt = entry.publishedAt
   ? entry.publishedAt.toISOString().slice(0, 10)
   : "2026-04-05";
 
-// Post object shaped like EmDash's collection items so companion components
-// can read from post.data.metadata.* and post.id.
+// For real emdash entries, plugins populate metadata at publish time.
+// The fallback post and unseeded entries get computed values instead.
 const url = `https://plugdash.dev/blog/${slug}`;
-const message = `${entry.title} - ${url}`;
-const enc = encodeURIComponent;
+const meta = entry.metadata ?? {};
 const post = {
-  id: `blog-${slug}`,
+  id: entry.id ?? `blog-${slug}`,
   status: "published",
   slug,
   data: {
@@ -32,44 +34,25 @@ const post = {
     title: entry.title,
     publishedAt,
     metadata: {
-      wordCount: entry.wordCount ?? 600,
-      readingTimeMinutes: entry.readingTimeMinutes ?? 3,
-      shareUrls: {
-        twitter: `https://twitter.com/intent/tweet?text=${enc(entry.title)}&url=${enc(url)}&via=abhinavs`,
-        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`,
-        whatsapp: `https://wa.me/?text=${enc(message)}`,
-        bluesky: `https://bsky.app/intent/compose?text=${enc(message)}`,
-        email: `mailto:?subject=${enc(entry.title)}&body=${enc(message)}`,
-      },
-      shortlink: { url: `https://plugdash.dev/l/${slug}` },
-      heartpost: { count: 0 },
-      tocgen: {
-        entries: extractHeadings(entry.content),
+      wordCount: meta.wordCount ?? 600,
+      readingTimeMinutes: meta.readingTimeMinutes ?? 3,
+      shareUrls: meta.shareUrls ?? generateAllShareUrls({
+        title: entry.title,
+        url,
+        platforms: ["twitter", "linkedin", "whatsapp", "bluesky", "email"],
+        via: "abhinavs",
+      }),
+      shortlink: meta.shortlink ?? { url },
+      heartpost: meta.heartpost ?? { count: 0 },
+      tocgen: meta.tocgen ?? {
+        entries: nestHeadings(
+          deduplicateAnchors(extractHeadings(entry.content as PortableTextBlock[])),
+          3,
+        ),
       },
     },
   },
 };
-
-function extractHeadings(blocks: unknown[]): Array<{ id: string; text: string; level: 2 | 3; children: never[] }> {
-  return blocks
-    .filter((b): b is Record<string, unknown> => typeof b === "object" && b !== null && (b as any)._type === "block")
-    .filter((b) => b.style === "h2" || b.style === "h3")
-    .map((b) => {
-      const text = ((b.children as Array<{ text?: string }> | undefined) ?? [])
-        .map((c) => c.text ?? "")
-        .join("");
-      return {
-        id: slugify(text),
-        text,
-        level: (b.style === "h3" ? 3 : 2) as 2 | 3,
-        children: [],
-      };
-    });
-}
-
-function slugify(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
 
 function fallbackPost(): BlogPost {
   return {
@@ -78,9 +61,8 @@ function fallbackPost(): BlogPost {
     title: "The PlugDash launch: eight plugins, one live site",
     description:
       "Announcing PlugDash: eight MIT-licensed plugins for EmDash, all installed on the catalog site itself.",
-    readingTimeMinutes: 3,
-    wordCount: 612,
     publishedAt: new Date("2026-04-05"),
+    metadata: { readingTimeMinutes: 3, wordCount: 612 },
     content: [
       { _type: "block", style: "normal", children: [{ _type: "span", text: "Today PlugDash ships with eight plugins for EmDash. All MIT, all on npm, all installed on this site. If a plugin works here, it works for you." }] },
       { _type: "block", style: "h2", children: [{ _type: "span", text: "What PlugDash is" }] },

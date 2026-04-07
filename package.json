@@ -13,7 +13,8 @@
     "deploy": "astro build && wrangler deploy",
     "bootstrap": "emdash init && emdash seed",
     "seed": "emdash seed",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "lint:plugins": "bash scripts/lint-plugin-hygiene.sh"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.1.7",
@@ -24,11 +25,13 @@
     "@plugdash/engage": "^1.0.0",
     "@plugdash/heartpost": "^0.2.0",
     "@plugdash/readtime": "^0.2.0",
-    "@plugdash/sharepost": "^0.2.0",
-    "@plugdash/shortlink": "^0.2.0",
-    "@plugdash/tocgen": "^0.2.0",
+    "@plugdash/sharepost": "^0.2.2",
+    "@plugdash/shortlink": "^0.2.2",
+    "@plugdash/tocgen": "^0.2.2",
+    "@portabletext/types": "^4.0.2",
     "astro": "^6.1.3",
     "emdash": "^0.1.0",
+    "phosphor-astro": "^2.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

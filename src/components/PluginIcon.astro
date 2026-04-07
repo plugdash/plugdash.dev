@@ -1,0 +1,33 @@
+---
+import Timer from "phosphor-astro/Timer.astro";
+import ListNumbers from "phosphor-astro/ListNumbers.astro";
+import ShareNetwork from "phosphor-astro/ShareNetwork.astro";
+import Heart from "phosphor-astro/Heart.astro";
+import LinkSimple from "phosphor-astro/LinkSimple.astro";
+import MegaphoneSimple from "phosphor-astro/MegaphoneSimple.astro";
+import RocketLaunch from "phosphor-astro/RocketLaunch.astro";
+import HandHeart from "phosphor-astro/HandHeart.astro";
+
+interface Props {
+  slug: string;
+  size?: number;
+  class?: string;
+}
+
+const { slug, size = 24, class: className } = Astro.props;
+
+const icons: Record<string, any> = {
+  readtime: Timer,
+  tocgen: ListNumbers,
+  sharepost: ShareNetwork,
+  heartpost: Heart,
+  shortlink: LinkSimple,
+  callout: MegaphoneSimple,
+  autobuild: RocketLaunch,
+  engage: HandHeart,
+};
+
+const Icon = icons[slug];
+---
+
+{Icon && <Icon width={size} height={size} class={className} />}

@@ -25,7 +25,7 @@ importers:
         version: 0.1.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
       '@plugdash/engage':
         specifier: ^1.0.0
-        version: 1.0.0(@plugdash/heartpost@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))(@plugdash/sharepost@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))(@plugdash/shortlink@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))
+        version: 1.0.0(@plugdash/heartpost@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))(@plugdash/sharepost@0.2.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))(@plugdash/shortlink@0.2.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))
       '@plugdash/heartpost':
         specifier: ^0.2.0
         version: 0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
@@ -33,20 +33,26 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0(@portabletext/types@4.0.2)(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
       '@plugdash/sharepost':
-        specifier: ^0.2.0
-        version: 0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
+        specifier: ^0.2.2
+        version: 0.2.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
       '@plugdash/shortlink':
-        specifier: ^0.2.0
-        version: 0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
+        specifier: ^0.2.2
+        version: 0.2.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
       '@plugdash/tocgen':
-        specifier: ^0.2.0
-        version: 0.2.0(@portabletext/types@4.0.2)(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
+        specifier: ^0.2.2
+        version: 0.2.2(@portabletext/types@4.0.2)(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
+      '@portabletext/types':
+        specifier: ^4.0.2
+        version: 4.0.2
       astro:
         specifier: ^6.1.3
         version: 6.1.3(@types/node@22.19.17)(rollup@4.60.1)(typescript@5.9.3)(yaml@2.8.3)
       emdash:
         specifier: ^0.1.0
         version: 0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)
+      phosphor-astro:
+        specifier: ^2.1.0
+        version: 2.1.0
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -1040,18 +1046,18 @@ packages:
       '@portabletext/types': ^2.0.0
       emdash: ^0.1.0
 
-  '@plugdash/sharepost@0.2.0':
-    resolution: {integrity: sha512-oQkimzD89xGe3TK/Oid1T+SLK4PtjKYbQbjuc8i1TBGhii5c0e+iUqyNObZfqlsceCLQNloRxQHGOt4FFvWepA==}
+  '@plugdash/sharepost@0.2.2':
+    resolution: {integrity: sha512-wjKesEFfbr0yA1WQ47X6ddCXF+GN7bBrC90Kj/WRnYzAozznmI74GyahB6eBkfTaVyBmCwU7PKGpBrCe7ZX0Xg==}
     peerDependencies:
       emdash: ^0.1.0
 
-  '@plugdash/shortlink@0.2.0':
-    resolution: {integrity: sha512-f+DUGr2zYKjT/7Ikk0PTtoB/A4wEL3KdvDihHFN+ke8Hi8PxCzO5EOh0FWZo7jMhGOwqMkHpaEoLFjNIqnTlOg==}
+  '@plugdash/shortlink@0.2.2':
+    resolution: {integrity: sha512-6KUxeeryd/HFDBdo1f9jUWxOYevQJWtl7JMQ0QenRlNlQfKmMjGVpicCYiO01DKPKBRlPISF+Brg3dsT1XzU7g==}
     peerDependencies:
       emdash: ^0.1.0
 
-  '@plugdash/tocgen@0.2.0':
-    resolution: {integrity: sha512-cvzuh4Nc10weusP9kRac8YshiyZDvesvTa242OX/H8eZeONp0GXmBcsjcodFUn+oE5qrotJAOfHehBgjTyXTWg==}
+  '@plugdash/tocgen@0.2.2':
+    resolution: {integrity: sha512-8CM6BvzO44zQ2pvzCQawBH/uqOFQM8LLS4zNTdMYwkgyZdPmP0q/2ffcDYXjZhvEj6NcyjPCuYN+EQQWKBhmCA==}
     peerDependencies:
       '@portabletext/types': ^2.0.0
       emdash: ^0.1.0
@@ -2812,6 +2818,9 @@ packages:
 
   pgpass@1.0.5:
     resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
+
+  phosphor-astro@2.1.0:
+    resolution: {integrity: sha512-qyYUlxF8DbfHc+85DDGPL04ghNBwrVK75EsNsBfYOChiCeCRwAwfbHxj/qqPrrSFPMgh9cUyEvgKYjI/7bjCUA==}
 
   piccolore@0.1.3:
     resolution: {integrity: sha512-o8bTeDWjE086iwKrROaDf31K0qC/BENdm15/uH9usSC/uZjJOKb2YGiVHfLY4GhwsERiPI1jmwI2XrA7ACOxVw==}
@@ -4692,11 +4701,11 @@ snapshots:
     dependencies:
       emdash: 0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)
 
-  '@plugdash/engage@1.0.0(@plugdash/heartpost@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))(@plugdash/sharepost@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))(@plugdash/shortlink@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))':
+  '@plugdash/engage@1.0.0(@plugdash/heartpost@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))(@plugdash/sharepost@0.2.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))(@plugdash/shortlink@0.2.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)))':
     dependencies:
       '@plugdash/heartpost': 0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
-      '@plugdash/sharepost': 0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
-      '@plugdash/shortlink': 0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
+      '@plugdash/sharepost': 0.2.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
+      '@plugdash/shortlink': 0.2.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))
 
   '@plugdash/heartpost@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))':
     dependencies:
@@ -4707,15 +4716,15 @@ snapshots:
       '@portabletext/types': 4.0.2
       emdash: 0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)
 
-  '@plugdash/sharepost@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))':
+  '@plugdash/sharepost@0.2.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))':
     dependencies:
       emdash: 0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)
 
-  '@plugdash/shortlink@0.2.0(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))':
+  '@plugdash/shortlink@0.2.2(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))':
     dependencies:
       emdash: 0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)
 
-  '@plugdash/tocgen@0.2.0(@portabletext/types@4.0.2)(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))':
+  '@plugdash/tocgen@0.2.2(@portabletext/types@4.0.2)(emdash@0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d))':
     dependencies:
       '@portabletext/types': 4.0.2
       emdash: 0.1.0(72f5991ac723e1e5ddaee9fc4cdfda3d)
@@ -6814,6 +6823,8 @@ snapshots:
     dependencies:
       split2: 4.2.0
     optional: true
+
+  phosphor-astro@2.1.0: {}
 
   piccolore@0.1.3: {}
 

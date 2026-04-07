@@ -23,7 +23,7 @@ export async function resolvePlugin(slug: string): Promise<Plugin | undefined> {
 	try {
 		const { entry, error } = await getEmDashEntry("plugins", slug);
 		if (error || !entry || !entry.data) return fallback;
-		const data = entry.data as Record<string, unknown>;
+		const data = entry.data as unknown as Record<string, unknown>;
 		if (!fallback) return undefined;
 		return mergePlugin(fallback, data);
 	} catch {
@@ -40,7 +40,7 @@ export async function resolvePlugins(): Promise<Plugin[]> {
 		if (error || !entries || entries.length === 0) return sortedStaticPlugins();
 		const merged = entries
 			.map((entry) => {
-				const data = entry.data as Record<string, unknown>;
+				const data = entry.data as unknown as Record<string, unknown>;
 				const fallback = staticPlugins.find((p) => p.slug === entry.id || p.slug === (data.slug as string | undefined));
 				if (!fallback) return undefined;
 				return mergePlugin(fallback, data);
@@ -63,7 +63,7 @@ export async function resolveDocs(): Promise<StaticDocEntry[]> {
 		if (error || !entries || entries.length === 0) return staticDocs;
 		return entries
 			.map((entry) => {
-				const data = entry.data as Record<string, unknown>;
+				const data = entry.data as unknown as Record<string, unknown>;
 				const slug = (data.slug as string | undefined) ?? entry.id;
 				const fallback = staticDocs.find((d) => d.slug === slug);
 				if (!fallback) return undefined;
@@ -73,11 +73,35 @@ export async function resolveDocs(): Promise<StaticDocEntry[]> {
 					section: ((data.section as string | undefined) ?? fallback.section) as StaticDocEntry["section"],
 					href: `/docs/${slug}`,
 					summary: (data.summary as string | undefined) ?? fallback.summary,
+					metadata: (data.metadata as Record<string, unknown> | undefined) ?? undefined,
 				} satisfies StaticDocEntry;
 			})
 			.filter(Boolean) as StaticDocEntry[];
 	} catch {
 		return staticDocs;
+	}
+}
+
+/**
+ * Resolve a single doc entry by slug (for plugin metadata).
+ */
+export async function resolveDocEntry(slug: string): Promise<StaticDocEntry | undefined> {
+	const fallback = staticDocs.find((d) => d.slug === slug);
+	try {
+		const { entry, error } = await getEmDashEntry("docs", slug);
+		if (error || !entry || !entry.data) return fallback;
+		const data = entry.data as unknown as Record<string, unknown>;
+		if (!fallback) return undefined;
+		return {
+			slug,
+			title: (data.title as string | undefined) ?? fallback.title,
+			section: ((data.section as string | undefined) ?? fallback.section) as StaticDocEntry["section"],
+			href: `/docs/${slug}`,
+			summary: (data.summary as string | undefined) ?? fallback.summary,
+			metadata: (data.metadata as Record<string, unknown> | undefined) ?? undefined,
+		};
+	} catch {
+		return fallback;
 	}
 }
 
@@ -92,25 +116,25 @@ export interface BlogPost {
 	title: string;
 	description: string;
 	content: unknown[]; // PortableTextBlock[]
-	readingTimeMinutes?: number;
-	wordCount?: number;
 	publishedAt?: Date;
+	/** Plugin-populated metadata (readingTimeMinutes, shareUrls, shortlink, etc.) */
+	metadata?: Record<string, unknown>;
 }
 
 export async function resolveBlogPost(slug: string): Promise<BlogPost | undefined> {
 	try {
 		const { entry, error } = await getEmDashEntry("blog", slug);
 		if (error || !entry || !entry.data) return undefined;
-		const data = entry.data as Record<string, unknown>;
+		const data = entry.data;
+		const metadata = (data.metadata as Record<string, unknown> | undefined) ?? {};
 		return {
 			id: entry.id,
 			slug,
-			title: (data.title as string) ?? "",
-			description: (data.description as string) ?? "",
+			title: data.title ?? "",
+			description: data.description ?? "",
 			content: (data.content as unknown[]) ?? [],
-			readingTimeMinutes: data.reading_time_minutes as number | undefined,
-			wordCount: data.word_count as number | undefined,
-			publishedAt: entry.publishedAt instanceof Date ? entry.publishedAt : undefined,
+			publishedAt: data.publishedAt instanceof Date ? data.publishedAt : undefined,
+			metadata,
 		};
 	} catch {
 		return undefined;
@@ -141,6 +165,7 @@ function mergePlugin(fallback: Plugin, data: Record<string, unknown>): Plugin {
 		pairsNote: s("pairs_note") ?? fallback.pairsNote,
 		demoCaption: s("demo_caption") ?? fallback.demoCaption,
 		setupNote: s("setup_note") ?? fallback.setupNote,
+		metadata: (data.metadata as Record<string, unknown> | undefined) ?? undefined,
 	};
 }
 
