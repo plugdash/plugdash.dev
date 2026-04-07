@@ -15,19 +15,13 @@ interface Props {
 }
 
 const { slug, size = 24, class: className } = Astro.props;
-
-const icons: Record<string, any> = {
-  readtime: Timer,
-  tocgen: ListNumbers,
-  sharepost: ShareNetwork,
-  heartpost: Heart,
-  shortlink: LinkSimple,
-  callout: MegaphoneSimple,
-  autobuild: RocketLaunch,
-  engage: HandHeart,
-};
-
-const Icon = icons[slug];
 ---
 
-{Icon && <Icon width={size} height={size} class={className} />}
+{slug === "readtime" && <Timer width={size} height={size} class={className} />}
+{slug === "tocgen" && <ListNumbers width={size} height={size} class={className} />}
+{slug === "sharepost" && <ShareNetwork width={size} height={size} class={className} />}
+{slug === "heartpost" && <Heart width={size} height={size} class={className} />}
+{slug === "shortlink" && <LinkSimple width={size} height={size} class={className} />}
+{slug === "callout" && <MegaphoneSimple width={size} height={size} class={className} />}
+{slug === "autobuild" && <RocketLaunch width={size} height={size} class={className} />}
+{slug === "engage" && <HandHeart width={size} height={size} class={className} />}
