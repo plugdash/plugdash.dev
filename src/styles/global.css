@@ -91,6 +91,17 @@ p {
   color: var(--text-strong);
 }
 
+.cursor {
+  display: inline-block;
+  margin-left: 0.05em;
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
 /* Replace the middot separator in ReadingTime with a bullet (•) to
  * match the separator used elsewhere on the site. Zero out the span's
  * text, then render the bullet via ::before. */
