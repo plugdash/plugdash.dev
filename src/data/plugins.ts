@@ -7,9 +7,9 @@
  * live collection via `getEmDashCollection("plugins")` per spec section
  * "agent surfaces" - at which point this file can be deleted.
  *
- * Copy for name, tagline, headline, sub, pairsNote, demoCaption, setupNote
- * comes from plugdash-research/conversations/plugdash-launch-copy.md - do not
- * rewrite.
+ * Copy fields (tagline, headline, sub, homeCardCopy, pairsNote, demoCaption,
+ * setupNote) are edited directly in this file. Mirror any change into
+ * seed/seed.json's matching plugin entry so a fresh seed stays in sync.
  */
 
 export type PluginStatus = "alpha" | "beta";
@@ -47,10 +47,10 @@ export const plugins: Plugin[] = [
     slug: "readtime",
     name: "readtime",
     npmPackage: "@plugdash/readtime",
-    tagline: "Readers decide in three seconds. Give them a reason to stay.",
-    headline: "Tell readers what they're committing to.",
-    sub: "Estimates reading time from your post's word count and shows it wherever you want. Works on every published post, automatically. Nothing to configure to ship something good.",
-    homeCardCopy: "Readers decide in three seconds. Give them a reason to stay.",
+    tagline: "The estimate readers check before they commit to a paragraph.",
+    headline: "Tell them what they're signing up for before they scroll.",
+    sub: "readtime counts words at publish time and writes the estimate straight into your post's metadata. No client-side JavaScript, no recalculating on every page view. Four display variants, three sizes, every value bound to a CSS token.",
+    homeCardCopy: "Readers check the estimate before they read the paragraph.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/readtime",
     capabilities: "read:content, write:metadata",
     hooks: "content:afterSave",
@@ -62,10 +62,10 @@ export const plugins: Plugin[] = [
     companionComponent: "ReadingTime.astro",
     pairs: ["heartpost", "sharepost"],
     pairsNote:
-      "readers who finish a post are your most likely to share or heart it. Show them the path.",
-    demoCaption: "5 min read - 1,240 words, calculated at publish, shown instantly.",
+      "someone who finishes a post is your best candidate to share it or heart it. readtime runs before either of those decisions gets made.",
+    demoCaption: "5 min read - 1,240 words, computed once at publish, served instantly.",
     setupNote:
-      "After this, every published post shows reading time. If a post doesn't have it yet, publish it again - readtime runs on every publish.",
+      "Every published post gets a reading time automatically. Older posts pick it up the next time you hit publish.",
     componentImport: 'import ReadingTime from "@plugdash/readtime/ReadingTime.astro"',
     componentUsage: "<ReadingTime post={post} />",
     props: [
@@ -88,10 +88,10 @@ export const plugins: Plugin[] = [
     slug: "callout",
     name: "callout",
     npmPackage: "@plugdash/callout",
-    tagline: "The block every technical writer reaches for that almost no theme ships.",
-    headline: "The block your readers stop and read.",
-    sub: "Adds a Portable Text block type for info, warning, tip, and danger callouts. Shows up in the EmDash editor as a native block. Ships Callout.astro with default styles that look intentional - not like an afterthought. CSS custom properties for every visual value.",
-    homeCardCopy: "The block every technical writer reaches for that almost no theme ships.",
+    tagline: "The block every technical writer reaches for, and most CMSes never ship.",
+    headline: "A block worth reading, not skimming past.",
+    sub: "callout registers a native Portable Text block for info, warning, tip, and danger. It shows up in the EmDash editor like any other block, and Callout.astro ships with defaults that look designed, not bolted on. Every visual value is a CSS custom property.",
+    homeCardCopy: "Info, warning, tip, danger - four callouts, one native editor block.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/callout",
     capabilities: "blocks:register",
     hooks: "editor:registerBlock",
@@ -102,10 +102,10 @@ export const plugins: Plugin[] = [
     companionComponent: "Callout.astro",
     pairs: ["codeblock", "tocgen"],
     pairsNote:
-      "callouts and code blocks are the two blocks every technical writer reaches for.",
-    demoCaption: "info, warning, tip, danger - all four, out of the box.",
+      "callouts and code blocks are the two things a technical writer reaches for first.",
+    demoCaption: "Four variants, zero configuration.",
     setupNote:
-      "After this, the callout block appears in your EmDash editor. Add the component to your layout once - every post that uses callouts renders them correctly.",
+      "The callout block shows up in your EmDash editor immediately. Wire the component into your layout once, and every callout in every post renders correctly from then on.",
     componentImport: 'import Callout from "@plugdash/callout/Callout.astro"',
     componentUsage: '<Callout variant="info" title="Heads up">...</Callout>',
     props: [
@@ -122,10 +122,10 @@ export const plugins: Plugin[] = [
     slug: "sharepost",
     name: "sharepost",
     npmPackage: "@plugdash/sharepost",
-    tagline: "Readers who want to share your work shouldn't have to work for it.",
-    headline: "Make sharing the obvious next step.",
-    sub: "Generates correct share URLs for Twitter/X, LinkedIn, WhatsApp, Bluesky, and email on every publish. Renders as circular icon buttons - no JavaScript libraries, no tracking scripts, no 200KB payloads. Four variants. Looks right on day one.",
-    homeCardCopy: "Readers who want to share your work shouldn't have to work for it.",
+    tagline: "If a reader wants to share your post, that should take one click, not a workaround.",
+    headline: "Make sharing the obvious next move, not a detour.",
+    sub: "sharepost generates correct share URLs for X, LinkedIn, WhatsApp, Bluesky, and email on every publish, then renders them as circular icon buttons. No JavaScript SDKs, no tracking pixels, no 200KB of vendor script for five links.",
+    homeCardCopy: "Correct share URLs for five platforms, computed once, at publish.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/sharepost",
     capabilities: "read:content, write:metadata",
     hooks: "content:afterSave",
@@ -136,10 +136,10 @@ export const plugins: Plugin[] = [
     companionComponent: "ShareButtons.astro",
     pairs: ["heartpost", "readtime"],
     pairsNote:
-      "share and heart are two different signals. Most readers do one or the other. Give them both.",
-    demoCaption: "Circular by default. No configuration. Works in dark and light themes.",
+      "a share and a heart are different signals from different readers. Run both, and you stop guessing which one you're missing.",
+    demoCaption: "Circular by default, no configuration, correct in both themes.",
     setupNote:
-      "After this, every published post has share URLs ready. Add the component once - every new post picks it up automatically.",
+      "Every published post has share URLs the moment it goes live. Add the component once, and every future post inherits it.",
     componentImport: 'import ShareButtons from "@plugdash/sharepost/ShareButtons.astro"',
     componentUsage: "<ShareButtons post={post} />",
     props: [
@@ -157,10 +157,10 @@ export const plugins: Plugin[] = [
     slug: "heartpost",
     name: "heartpost",
     npmPackage: "@plugdash/heartpost",
-    tagline: "The simplest signal readers can send. Show them you counted it.",
-    headline: "The lightest form of applause.",
-    sub: "A heart counter backed by Cloudflare KV. One click, one count, no account needed. Ships HeartButton.astro with four variants and full CSS customisation.",
-    homeCardCopy: "The lightest form of applause. One click, no account.",
+    tagline: "The lightest thing a reader can do to tell you they liked it.",
+    headline: "One click. No account. Counted anyway.",
+    sub: "heartpost stores a heart count in Cloudflare KV and updates it with an optimistic client-side increment, so the number moves before the network round-trip finishes. HeartButton.astro ships in four variants, fully restyled through CSS custom properties.",
+    homeCardCopy: "One click, no account, counted in KV.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/heartpost",
     capabilities: "kv:read, kv:write",
     hooks: "api:register",
@@ -171,10 +171,10 @@ export const plugins: Plugin[] = [
     companionComponent: "HeartButton.astro",
     pairs: ["sharepost", "readtime"],
     pairsNote:
-      "a heart and a share are different signals. Give readers both.",
-    demoCaption: "One click. Optimistic update. KV-backed counter.",
+      "a heart is a quiet yes. A share is a loud one. Run both and you can tell which post readers loved versus which one they wanted other people to see.",
+    demoCaption: "Click. Count moves instantly. KV confirms behind it.",
     setupNote:
-      "After this, every post can show a heart count. The count is stored in KV and updates without a page refresh.",
+      "Every post gets a heart count the moment you add the component. No account system to stand up, no cookies to manage.",
     componentImport: 'import HeartButton from "@plugdash/heartpost/HeartButton.astro"',
     componentUsage: "<HeartButton post={post} />",
     props: [
@@ -191,10 +191,10 @@ export const plugins: Plugin[] = [
     slug: "shortlink",
     name: "shortlink",
     npmPackage: "@plugdash/shortlink",
-    tagline: "A short URL for every post, ready to paste anywhere.",
-    headline: "Every post, one clean URL to copy.",
-    sub: "Auto-generates short URLs for published posts, stored in Cloudflare KV. Ships CopyLink.astro with three variants - circle, pill, inline. Green check on copy, resets in two seconds.",
-    homeCardCopy: "Every post deserves a clean URL. Copy and share in one tap.",
+    tagline: "A clean URL for every post, generated the moment you publish.",
+    headline: "The link you'd actually want to paste in a tweet.",
+    sub: "shortlink generates a short URL for every published post and stores it in Cloudflare KV. CopyLink.astro ships in three variants - circle, pill, inline - with a green check on copy that resets itself after two seconds.",
+    homeCardCopy: "Copy the link in one click. No dashboard, no separate service.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/shortlink",
     capabilities: "kv:read, kv:write",
     hooks: "content:afterSave, api:register",
@@ -205,10 +205,10 @@ export const plugins: Plugin[] = [
     companionComponent: "CopyLink.astro",
     pairs: ["sharepost", "heartpost"],
     pairsNote:
-      "copy link sits naturally alongside share and heart. Most readers use one of the three.",
-    demoCaption: "Click to copy. Green check. Resets after two seconds.",
+      "shortlink, sharepost, and heartpost are the three things a reader can do without leaving the page. Most posts ship all three.",
+    demoCaption: "Click to copy. Green check confirms it. Gone in two seconds.",
     setupNote:
-      "After this, each published post gets a short URL automatically. The component copies it to the clipboard on click.",
+      "Every published post gets a short URL automatically, no separate step. The component handles the clipboard copy.",
     componentImport: 'import CopyLink from "@plugdash/shortlink/CopyLink.astro"',
     componentUsage: "<CopyLink post={post} />",
     props: [
@@ -224,10 +224,10 @@ export const plugins: Plugin[] = [
     slug: "tocgen",
     name: "tocgen",
     npmPackage: "@plugdash/tocgen",
-    tagline: "Long posts deserve navigation. Your readers will find what they came for.",
-    headline: "Long posts shouldn't make readers work to find what they need.",
-    sub: "Parses headings from your Portable Text content and writes a nested navigation structure on every publish. Ships TableOfContents.astro with a sticky sidebar variant that follows readers as they scroll. Works out of the box. Skips short posts automatically.",
-    homeCardCopy: "Long posts deserve navigation. Your readers will find what they came for.",
+    tagline: "A 3,000-word post without a table of contents is a post nobody finishes.",
+    headline: "Show readers the shape of the post before they commit to it.",
+    sub: "tocgen parses headings out of your Portable Text content at publish time and writes a nested navigation tree into the post's metadata. TableOfContents.astro renders it with a sticky sidebar variant that tracks scroll position. Posts under the heading threshold are skipped automatically.",
+    homeCardCopy: "A table of contents, generated from your headings, skipped on short posts.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/tocgen",
     capabilities: "read:content, write:metadata",
     hooks: "content:afterSave",
@@ -238,10 +238,10 @@ export const plugins: Plugin[] = [
     companionComponent: "TableOfContents.astro",
     pairs: ["readtime", "callout"],
     pairsNote:
-      "readers who can see the structure and the time commitment are more likely to start.",
-    demoCaption: "Sticky sidebar on desktop. Nested h2 and h3. Active state as you scroll.",
+      "readtime tells a reader how long the post is. tocgen shows them the shape of it. Together they answer the two questions a reader asks before committing: how long, and about what.",
+    demoCaption: "Sticky on desktop, nested h2/h3, active section highlighted as you scroll.",
     setupNote:
-      "After this, every post with three or more headings gets a table of contents. Short posts are skipped - you don't need to configure the threshold.",
+      "Every post with three or more headings gets a table of contents automatically. Shorter posts are skipped - nothing to configure.",
     componentImport: 'import TableOfContents from "@plugdash/tocgen/TableOfContents.astro"',
     componentUsage: "<TableOfContents post={post} sticky />",
     props: [
@@ -259,10 +259,10 @@ export const plugins: Plugin[] = [
     slug: "engage",
     name: "engage",
     npmPackage: "@plugdash/engage",
-    tagline: "Heart, share, copy - the engagement bundle for EmDash.",
-    headline: "The engagement bar your blog needed from day one.",
-    sub: "A convenience bundle that composes heartpost, sharepost, and shortlink into one component. Drop EngagementBar.astro into your Post layout and readers get all three signals with one import.",
-    homeCardCopy: "Heart, share, copy. One import, one bar, one well-considered default.",
+    tagline: "heartpost, sharepost, and shortlink, wired into one component.",
+    headline: "Three plugins. One import. One row underneath every post.",
+    sub: "engage composes heartpost, sharepost, and shortlink into a single EngagementBar.astro. Install the three underlying plugins, then import the bundle instead of stitching the components together yourself.",
+    homeCardCopy: "One row under every post: heart, share, copy link.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/engage",
     capabilities: "none - convenience package only",
     hooks: "none - convenience package only",
@@ -274,10 +274,10 @@ export const plugins: Plugin[] = [
     companionComponent: "EngagementBar.astro",
     pairs: ["heartpost", "sharepost", "shortlink"],
     pairsNote:
-      "engage wraps these three. Install all three, then use engage's component.",
-    demoCaption: "Heart, share buttons, copy link - in one component.",
+      "engage wraps heartpost, sharepost, and shortlink. Install all three plugins, then use engage's component instead of assembling your own layout.",
+    demoCaption: "Heart, share buttons, and copy link, rendered from one component.",
     setupNote:
-      "engage is a bundle. Register heartpost, sharepost, and shortlink as plugins, then import EngagementBar.astro from @plugdash/engage in your Post layout.",
+      "engage is a bundle, not a plugin of its own. Register heartpost, sharepost, and shortlink, then import EngagementBar.astro from @plugdash/engage into your Post layout.",
     componentImport: 'import EngagementBar from "@plugdash/engage/EngagementBar.astro"',
     componentUsage: "<EngagementBar post={post} />",
     props: [
@@ -297,10 +297,10 @@ export const plugins: Plugin[] = [
     slug: "autobuild",
     name: "autobuild",
     npmPackage: "@plugdash/autobuild",
-    tagline: "Publish in the admin. Live in 60 seconds.",
-    headline: "Publish in the admin. Live in 60 seconds.",
-    sub: "Fires your Cloudflare Pages, Netlify, or Vercel build hook on every publish. No git push. No manual redeploy. The admin becomes the thing that moves the site.",
-    homeCardCopy: "The plugin that makes EmDash feel live.",
+    tagline: "Hit publish in the admin. The deploy is already running.",
+    headline: "Publish in the admin. Live in under a minute.",
+    sub: "autobuild fires your Cloudflare Pages, Netlify, or Vercel build hook on every publish - no git push, no manual redeploy. It debounces for five seconds, so a batch of edits triggers one deploy instead of ten.",
+    homeCardCopy: "The plugin that makes the admin the thing that ships the site.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/autobuild",
     capabilities: "read:content, network:fetch",
     hooks: "content:afterSave, content:afterDelete",
@@ -312,10 +312,10 @@ export const plugins: Plugin[] = [
     companionComponent: "",
     pairs: ["readtime", "tocgen"],
     pairsNote:
-      "these write metadata on publish. autobuild makes sure the live site sees the new metadata within a minute.",
-    demoCaption: "Publish, build hook fires, deploy kicks off, live. Four lines of config.",
+      "readtime and tocgen write metadata on publish. autobuild is what gets that metadata onto the live site within a minute, instead of at the next scheduled build.",
+    demoCaption: "Publish. Build hook fires. Deploy starts. Four lines of config.",
     setupNote:
-      "Get your build hook URL from Cloudflare Pages, Netlify, or Vercel. Paste it as an env var. After this, every publish rebuilds the site. Debounces 5 seconds so a batch of publishes triggers one deploy, not ten.",
+      "Paste your build hook URL from Cloudflare Pages, Netlify, or Vercel as an env var. Every publish rebuilds the site after that, debounced so a burst of edits fires one deploy, not ten.",
     componentImport: "",
     componentUsage: "",
     props: [
