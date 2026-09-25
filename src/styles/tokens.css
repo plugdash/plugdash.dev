@@ -21,19 +21,23 @@
   --muted: #6b6b6b;
 }
 
+/* Shape tokens - site-owned, not part of the @plugdash/* package contract */
+:root {
+  --radius-sm: 2px;
+  --radius: 3px;
+}
+
 /* plugdash component tokens - consumed by all @plugdash/* companion components */
 :root {
-  --plugdash-font-ui: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --plugdash-font-body: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --plugdash-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --plugdash-font-ui: var(--plugdash-font-mono);
+  --plugdash-font-body: var(--plugdash-font-mono);
   --plugdash-muted: var(--muted);
   --plugdash-accent: var(--accent);
   --plugdash-accent-fg: var(--accent-fg);
   --plugdash-border: var(--border);
   --plugdash-surface: var(--surface);
   --plugdash-transition: 150ms ease;
-  --radius-sm: 2px;
-  --radius: 3px;
 
   --plugdash-meta-size: 0.875rem;
   --plugdash-meta-font: inherit;
@@ -59,4 +63,5 @@
 
   --plugdash-paywall-padding: 2rem;
   --plugdash-tip-radius: 8px;
+  --plugdash-callout-radius: var(--radius);
 }

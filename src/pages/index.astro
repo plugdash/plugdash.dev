@@ -155,20 +155,6 @@ const demoPost = buildDemoPost({
     border: 1px solid transparent;
   }
 
-  .hero-ascii {
-    margin-top: 2rem;
-    display: inline-block;
-    font-size: 0.8rem;
-    line-height: 1.3;
-    color: var(--muted);
-    background: none;
-    border: none;
-    padding: 0;
-  }
-  .hero-ascii::before {
-    content: none;
-  }
-
   .btn-primary {
     background: var(--accent);
     color: var(--accent-fg);
@@ -186,6 +172,17 @@ const demoPost = buildDemoPost({
     background: var(--surface);
     color: var(--text);
     border-color: var(--muted);
+  }
+
+  .hero-ascii {
+    margin-top: 2rem;
+    display: inline-block;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    color: var(--muted);
+    background: none;
+    border: none;
+    padding: 0;
   }
 
   .demo-strip {
@@ -255,7 +252,7 @@ const demoPost = buildDemoPost({
   .built-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0;
   }
   @media (min-width: 720px) {
     .built-grid {
@@ -264,16 +261,18 @@ const demoPost = buildDemoPost({
     }
   }
   .built-card {
-    position: relative;
-    padding: 1.5rem 1.25rem 1.25rem;
+    padding-bottom: 1.25rem;
   }
   .built-card + .built-card {
     border-top: 1px solid var(--border);
+    padding-top: 1.25rem;
   }
   @media (min-width: 720px) {
     .built-card + .built-card {
       border-top: none;
       border-left: 1px solid var(--border);
+      padding-top: 0;
+      padding-left: 1.25rem;
     }
   }
   .built-num {
