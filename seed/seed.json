@@ -398,6 +398,31 @@
 					"demo_caption": "TypeScript, highlighted with github-dark, no client bundle added to the page.",
 					"setup_note": "Drop CodeBlock.astro into your Portable Text renderer for code blocks and every fenced snippet in every post highlights from then on, including posts that already existed."
 				}
+			},
+			{
+				"id": "plugin-paygate",
+				"slug": "paygate",
+				"status": "published",
+				"data": {
+					"name": "paygate",
+					"tagline": "A post behind a paywall, without a subscription behind it.",
+					"headline": "Charge per post. Skip the subscription business entirely.",
+					"sub": "paygate turns EmDash's built-in x402 support into a settings panel a publisher can actually use - price a post, pick full block or preview, done. A request without a payment receipt gets a 402 response with the payment details attached; an AI agent with a wallet can pay it and read the post without a human ever seeing a login screen.",
+					"home_card_copy": "Price a post, gate it, get paid to a wallet address - no Stripe, no subscription tier.",
+					"npm_package": "@plugdash/paygate",
+					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/paygate",
+					"capabilities": "read:content, write:content, write:routes, read:kv, write:kv",
+					"hooks": "route:request, content:afterSave",
+					"plugin_status": "alpha",
+					"install_command": "npm install @plugdash/paygate",
+					"config_example": "import paygate from \"@plugdash/paygate\"\n// in emdash plugins array:\npaygate({ walletAddress: \"0x...\", network: \"base\", defaultPrice: 1.00 })",
+					"wordpress_equivalent": "MemberPress",
+					"companion_component": "",
+					"pairs": "readtime, tocgen",
+					"pairs_note": "someone deciding whether to pay for a post wants to know how long it is and how it's laid out first. readtime and tocgen both show up on the preview before the paywall does.",
+					"demo_caption": "No receipt, no read - a 402 response with the price attached, resolved the moment payment lands.",
+					"setup_note": "Set your wallet address once in the plugin config, then flip 'require payment' on any post from its Monetisation panel in the admin. Free posts stay free until you say otherwise."
+				}
 			}
 		],
 		"docs": [

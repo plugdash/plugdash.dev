@@ -484,6 +484,39 @@ export const plugins: Plugin[] = [
       { name: "lineNumbers", type: "boolean", default: "false", description: "Show line numbers" },
     ],
   },
+  {
+    slug: "paygate",
+    name: "paygate",
+    npmPackage: "@plugdash/paygate",
+    tagline: "A post behind a paywall, without a subscription behind it.",
+    headline: "Charge per post. Skip the subscription business entirely.",
+    sub: "paygate turns EmDash's built-in x402 support into a settings panel a publisher can actually use - price a post, pick full block or preview, done. A request without a payment receipt gets a 402 response with the payment details attached; an AI agent with a wallet can pay it and read the post without a human ever seeing a login screen.",
+    homeCardCopy: "Price a post, gate it, get paid to a wallet address - no Stripe, no subscription tier.",
+    githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/paygate",
+    capabilities: "read:content, write:content, write:routes, read:kv, write:kv",
+    hooks: "route:request, content:afterSave",
+    status: "alpha",
+    installCommand: "npm install @plugdash/paygate",
+    configExample:
+      'import paygate from "@plugdash/paygate"\n// in emdash plugins array:\npaygate({ walletAddress: "0x...", network: "base", defaultPrice: 1.00 })',
+    wordpressEquivalent: "MemberPress",
+    companionComponent: "",
+    pairs: ["readtime", "tocgen"],
+    pairsNote:
+      "someone deciding whether to pay for a post wants to know how long it is and how it's laid out first. readtime and tocgen both show up on the preview before the paywall does.",
+    demoCaption: "No receipt, no read - a 402 response with the price attached, resolved the moment payment lands.",
+    setupNote:
+      "Set your wallet address once in the plugin config, then flip 'require payment' on any post from its Monetisation panel in the admin. Free posts stay free until you say otherwise.",
+    componentImport: "",
+    componentUsage: "",
+    props: [
+      { name: "walletAddress", type: "string", description: "Required - wallet that receives payment" },
+      { name: "defaultPrice", type: "number", default: "1.00", description: "Price in USD" },
+      { name: "network", type: '"base" | "ethereum" | "polygon"', default: '"base"', description: "Payment network" },
+      { name: "gateType", type: '"full" | "preview"', default: '"full"', description: "Block entirely or show an excerpt" },
+      { name: "previewWords", type: "number", default: "100", description: "Words shown in preview mode" },
+    ],
+  },
 ];
 
 export function getPlugin(slug: string): Plugin | undefined {
