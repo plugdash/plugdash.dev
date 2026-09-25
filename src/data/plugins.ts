@@ -361,6 +361,37 @@ export const plugins: Plugin[] = [
       { name: "logo", type: "string", description: "Optional logo image URL" },
     ],
   },
+  {
+    slug: "fromsubstack",
+    name: "fromsubstack",
+    npmPackage: "@plugdash/fromsubstack",
+    tagline: "The export button Substack gives you, turned into a working blog somewhere else.",
+    headline: "Point it at the export ZIP. Walk away with a working blog.",
+    sub: "fromsubstack unzips a Substack export, converts each post's HTML into Portable Text, and re-uploads every image to your own media library. Slugs carry over by default, so old links from newsletters and search results keep resolving. Everything lands as a draft first - nothing goes live until you review it.",
+    homeCardCopy: "Unzip the Substack export, get EmDash content back - posts, images, slugs intact.",
+    githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/fromsubstack",
+    capabilities: "write:content, write:media, read:schema",
+    hooks: "none - runs as a one-time CLI import",
+    status: "beta",
+    installCommand: "npm install @plugdash/fromsubstack",
+    configExample: '// runs via CLI, not the plugins array:\nnpx emdash plugin fromsubstack --file export.zip --status draft',
+    wordpressEquivalent: "",
+    companionComponent: "",
+    pairs: ["fromghost", "redirects"],
+    pairsNote:
+      "if the old Substack URLs are indexed anywhere, redirects is what keeps them from turning into 404s once the archive moves.",
+    demoCaption: "5 posts, 3 with images, imported and re-hosted in one CLI run.",
+    setupNote:
+      "Export your archive from Substack's settings, then run the import command with the ZIP path. Re-running the same file skips posts it's already imported instead of duplicating them.",
+    componentImport: "",
+    componentUsage: "",
+    props: [
+      { name: "targetCollection", type: "string", default: '"posts"', description: "Collection to import into" },
+      { name: "status", type: '"draft" | "published"', default: '"draft"', description: "Status assigned to imported posts" },
+      { name: "importImages", type: "boolean", default: "true", description: "Download and re-host images" },
+      { name: "preserveSlugs", type: "boolean", default: "true", description: "Keep the original Substack slug" },
+    ],
+  },
 ];
 
 export function getPlugin(slug: string): Plugin | undefined {

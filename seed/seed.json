@@ -298,6 +298,31 @@
 					"demo_caption": "1200x630 PNG, rendered from Satori JSX, generated once per publish.",
 					"setup_note": "Publish a post and the card exists at metadata.ogImage before the deploy even finishes. Point your layout's og:image meta tag at it once and every future post inherits it."
 				}
+			},
+			{
+				"id": "plugin-fromsubstack",
+				"slug": "fromsubstack",
+				"status": "published",
+				"data": {
+					"name": "fromsubstack",
+					"tagline": "The export button Substack gives you, turned into a working blog somewhere else.",
+					"headline": "Point it at the export ZIP. Walk away with a working blog.",
+					"sub": "fromsubstack unzips a Substack export, converts each post's HTML into Portable Text, and re-uploads every image to your own media library. Slugs carry over by default, so old links from newsletters and search results keep resolving. Everything lands as a draft first - nothing goes live until you review it.",
+					"home_card_copy": "Unzip the Substack export, get EmDash content back - posts, images, slugs intact.",
+					"npm_package": "@plugdash/fromsubstack",
+					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/fromsubstack",
+					"capabilities": "write:content, write:media, read:schema",
+					"hooks": "none - runs as a one-time CLI import",
+					"plugin_status": "beta",
+					"install_command": "npm install @plugdash/fromsubstack",
+					"config_example": "// runs via CLI, not the plugins array:\nnpx emdash plugin fromsubstack --file export.zip --status draft",
+					"wordpress_equivalent": "",
+					"companion_component": "",
+					"pairs": "fromghost, redirects",
+					"pairs_note": "if the old Substack URLs are indexed anywhere, redirects is what keeps them from turning into 404s once the archive moves.",
+					"demo_caption": "5 posts, 3 with images, imported and re-hosted in one CLI run.",
+					"setup_note": "Export your archive from Substack's settings, then run the import command with the ZIP path. Re-running the same file skips posts it's already imported instead of duplicating them."
+				}
 			}
 		],
 		"docs": [
