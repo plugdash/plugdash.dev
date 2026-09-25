@@ -373,6 +373,31 @@
 					"demo_caption": "Top 5 links this week, ranked by clicks, refreshed on every dashboard load.",
 					"setup_note": "Install it next to shortlink and every redirect starts getting counted immediately - no extra config, no separate tracking script."
 				}
+			},
+			{
+				"id": "plugin-codeblock",
+				"slug": "codeblock",
+				"status": "published",
+				"data": {
+					"name": "codeblock",
+					"tagline": "Syntax highlighting that doesn't ship a highlighter to the browser.",
+					"headline": "The code block renders highlighted. The browser does none of the work.",
+					"sub": "codeblock runs Shiki inside the Worker and highlights code at render time, not at save time, so a theme upgrade or a language fix applies to every post retroactively with nothing stored as pre-rendered HTML. Twelve common languages preload by default; anything else loads from Shiki's registry on first use.",
+					"home_card_copy": "Shiki highlighting, rendered server-side, zero JavaScript shipped to the browser.",
+					"npm_package": "@plugdash/codeblock",
+					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/codeblock",
+					"capabilities": "read:content",
+					"hooks": "none - render-time transform, not a lifecycle hook",
+					"plugin_status": "beta",
+					"install_command": "npm install @plugdash/codeblock",
+					"config_example": "import CodeBlock from \"@plugdash/codeblock/CodeBlock.astro\"\n<CodeBlock block={block} theme=\"github-dark\" />",
+					"wordpress_equivalent": "SyntaxHighlighter Evolved",
+					"companion_component": "CodeBlock.astro",
+					"pairs": "callout, tocgen",
+					"pairs_note": "a technical post is callouts and code blocks, in some order. Most posts that use one use both.",
+					"demo_caption": "TypeScript, highlighted with github-dark, no client bundle added to the page.",
+					"setup_note": "Drop CodeBlock.astro into your Portable Text renderer for code blocks and every fenced snippet in every post highlights from then on, including posts that already existed."
+				}
 			}
 		],
 		"docs": [

@@ -453,6 +453,37 @@ export const plugins: Plugin[] = [
       { name: "retentionDays", type: "number", default: "90", description: "Days to keep daily records before purge" },
     ],
   },
+  {
+    slug: "codeblock",
+    name: "codeblock",
+    npmPackage: "@plugdash/codeblock",
+    tagline: "Syntax highlighting that doesn't ship a highlighter to the browser.",
+    headline: "The code block renders highlighted. The browser does none of the work.",
+    sub: "codeblock runs Shiki inside the Worker and highlights code at render time, not at save time, so a theme upgrade or a language fix applies to every post retroactively with nothing stored as pre-rendered HTML. Twelve common languages preload by default; anything else loads from Shiki's registry on first use.",
+    homeCardCopy: "Shiki highlighting, rendered server-side, zero JavaScript shipped to the browser.",
+    githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/codeblock",
+    capabilities: "read:content",
+    hooks: "none - render-time transform, not a lifecycle hook",
+    status: "beta",
+    installCommand: "npm install @plugdash/codeblock",
+    configExample: 'import CodeBlock from "@plugdash/codeblock/CodeBlock.astro"\n<CodeBlock block={block} theme="github-dark" />',
+    wordpressEquivalent: "SyntaxHighlighter Evolved",
+    companionComponent: "CodeBlock.astro",
+    pairs: ["callout", "tocgen"],
+    pairsNote:
+      "a technical post is callouts and code blocks, in some order. Most posts that use one use both.",
+    demoCaption: "TypeScript, highlighted with github-dark, no client bundle added to the page.",
+    setupNote:
+      "Drop CodeBlock.astro into your Portable Text renderer for code blocks and every fenced snippet in every post highlights from then on, including posts that already existed.",
+    componentImport: 'import CodeBlock from "@plugdash/codeblock/CodeBlock.astro"',
+    componentUsage: '<CodeBlock block={block} theme="github-dark" />',
+    props: [
+      { name: "block", type: "Portable Text code block", description: "Required - the code block to render" },
+      { name: "theme", type: "string", default: '"github-dark"', description: "Shiki theme name" },
+      { name: "lightTheme", type: "string", description: "Optional theme used in light mode" },
+      { name: "lineNumbers", type: "boolean", default: "false", description: "Show line numbers" },
+    ],
+  },
 ];
 
 export function getPlugin(slug: string): Plugin | undefined {
