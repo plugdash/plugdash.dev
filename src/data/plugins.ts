@@ -392,6 +392,36 @@ export const plugins: Plugin[] = [
       { name: "preserveSlugs", type: "boolean", default: "true", description: "Keep the original Substack slug" },
     ],
   },
+  {
+    slug: "redirects",
+    name: "redirects",
+    npmPackage: "@plugdash/redirects",
+    tagline: "Change a slug and the old URL still has to go somewhere.",
+    headline: "Rename a post without breaking the link everyone already has.",
+    sub: "redirects watches every slug change and writes a 301 automatically, no extra step. Every request gets checked against the redirect table before your site ever renders a page, and a hit counter tracks which old URLs are still getting traffic. A CSV importer handles the bulk redirects you bring over from a migration.",
+    homeCardCopy: "Change a slug, get a 301 automatically. No dead links from a rename.",
+    githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/redirects",
+    capabilities: "read:content, write:routes, read:routes, read:kv, write:kv",
+    hooks: "content:beforeSave, route:request",
+    status: "beta",
+    installCommand: "npm install @plugdash/redirects",
+    configExample:
+      'import redirects from "@plugdash/redirects"\n// in emdash plugins array:\nredirects({ autoRedirect: true, statusCode: 301 })',
+    wordpressEquivalent: "Redirection",
+    companionComponent: "",
+    pairs: ["fromsubstack", "fromghost"],
+    pairsNote:
+      "a migration brings a list of URLs that used to work somewhere else. redirects is what makes them keep working here.",
+    demoCaption: "Rename a slug, and the old path 301s to the new one before the next request.",
+    setupNote:
+      "Install it and slug changes start redirecting immediately. Bring over redirects from an old CMS with the CSV importer on the admin page instead of typing each one in by hand.",
+    componentImport: "",
+    componentUsage: "",
+    props: [
+      { name: "autoRedirect", type: "boolean", default: "true", description: "Create a redirect automatically on slug change" },
+      { name: "statusCode", type: "301 | 302", default: "301", description: "Status code for generated redirects" },
+    ],
+  },
 ];
 
 export function getPlugin(slug: string): Plugin | undefined {
