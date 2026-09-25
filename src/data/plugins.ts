@@ -422,6 +422,37 @@ export const plugins: Plugin[] = [
       { name: "statusCode", type: "301 | 302", default: "301", description: "Status code for generated redirects" },
     ],
   },
+  {
+    slug: "clickcount",
+    name: "clickcount",
+    npmPackage: "@plugdash/clickcount",
+    tagline: "shortlink tells you the link works. clickcount tells you who used it.",
+    headline: "Know which links people actually click, not just which ones you made.",
+    sub: "clickcount hooks into shortlink's redirect route and counts every request in Cloudflare KV - referrer domain, country, running total, all written as fire-and-forget so tracking never slows the redirect down. A dashboard widget surfaces your top five links and a 7-day sparkline without leaving the admin.",
+    homeCardCopy: "Every shortlink redirect counted - referrer, country, running total, no extra request.",
+    githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/clickcount",
+    capabilities: "read:kv, write:kv, read:routes",
+    hooks: "route:request",
+    status: "alpha",
+    installCommand: "npm install @plugdash/clickcount",
+    configExample:
+      'import clickcount from "@plugdash/clickcount"\n// in emdash plugins array:\nclickcount({ trackReferrers: true, trackCountries: true })',
+    wordpressEquivalent: "Pretty Links",
+    companionComponent: "",
+    pairs: ["shortlink"],
+    pairsNote:
+      "clickcount only has something to count once shortlink exists. Install both for the full picture - the link and the traffic on it.",
+    demoCaption: "Top 5 links this week, ranked by clicks, refreshed on every dashboard load.",
+    setupNote:
+      "Install it next to shortlink and every redirect starts getting counted immediately - no extra config, no separate tracking script.",
+    componentImport: "",
+    componentUsage: "",
+    props: [
+      { name: "trackReferrers", type: "boolean", default: "true", description: "Record referrer domain per click" },
+      { name: "trackCountries", type: "boolean", default: "true", description: "Record country from the CF-IPCountry header" },
+      { name: "retentionDays", type: "number", default: "90", description: "Days to keep daily records before purge" },
+    ],
+  },
 ];
 
 export function getPlugin(slug: string): Plugin | undefined {

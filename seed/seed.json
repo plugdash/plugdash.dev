@@ -348,6 +348,31 @@
 					"demo_caption": "Rename a slug, and the old path 301s to the new one before the next request.",
 					"setup_note": "Install it and slug changes start redirecting immediately. Bring over redirects from an old CMS with the CSV importer on the admin page instead of typing each one in by hand."
 				}
+			},
+			{
+				"id": "plugin-clickcount",
+				"slug": "clickcount",
+				"status": "published",
+				"data": {
+					"name": "clickcount",
+					"tagline": "shortlink tells you the link works. clickcount tells you who used it.",
+					"headline": "Know which links people actually click, not just which ones you made.",
+					"sub": "clickcount hooks into shortlink's redirect route and counts every request in Cloudflare KV - referrer domain, country, running total, all written as fire-and-forget so tracking never slows the redirect down. A dashboard widget surfaces your top five links and a 7-day sparkline without leaving the admin.",
+					"home_card_copy": "Every shortlink redirect counted - referrer, country, running total, no extra request.",
+					"npm_package": "@plugdash/clickcount",
+					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/clickcount",
+					"capabilities": "read:kv, write:kv, read:routes",
+					"hooks": "route:request",
+					"plugin_status": "alpha",
+					"install_command": "npm install @plugdash/clickcount",
+					"config_example": "import clickcount from \"@plugdash/clickcount\"\n// in emdash plugins array:\nclickcount({ trackReferrers: true, trackCountries: true })",
+					"wordpress_equivalent": "Pretty Links",
+					"companion_component": "",
+					"pairs": "shortlink",
+					"pairs_note": "clickcount only has something to count once shortlink exists. Install both for the full picture - the link and the traffic on it.",
+					"demo_caption": "Top 5 links this week, ranked by clicks, refreshed on every dashboard load.",
+					"setup_note": "Install it next to shortlink and every redirect starts getting counted immediately - no extra config, no separate tracking script."
+				}
 			}
 		],
 		"docs": [
