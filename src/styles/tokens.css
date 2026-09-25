@@ -32,6 +32,8 @@
   --plugdash-border: var(--border);
   --plugdash-surface: var(--surface);
   --plugdash-transition: 150ms ease;
+  --radius-sm: 2px;
+  --radius: 3px;
 
   --plugdash-meta-size: 0.875rem;
   --plugdash-meta-font: inherit;

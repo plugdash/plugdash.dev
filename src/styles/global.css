@@ -42,18 +42,32 @@ code, pre, kbd, samp {
 }
 
 pre {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 1rem;
+  border-radius: var(--radius);
+  padding: 2.25rem 1rem 1rem;
   overflow-x: auto;
   line-height: 1.5;
+}
+
+pre::before {
+  content: "";
+  position: absolute;
+  top: 0.9rem;
+  left: 1rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  opacity: 0.35;
+  box-shadow: 16px 0 var(--muted), 32px 0 var(--muted);
 }
 
 :not(pre) > code {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   padding: 0.125rem 0.35rem;
 }
 
@@ -229,7 +243,7 @@ p {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 0.2rem 0.5rem;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   color: var(--muted);
 }
