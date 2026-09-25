@@ -327,6 +327,40 @@ export const plugins: Plugin[] = [
       { name: "headers", type: "object", description: "Optional extra headers" },
     ],
   },
+  {
+    slug: "socialcard",
+    name: "socialcard",
+    npmPackage: "@plugdash/socialcard",
+    tagline: "The preview image that decides whether anyone clicks the link at all.",
+    headline: "Generate the card before anyone hits share.",
+    sub: "socialcard renders an OG image with Satori the moment you publish, then converts it to PNG with resvg-js - both running inside the same Cloudflare Worker that serves the rest of your site. No screenshot service, no third-party API key, no cold start. Three templates ship built in, every colour and font is config, not code.",
+    homeCardCopy: "The OG image renders in the Worker, at publish, not through a screenshot service.",
+    githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/socialcard",
+    capabilities: "read:content, write:content, network:storage",
+    hooks: "content:afterSave",
+    status: "alpha",
+    installCommand: "npm install @plugdash/socialcard",
+    configExample:
+      'import socialcard from "@plugdash/socialcard"\n// in emdash plugins array:\nsocialcard({ template: "bold", background: "#0f172a" })',
+    wordpressEquivalent: "Social Image Generator",
+    companionComponent: "",
+    pairs: ["sharepost", "readtime"],
+    pairsNote:
+      "sharepost puts the link in front of people. socialcard is what they see before they click it - the two only work as a pair.",
+    demoCaption: "1200x630 PNG, rendered from Satori JSX, generated once per publish.",
+    setupNote:
+      "Publish a post and the card exists at metadata.ogImage before the deploy even finishes. Point your layout's og:image meta tag at it once and every future post inherits it.",
+    componentImport: "",
+    componentUsage: "",
+    props: [
+      { name: "template", type: '"default" | "minimal" | "bold"', default: '"default"', description: "Layout template" },
+      { name: "width", type: "number", default: "1200", description: "Image width in px" },
+      { name: "height", type: "number", default: "630", description: "Image height in px" },
+      { name: "background", type: "string", default: '"#0f172a"', description: "Background colour (hex)" },
+      { name: "foreground", type: "string", default: '"#f8fafc"', description: "Text colour (hex)" },
+      { name: "logo", type: "string", description: "Optional logo image URL" },
+    ],
+  },
 ];
 
 export function getPlugin(slug: string): Plugin | undefined {

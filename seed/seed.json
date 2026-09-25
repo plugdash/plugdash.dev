@@ -273,6 +273,31 @@
 					"demo_caption": "Publish in the admin and the build hook fires - four lines of config, no git push.",
 					"setup_note": "Paste your build hook URL from Cloudflare Pages, Netlify, or Vercel as an env var. Every publish rebuilds the site after that, debounced so a burst of edits fires one deploy, not ten."
 				}
+			},
+			{
+				"id": "plugin-socialcard",
+				"slug": "socialcard",
+				"status": "published",
+				"data": {
+					"name": "socialcard",
+					"tagline": "The preview image that decides whether anyone clicks the link at all.",
+					"headline": "Generate the card before anyone hits share.",
+					"sub": "socialcard renders an OG image with Satori the moment you publish, then converts it to PNG with resvg-js - both running inside the same Cloudflare Worker that serves the rest of your site. No screenshot service, no third-party API key, no cold start. Three templates ship built in, every colour and font is config, not code.",
+					"home_card_copy": "The OG image renders in the Worker, at publish, not through a screenshot service.",
+					"npm_package": "@plugdash/socialcard",
+					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/socialcard",
+					"capabilities": "read:content, write:content, network:storage",
+					"hooks": "content:afterSave",
+					"plugin_status": "alpha",
+					"install_command": "npm install @plugdash/socialcard",
+					"config_example": "import socialcard from \"@plugdash/socialcard\"\n// in emdash plugins array:\nsocialcard({ template: \"bold\", background: \"#0f172a\" })",
+					"wordpress_equivalent": "Social Image Generator",
+					"companion_component": "",
+					"pairs": "sharepost, readtime",
+					"pairs_note": "sharepost puts the link in front of people. socialcard is what they see before they click it - the two only work as a pair.",
+					"demo_caption": "1200x630 PNG, rendered from Satori JSX, generated once per publish.",
+					"setup_note": "Publish a post and the card exists at metadata.ogImage before the deploy even finishes. Point your layout's og:image meta tag at it once and every future post inherits it."
+				}
 			}
 		],
 		"docs": [
