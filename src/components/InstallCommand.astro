@@ -9,6 +9,7 @@ const id = `install-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
 <div class={`install-command ${className}`} data-install>
+  <span class="install-prompt" aria-hidden="true">$</span>
   <code id={id}>{command}</code>
   <button
     type="button"
@@ -33,15 +34,22 @@ const id = `install-${Math.random().toString(36).slice(2, 9)}`;
     display: inline-flex;
     align-items: stretch;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius);
     background: var(--surface);
     overflow: hidden;
     font-family: var(--plugdash-font-mono);
     font-size: 0.875rem;
     max-width: 100%;
   }
+  .install-prompt {
+    display: inline-flex;
+    align-items: center;
+    padding-left: 0.85rem;
+    color: var(--muted);
+    user-select: none;
+  }
   .install-command code {
-    padding: 0.55rem 0.85rem;
+    padding: 0.55rem 0.85rem 0.55rem 0.4rem;
     background: none;
     border: none;
     color: var(--text-strong);
