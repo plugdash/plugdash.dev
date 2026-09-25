@@ -17,7 +17,7 @@ const demoPost = buildDemoPost({
   slug: "index",
   title: "PlugDash - drop-in plugins for EmDash",
   url: "https://plugdash.dev",
-  message: "PlugDash: eight MIT-licensed plugins for EmDash. Reading time, shares, hearts, short links, callouts, table of contents, and publish-triggered deploys, all running on this page right now.",
+  message: "PlugDash: eight small, MIT-licensed plugins for EmDash - reading time, share buttons, hearts, short links, a table of contents, callouts, and a deploy hook that fires the moment you publish. Every one of them is running on this exact page.",
   heartCount: 4,
 });
 ---
@@ -29,9 +29,10 @@ const demoPost = buildDemoPost({
       The plugins your readers<br />notice without knowing why.
     </h1>
     <p class="hero-sub">
-      Eight drop-in plugins for EmDash: reading time, social sharing, hearts,
-      short links, table of contents, callouts, and publish-triggered deploys.
-      MIT licensed. All of them running live on this page.
+      Eight EmDash plugins that each do one small thing: reading time, share
+      buttons, a heart counter, short links, a table of contents, callouts,
+      and a build hook that fires the moment you publish. MIT licensed, and
+      every one of them is running on the page in front of you.
     </p>
     <div class="hero-cta">
       <a href="/plugins" class="btn btn-primary">Browse plugins</a>
@@ -59,7 +60,8 @@ const demoPost = buildDemoPost({
         <CopyLink post={demoPost} variant="pill" showUrl />
       </div>
       <p class="demo-caption">
-        This bar runs readtime, sharepost, heartpost, and shortlink. Nothing staged.
+        This bar is readtime, sharepost, heartpost, and shortlink, rendered the
+        same way they'd render on your site. No screenshot, no mockup.
       </p>
     </div>
   </section>
@@ -82,34 +84,38 @@ const demoPost = buildDemoPost({
   <section class="built container">
     <header class="built-header">
       <h2 class="grid-heading">Built to be kept</h2>
-      <p class="built-lede">Install it. Change it. Prove it on the page you are reading.</p>
+      <p class="built-lede">
+        You can install any of this in a minute, restyle every pixel with CSS
+        variables, and check our work just by looking at the page you're on -
+        it's running all eight plugins right now.
+      </p>
     </header>
     <div class="built-grid">
       <article class="built-card">
         <span class="built-num">01</span>
         <h3>Works on install</h3>
         <p>
-          Defaults built to look intentional, not like defaults. One import
-          in your layout, and readers see the result immediately. Nothing to
-          configure to ship something good.
+          Add one import to your layout and readers see the result right
+          away, no config file, no setup wizard, no options panel to work
+          through before anything looks right.
         </p>
       </article>
       <article class="built-card">
         <span class="built-num">02</span>
         <h3>Yours to change</h3>
         <p>
-          Every visual value is a CSS custom property. Variants for tone,
-          sizes for density, tokens that bend to your theme without
-          fighting it.
+          Every visual value is a CSS custom property, so tone, size, and
+          spacing all bend to your theme instead of fighting it. Swap the
+          variables and the plugin just looks like it was built for your site.
         </p>
       </article>
       <article class="built-card">
         <span class="built-num">03</span>
         <h3>Proven on this page</h3>
         <p>
-          This site runs EmDash with every PlugDash plugin installed.
-          The reading time, the share buttons, the heart - all running
-          live. If it ships here, it ships.
+          This site runs EmDash with every plugin installed. The reading
+          time above, the share buttons, the heart counter you might have
+          already clicked - none of it is a screenshot.
         </p>
       </article>
     </div>

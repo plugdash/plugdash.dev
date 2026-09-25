@@ -10,7 +10,7 @@ interface Props {
 const { title, description, ogImage } = Astro.props;
 const siteTitle = title.includes("plugdash") ? title : `${title} - plugdash`;
 const desc = description ??
-  "Eight MIT-licensed plugins for EmDash. Reading time, sharing, hearts, short links, table of contents, callouts, and publish-triggered deploys - all running live on plugdash.dev.";
+  "Eight small, MIT-licensed plugins for EmDash: reading time, sharing, hearts, short links, table of contents, callouts, and publish-triggered deploys. All of them running live on plugdash.dev.";
 ---
 
 <!doctype html>

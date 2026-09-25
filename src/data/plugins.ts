@@ -89,7 +89,7 @@ export const plugins: Plugin[] = [
     name: "callout",
     npmPackage: "@plugdash/callout",
     tagline: "The block every technical writer reaches for, and most CMSes never ship.",
-    headline: "A block worth reading, not skimming past.",
+    headline: "The block readers actually stop and read.",
     sub: "callout registers a native Portable Text block for info, warning, tip, and danger. It shows up in the EmDash editor like any other block, and Callout.astro ships with defaults that look designed, not bolted on. Every visual value is a CSS custom property.",
     homeCardCopy: "Info, warning, tip, danger - four callouts, one native editor block.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/callout",
@@ -122,8 +122,8 @@ export const plugins: Plugin[] = [
     slug: "sharepost",
     name: "sharepost",
     npmPackage: "@plugdash/sharepost",
-    tagline: "If a reader wants to share your post, that should take one click, not a workaround.",
-    headline: "Make sharing the obvious next move, not a detour.",
+    tagline: "If a reader wants to share your post, that should take one click.",
+    headline: "Make sharing the obvious next move.",
     sub: "sharepost generates correct share URLs for X, LinkedIn, WhatsApp, Bluesky, and email on every publish, then renders them as circular icon buttons. No JavaScript SDKs, no tracking pixels, no 200KB of vendor script for five links.",
     homeCardCopy: "Correct share URLs for five platforms, computed once, at publish.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/sharepost",
@@ -158,7 +158,7 @@ export const plugins: Plugin[] = [
     name: "heartpost",
     npmPackage: "@plugdash/heartpost",
     tagline: "The lightest thing a reader can do to tell you they liked it.",
-    headline: "One click. No account. Counted anyway.",
+    headline: "One click, no account, and it still counts.",
     sub: "heartpost stores a heart count in Cloudflare KV and updates it with an optimistic client-side increment, so the number moves before the network round-trip finishes. HeartButton.astro ships in four variants, fully restyled through CSS custom properties.",
     homeCardCopy: "One click, no account, counted in KV.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/heartpost",
@@ -172,7 +172,7 @@ export const plugins: Plugin[] = [
     pairs: ["sharepost", "readtime"],
     pairsNote:
       "a heart is a quiet yes. A share is a loud one. Run both and you can tell which post readers loved versus which one they wanted other people to see.",
-    demoCaption: "Click. Count moves instantly. KV confirms behind it.",
+    demoCaption: "The count moves the instant you click, before KV even confirms it.",
     setupNote:
       "Every post gets a heart count the moment you add the component. No account system to stand up, no cookies to manage.",
     componentImport: 'import HeartButton from "@plugdash/heartpost/HeartButton.astro"',
@@ -206,7 +206,7 @@ export const plugins: Plugin[] = [
     pairs: ["sharepost", "heartpost"],
     pairsNote:
       "shortlink, sharepost, and heartpost are the three things a reader can do without leaving the page. Most posts ship all three.",
-    demoCaption: "Click to copy. Green check confirms it. Gone in two seconds.",
+    demoCaption: "Click to copy - a green check confirms it, then fades after two seconds.",
     setupNote:
       "Every published post gets a short URL automatically, no separate step. The component handles the clipboard copy.",
     componentImport: 'import CopyLink from "@plugdash/shortlink/CopyLink.astro"',
@@ -260,7 +260,7 @@ export const plugins: Plugin[] = [
     name: "engage",
     npmPackage: "@plugdash/engage",
     tagline: "heartpost, sharepost, and shortlink, wired into one component.",
-    headline: "Three plugins. One import. One row underneath every post.",
+    headline: "Three plugins, one import, one row under every post.",
     sub: "engage composes heartpost, sharepost, and shortlink into a single EngagementBar.astro. Install the three underlying plugins, then import the bundle instead of stitching the components together yourself.",
     homeCardCopy: "One row under every post: heart, share, copy link.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/engage",
@@ -298,7 +298,7 @@ export const plugins: Plugin[] = [
     name: "autobuild",
     npmPackage: "@plugdash/autobuild",
     tagline: "Hit publish in the admin. The deploy is already running.",
-    headline: "Publish in the admin. Live in under a minute.",
+    headline: "The admin panel that also deploys your site.",
     sub: "autobuild fires your Cloudflare Pages, Netlify, or Vercel build hook on every publish - no git push, no manual redeploy. It debounces for five seconds, so a batch of edits triggers one deploy instead of ten.",
     homeCardCopy: "The plugin that makes the admin the thing that ships the site.",
     githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/autobuild",
@@ -313,7 +313,7 @@ export const plugins: Plugin[] = [
     pairs: ["readtime", "tocgen"],
     pairsNote:
       "readtime and tocgen write metadata on publish. autobuild is what gets that metadata onto the live site within a minute, instead of at the next scheduled build.",
-    demoCaption: "Publish. Build hook fires. Deploy starts. Four lines of config.",
+    demoCaption: "Publish in the admin and the build hook fires - four lines of config, no git push.",
     setupNote:
       "Paste your build hook URL from Cloudflare Pages, Netlify, or Vercel as an env var. Every publish rebuilds the site after that, debounced so a burst of edits fires one deploy, not ten.",
     componentImport: "",
