@@ -448,6 +448,31 @@
 					"demo_caption": "Tags, feature images, and SEO fields carried over, not just the post body.",
 					"setup_note": "Export the full site from Ghost's admin settings, then run the import against the JSON file. Both Ghost v4 and v5 exports work, including the Lexical editor format v5 introduced."
 				}
+			},
+			{
+				"id": "plugin-enrichkit",
+				"slug": "enrichkit",
+				"status": "published",
+				"data": {
+					"name": "enrichkit",
+					"tagline": "The tags and summary you'd write yourself, if publishing didn't already take long enough.",
+					"headline": "One API call at publish, five things you didn't have to write.",
+					"sub": "enrichkit sends the post body to Claude or GPT once per publish and asks for a summary, key topics, auto-tags, and a tweet draft in one JSON response - you pick which of the five to turn on. A missing API key or a bad response never blocks the publish; it just skips the enrichment and logs why.",
+					"home_card_copy": "Summary, topics, tags, and a tweet draft - one LLM call, every publish.",
+					"npm_package": "@plugdash/enrichkit",
+					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/enrichkit",
+					"capabilities": "read:content, write:content, network:api.anthropic.com, network:api.openai.com",
+					"hooks": "content:afterSave",
+					"plugin_status": "alpha",
+					"install_command": "npm install @plugdash/enrichkit",
+					"config_example": "import enrichkit from \"@plugdash/enrichkit\"\n// in emdash plugins array:\nenrichkit({ provider: \"anthropic\", apiKey: process.env.ANTHROPIC_API_KEY })",
+					"wordpress_equivalent": "",
+					"companion_component": "",
+					"pairs": "sharepost, socialcard",
+					"pairs_note": "enrichkit writes the tweet draft. socialcard renders the image next to it. Together they're what a shared link actually looks like.",
+					"demo_caption": "Summary, 4 topics, 6 tags, and a tweet draft, written for the post you just published.",
+					"setup_note": "Set your provider and API key once, then turn on whichever of the five enrichments you want. Posts under 100 words are skipped automatically - there's nothing there to enrich."
+				}
 			}
 		],
 		"docs": [

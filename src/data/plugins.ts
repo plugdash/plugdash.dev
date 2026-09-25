@@ -549,6 +549,42 @@ export const plugins: Plugin[] = [
       { name: "preserveSlugs", type: "boolean", default: "true", description: "Keep the original Ghost slug" },
     ],
   },
+  {
+    slug: "enrichkit",
+    name: "enrichkit",
+    npmPackage: "@plugdash/enrichkit",
+    tagline: "The tags and summary you'd write yourself, if publishing didn't already take long enough.",
+    headline: "One API call at publish, five things you didn't have to write.",
+    sub: "enrichkit sends the post body to Claude or GPT once per publish and asks for a summary, key topics, auto-tags, and a tweet draft in one JSON response - you pick which of the five to turn on. A missing API key or a bad response never blocks the publish; it just skips the enrichment and logs why.",
+    homeCardCopy: "Summary, topics, tags, and a tweet draft - one LLM call, every publish.",
+    githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/enrichkit",
+    capabilities: "read:content, write:content, network:api.anthropic.com, network:api.openai.com",
+    hooks: "content:afterSave",
+    status: "alpha",
+    installCommand: "npm install @plugdash/enrichkit",
+    configExample:
+      'import enrichkit from "@plugdash/enrichkit"\n// in emdash plugins array:\nenrichkit({ provider: "anthropic", apiKey: process.env.ANTHROPIC_API_KEY })',
+    wordpressEquivalent: "",
+    companionComponent: "",
+    pairs: ["sharepost", "socialcard"],
+    pairsNote:
+      "enrichkit writes the tweet draft. socialcard renders the image next to it. Together they're what a shared link actually looks like.",
+    demoCaption: "Summary, 4 topics, 6 tags, and a tweet draft, written for the post you just published.",
+    setupNote:
+      "Set your provider and API key once, then turn on whichever of the five enrichments you want. Posts under 100 words are skipped automatically - there's nothing there to enrich.",
+    componentImport: "",
+    componentUsage: "",
+    props: [
+      { name: "provider", type: '"anthropic" | "openai"', description: "Required - which LLM provider to call" },
+      { name: "apiKey", type: "string", description: "Required - API key, from env" },
+      { name: "model", type: "string", default: '"claude-haiku-4-5"', description: "Model to use" },
+      { name: "enrichments.summary", type: "boolean", default: "true", description: "2-3 sentence summary" },
+      { name: "enrichments.keyTopics", type: "boolean", default: "true", description: "3-5 key topics" },
+      { name: "enrichments.autoTags", type: "boolean", default: "true", description: "3-8 suggested tags" },
+      { name: "enrichments.tweetDraft", type: "boolean", default: "true", description: "Draft tweet under 280 chars" },
+      { name: "enrichments.readingLevel", type: "boolean", default: "false", description: "Estimated grade reading level" },
+    ],
+  },
 ];
 
 export function getPlugin(slug: string): Plugin | undefined {
