@@ -34,7 +34,7 @@ const { name, tagline, status = "alpha", installCommand, slug, class: className 
   .plugin-card {
     position: relative;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius);
     padding: 1.25rem;
     background: var(--surface);
     transition: border-color var(--plugdash-transition);
@@ -62,7 +62,7 @@ const { name, tagline, status = "alpha", installCommand, slug, class: className 
     justify-content: center;
     width: 32px;
     height: 32px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     background: var(--border);
     color: var(--text-strong);
     flex-shrink: 0;
@@ -81,7 +81,7 @@ const { name, tagline, status = "alpha", installCommand, slug, class: className 
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: 8px;
+    border-radius: var(--radius);
   }
   .plugin-card-name a:hover {
     color: var(--accent);

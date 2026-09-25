@@ -11,7 +11,7 @@ html {
   color: var(--text);
   font-family: var(--plugdash-font-body);
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -42,10 +42,21 @@ code, pre, kbd, samp {
 }
 
 pre {
-  background: var(--surface);
+  position: relative;
+  background-color: var(--surface);
+  background-image:
+    radial-gradient(circle, rgb(from var(--muted) r g b / 0.35) 4px, transparent 4px),
+    radial-gradient(circle, rgb(from var(--muted) r g b / 0.35) 4px, transparent 4px),
+    radial-gradient(circle, rgb(from var(--muted) r g b / 0.35) 4px, transparent 4px);
+  background-repeat: no-repeat;
+  background-position:
+    1rem 0.9rem,
+    calc(1rem + 16px) 0.9rem,
+    calc(1rem + 32px) 0.9rem;
+  background-size: 8px 8px;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 1rem;
+  border-radius: var(--radius);
+  padding: 2.25rem 1rem 1rem;
   overflow-x: auto;
   line-height: 1.5;
 }
@@ -53,7 +64,7 @@ pre {
 :not(pre) > code {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   padding: 0.125rem 0.35rem;
 }
 
@@ -61,11 +72,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--plugdash-font-ui);
   font-weight: 600;
   line-height: 1.2;
-  letter-spacing: -0.01em;
   color: var(--text-strong);
 }
 
-h1 { font-size: 2.5rem; letter-spacing: -0.02em; }
+h1 { font-size: 2.5rem; }
 h2 { font-size: 1.75rem; }
 h3 { font-size: 1.25rem; }
 
@@ -76,6 +86,23 @@ p {
 ::selection {
   background: var(--border);
   color: var(--text-strong);
+}
+
+.cursor {
+  display: inline-block;
+  margin-left: 0.05em;
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+  }
 }
 
 /* Replace the middot separator in ReadingTime with a bullet (•) to
@@ -230,7 +257,7 @@ p {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 0.2rem 0.5rem;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   color: var(--muted);
 }
