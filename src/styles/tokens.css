@@ -29,7 +29,7 @@
 
 /* plugdash component tokens - consumed by all @plugdash/* companion components */
 :root {
-  --plugdash-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --plugdash-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --plugdash-font-ui: var(--plugdash-font-mono);
   --plugdash-font-body: var(--plugdash-font-mono);
   --plugdash-muted: var(--muted);
