@@ -517,6 +517,38 @@ export const plugins: Plugin[] = [
       { name: "previewWords", type: "number", default: "100", description: "Words shown in preview mode" },
     ],
   },
+  {
+    slug: "fromghost",
+    name: "fromghost",
+    npmPackage: "@plugdash/fromghost",
+    tagline: "The export Ghost hands you on the way out, rebuilt here instead of abandoned in a JSON file.",
+    headline: "Bring the archive. Leave Ghost behind.",
+    sub: "fromghost reads a Ghost JSON export end to end - posts, tags, authors, feature images - and rebuilds each one as EmDash content. HTML converts to Portable Text with the same converter fromsubstack uses, tags resolve through the export's join tables, and SEO title and description carry over instead of getting reset to blank.",
+    homeCardCopy: "One Ghost JSON export in, full posts with tags and images out.",
+    githubUrl: "https://github.com/plugdash/plugdash/tree/main/packages/fromghost",
+    capabilities: "write:content, write:media, read:schema",
+    hooks: "none - runs as a one-time CLI import",
+    status: "beta",
+    installCommand: "npm install @plugdash/fromghost",
+    configExample: '// runs via CLI, not the plugins array:\nnpx emdash plugin fromghost --file export.json --status draft',
+    wordpressEquivalent: "",
+    companionComponent: "",
+    pairs: ["fromsubstack", "redirects"],
+    pairsNote:
+      "same shape as fromsubstack - an archive moving in from somewhere else, and redirects making sure the old links still resolve once it has.",
+    demoCaption: "Tags, feature images, and SEO fields carried over, not just the post body.",
+    setupNote:
+      "Export the full site from Ghost's admin settings, then run the import against the JSON file. Both Ghost v4 and v5 exports work, including the Lexical editor format v5 introduced.",
+    componentImport: "",
+    componentUsage: "",
+    props: [
+      { name: "targetCollection", type: "string", default: '"posts"', description: "Collection to import into" },
+      { name: "status", type: '"draft" | "published"', default: '"draft"', description: "Status assigned to imported posts" },
+      { name: "importImages", type: "boolean", default: "true", description: "Download and re-host the feature image" },
+      { name: "importTags", type: "boolean", default: "true", description: "Import tags as EmDash taxonomy" },
+      { name: "preserveSlugs", type: "boolean", default: "true", description: "Keep the original Ghost slug" },
+    ],
+  },
 ];
 
 export function getPlugin(slug: string): Plugin | undefined {

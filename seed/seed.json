@@ -423,6 +423,31 @@
 					"demo_caption": "No receipt, no read - a 402 response with the price attached, resolved the moment payment lands.",
 					"setup_note": "Set your wallet address once in the plugin config, then flip 'require payment' on any post from its Monetisation panel in the admin. Free posts stay free until you say otherwise."
 				}
+			},
+			{
+				"id": "plugin-fromghost",
+				"slug": "fromghost",
+				"status": "published",
+				"data": {
+					"name": "fromghost",
+					"tagline": "The export Ghost hands you on the way out, rebuilt here instead of abandoned in a JSON file.",
+					"headline": "Bring the archive. Leave Ghost behind.",
+					"sub": "fromghost reads a Ghost JSON export end to end - posts, tags, authors, feature images - and rebuilds each one as EmDash content. HTML converts to Portable Text with the same converter fromsubstack uses, tags resolve through the export's join tables, and SEO title and description carry over instead of getting reset to blank.",
+					"home_card_copy": "One Ghost JSON export in, full posts with tags and images out.",
+					"npm_package": "@plugdash/fromghost",
+					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/fromghost",
+					"capabilities": "write:content, write:media, read:schema",
+					"hooks": "none - runs as a one-time CLI import",
+					"plugin_status": "beta",
+					"install_command": "npm install @plugdash/fromghost",
+					"config_example": "// runs via CLI, not the plugins array:\nnpx emdash plugin fromghost --file export.json --status draft",
+					"wordpress_equivalent": "",
+					"companion_component": "",
+					"pairs": "fromsubstack, redirects",
+					"pairs_note": "same shape as fromsubstack - an archive moving in from somewhere else, and redirects making sure the old links still resolve once it has.",
+					"demo_caption": "Tags, feature images, and SEO fields carried over, not just the post body.",
+					"setup_note": "Export the full site from Ghost's admin settings, then run the import against the JSON file. Both Ghost v4 and v5 exports work, including the Lexical editor format v5 introduced."
+				}
 			}
 		],
 		"docs": [
