@@ -47,7 +47,9 @@ export async function resolvePlugins(): Promise<Plugin[]> {
 			})
 			.filter(Boolean) as Plugin[];
 		if (merged.length === 0) return sortedStaticPlugins();
-		return sortMerged(merged);
+		// Plugins added after the collection was seeded still get listed.
+		const missing = staticPlugins.filter((p) => !merged.some((m) => m.slug === p.slug));
+		return sortMerged([...merged, ...missing]);
 	} catch {
 		return sortedStaticPlugins();
 	}
@@ -61,22 +63,21 @@ export async function resolveDocs(): Promise<StaticDocEntry[]> {
 	try {
 		const { entries, error } = await getEmDashCollection("docs");
 		if (error || !entries || entries.length === 0) return staticDocs;
-		return entries
-			.map((entry) => {
-				const data = entry.data as unknown as Record<string, unknown>;
-				const slug = (data.slug as string | undefined) ?? entry.id;
-				const fallback = staticDocs.find((d) => d.slug === slug);
-				if (!fallback) return undefined;
-				return {
-					slug,
-					title: (data.title as string | undefined) ?? fallback.title,
-					section: ((data.section as string | undefined) ?? fallback.section) as StaticDocEntry["section"],
-					href: `/docs/${slug}`,
-					summary: (data.summary as string | undefined) ?? fallback.summary,
-					metadata: (data.metadata as Record<string, unknown> | undefined) ?? undefined,
-				} satisfies StaticDocEntry;
-			})
-			.filter(Boolean) as StaticDocEntry[];
+		// Walk the static list so docs added after seeding still show, in order,
+		// with admin edits layered on top where an entry exists.
+		return staticDocs.map((fallback) => {
+			const entry = entries.find((e) => ((e.data as unknown as Record<string, unknown>).slug ?? e.id) === fallback.slug);
+			if (!entry) return fallback;
+			const data = entry.data as unknown as Record<string, unknown>;
+			return {
+				slug: fallback.slug,
+				title: (data.title as string | undefined) ?? fallback.title,
+				section: ((data.section as string | undefined) ?? fallback.section) as StaticDocEntry["section"],
+				href: `/docs/${fallback.slug}`,
+				summary: (data.summary as string | undefined) ?? fallback.summary,
+				metadata: (data.metadata as Record<string, unknown> | undefined) ?? undefined,
+			} satisfies StaticDocEntry;
+		});
 	} catch {
 		return staticDocs;
 	}
