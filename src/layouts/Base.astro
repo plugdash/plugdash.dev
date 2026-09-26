@@ -36,13 +36,14 @@ const desc = description ??
     />
 
     <script is:inline>
-      // Apply saved theme before paint to avoid flash. Default is dark (no attribute).
+      // Apply saved theme before paint to avoid flash. Default is dark, set
+      // explicitly so components that follow prefers-color-scheme (codeblock)
+      // don't go light on a light-mode OS.
+      let theme = "dark";
       try {
-        const saved = localStorage.getItem("plugdash-theme");
-        if (saved === "light") {
-          document.documentElement.setAttribute("data-theme", "light");
-        }
+        if (localStorage.getItem("plugdash-theme") === "light") theme = "light";
       } catch (e) {}
+      document.documentElement.setAttribute("data-theme", theme);
     </script>
   </head>
   <body>
@@ -108,11 +109,7 @@ const desc = description ??
         const html = document.documentElement;
         btn.addEventListener("click", () => {
           const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
-          if (next === "light") {
-            html.setAttribute("data-theme", "light");
-          } else {
-            html.removeAttribute("data-theme");
-          }
+          html.setAttribute("data-theme", next);
           try {
             localStorage.setItem("plugdash-theme", next);
           } catch (e) {}
