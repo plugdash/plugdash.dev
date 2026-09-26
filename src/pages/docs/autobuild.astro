@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
 import { getPlugin } from "../../data/plugins";
@@ -48,8 +49,7 @@ const tocEntries = [
     array of the <code>emdash()</code> integration - the one that sits
     inside Astro's top-level <code>integrations</code> array:
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { autobuildPlugin } from "@plugdash/autobuild"
 
@@ -64,7 +64,7 @@ export default defineConfig({
       ],
     }),
   ],
-})`}</code></pre>
+})`} />
   <p>
     Get the hook URL from your Cloudflare Pages project under
     <strong>Settings -> Builds & deployments -> Deploy hooks</strong>.

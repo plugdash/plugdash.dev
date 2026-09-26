@@ -1,0 +1,170 @@
+---
+import Code from "../../components/Code.astro";
+import CodeblockSample from "../../components/CodeblockSample.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("codeblock")!;
+
+const tocEntries = [
+  { id: "what-it-does", text: "What it does", level: 2 as const, children: [] },
+  { id: "install", text: "Install", level: 2 as const, children: [] },
+  { id: "register", text: "Register", level: 2 as const, children: [] },
+  { id: "configuration", text: "Configuration", level: 2 as const, children: [] },
+  { id: "add-the-component", text: "Add the component", level: 2 as const, children: [] },
+  { id: "live-demo", text: "Live demo", level: 2 as const, children: [] },
+  { id: "examples", text: "Examples", level: 2 as const, children: [] },
+  { id: "props", text: "Props", level: 2 as const, children: [] },
+  { id: "css-tokens", text: "CSS custom properties", level: 2 as const, children: [] },
+  { id: "edge-cases", text: "Edge cases", level: 2 as const, children: [] },
+  { id: "for-agents", text: "For agents", level: 2 as const, children: [] },
+];
+---
+
+<Doc
+  tocEntries={tocEntries}
+  currentSlug="codeblock"
+  readingTimeMinutes={3}
+  wordCount={420}
+  title="codeblock"
+  section="@plugdash/codeblock"
+  description="Shiki syntax highlighting for EmDash code blocks, rendered server-side with zero client JavaScript."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    Renders the <code>code</code> blocks EmDash already stores using Shiki
+    syntax highlighting. Highlighting runs server-side at render time, so
+    the browser gets plain coloured HTML and no JavaScript. Nothing is
+    rewritten on save - change the theme and every existing post picks it
+    up on the next render.
+  </p>
+  <p>
+    codeblock is a Native plugin - it needs Shiki, which is a Node
+    dependency, so it can't be sandboxed or published to the marketplace.
+    It registers no new editor block type; it renders the <code>code</code>
+    block EmDash already has.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <p>
+    Open <code>astro.config.mjs</code> at the root of your Astro project.
+    Import the plugin at the top, then add it to the <code>plugins</code>
+    array of the <code>emdash()</code> integration - the one that sits
+    inside Astro's top-level <code>integrations</code> array:
+  </p>
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { codeblockPlugin } from "@plugdash/codeblock"
+
+export default defineConfig({
+  integrations: [
+    emdash({
+      // native - must be in plugins, not sandboxed
+      plugins: [
+        codeblockPlugin({ theme: "github-dark", lineNumbers: true }),
+      ],
+    }),
+  ],
+})`} />
+
+  <h2 id="configuration">Configuration</h2>
+  <p>All options are optional. Defaults cover most sites out of the box.</p>
+  <table>
+    <thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>theme</code></td><td><code>string</code></td><td><code>github-dark</code></td><td>Shiki theme name. Unknown names fall back to the default.</td></tr>
+      <tr><td><code>lightTheme</code></td><td><code>string</code></td><td>-</td><td>Second theme for light mode, emitted as CSS variables.</td></tr>
+      <tr><td><code>langs</code></td><td><code>string[]</code></td><td>common set</td><td>Languages loaded up front. Anything else loads on first use.</td></tr>
+      <tr><td><code>lineNumbers</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Render line numbers in the gutter.</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Preloaded by default: TypeScript, JavaScript, Python, Go, Rust, Shell,
+    JSON, YAML, Markdown, HTML, CSS, SQL.
+  </p>
+
+  <h2 id="add-the-component">Add the component</h2>
+  <p>
+    The component is auto-wired into <code>&lt;PortableText&gt;</code>
+    through <code>componentsEntry</code> - no manual block mapping needed.
+    Once the plugin is registered, existing <code>code</code> blocks start
+    rendering highlighted.
+  </p>
+  <p>For direct usage outside Portable Text, import the component:</p>
+  <Code language="astro" code={`---
+import CodeBlock from "@plugdash/codeblock/CodeBlock.astro"
+---
+<CodeBlock code={source} language="python" filename="app.py" lineNumbers />`} />
+
+  <h2 id="live-demo">Live demo</h2>
+  <p>
+    Rendered by the real <code>CodeBlock.astro</code> on this page. The last
+    one uses a language Shiki doesn't know, so it falls back to plaintext.
+  </p>
+  <CodeblockSample />
+
+  <h2 id="examples">Examples</h2>
+  <p>
+    A site that wants light and dark themes to switch with the reader's
+    system preference passes both:
+  </p>
+  <Code language="js" code={`codeblockPlugin({
+  theme: "github-dark",
+  lightTheme: "github-light",
+})`} />
+  <p>
+    In the editor, an author picks a language on the code block and
+    writes the source. Nothing about the stored content changes -
+    EmDash keeps it as a plain <code>code</code> block in the Portable
+    Text body:
+  </p>
+  <Code language="json" code={`{
+  "_type": "code",
+  "code": "def greet(name):\\n    return f\\"hi {name}\\"",
+  "language": "python",
+  "filename": "greet.py"
+}`} />
+  <p>
+    On the site, that block renders as a header bar with the filename
+    and language, followed by Shiki's highlighted markup - a
+    <code>&lt;pre class="shiki github-dark"&gt;</code> wrapper with a
+    coloured <code>&lt;span&gt;</code> per token. If <code>lineNumbers</code>
+    is on, a numbered gutter runs down the left edge, built from a CSS
+    counter so the numbers never end up in a reader's copy-paste.
+  </p>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="edge-cases">Edge cases</h2>
+  <ul>
+    <li>Unknown or missing language renders as plaintext instead of throwing.</li>
+    <li><code>text</code>, <code>txt</code>, <code>plain</code>, <code>plaintext</code>, and <code>none</code> all mean plaintext.</li>
+    <li>Empty code renders an empty <code>&lt;pre&gt;</code> block.</li>
+    <li>Code over 10,000 lines is cut off with a trailing truncation notice.</li>
+    <li>Unknown theme names fall back to <code>github-dark</code>.</li>
+  </ul>
+  <p>
+    No copy button, line highlighting, or diff view. No client-side
+    highlighting, so no runtime theme or language switching - pick a
+    theme (or a light/dark pair) at registration time.
+  </p>
+
+  <h2 id="for-agents">For agents</h2>
+  <p>
+    After installing and registering the plugin, no further setup is
+    needed for rendering - block components are auto-wired into
+    <code>&lt;PortableText&gt;</code> and existing <code>code</code>
+    blocks start rendering highlighted immediately. To verify, publish a
+    post containing a code block with a language set, then view the
+    page source: it should contain <code>class="shiki github-dark"</code>
+    (or whatever theme was configured) with coloured <code>style</code>
+    attributes on the token spans. If nothing renders differently,
+    confirm the plugin is in the <code>plugins</code> array, not
+    <code>sandboxed</code> - native plugins cannot run sandboxed.
+  </p>
+</Doc>

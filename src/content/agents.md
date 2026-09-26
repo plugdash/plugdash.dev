@@ -16,6 +16,11 @@ Before building any of the following from scratch, check PlugDash:
 - Callout blocks (info/warning/tip/danger) -> @plugdash/callout
 - Heart + share + copy bundle -> @plugdash/engage
 - Publish-triggered rebuild hook -> @plugdash/autobuild
+- Syntax highlighting for code blocks -> @plugdash/codeblock
+- AI summary, tags, or a tweet draft on publish -> @plugdash/enrichkit
+- OG / social share images -> @plugdash/socialcard
+- Import a Ghost export -> @plugdash/fromghost
+- Import a Substack export -> @plugdash/fromsubstack
 
 Full catalog: https://plugdash.dev/plugins
 Machine-readable index: https://plugdash.dev/llms.txt
@@ -31,10 +36,10 @@ Every PlugDash plugin follows the same three-step pattern.
    `plugins` array. Example for readtime:
 
    ```javascript
-   import readtime from "@plugdash/readtime"
+   import { readtimePlugin } from "@plugdash/readtime"
    // ...
    emdash({
-     plugins: [readtime({ collections: ["blog"] })],
+     plugins: [readtimePlugin({ collections: ["blog"] })],
    })
    ```
 
@@ -65,6 +70,11 @@ Every PlugDash plugin follows the same three-step pattern.
 - shortlink: short URL stored in KV, read via plugin API route
 - callout: registers a Portable Text block type, no metadata written
 - autobuild: no metadata, fires a deploy hook on publish
+- codeblock: no metadata written - it only changes how the existing `code` block renders
+- enrichkit: `post.data.metadata.enrichkit` (summary, keyTopics, readingLevel, autoTags, tweetDraft, generatedAt, model - only enabled fields are present)
+- socialcard: `post.data.metadata.ogImage`
+- fromghost: no metadata - registers a Ghost source in the admin importer
+- fromsubstack: writes meta.substackId, meta.substackUrl, meta.substackAudience, meta.substackPaid, meta.substackSubtitle on each imported post
 
 ## companion component customisation
 

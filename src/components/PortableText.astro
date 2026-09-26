@@ -6,6 +6,7 @@
  * portable text renderer upstream.
  */
 import Callout from "@plugdash/callout/Callout.astro";
+import Code from "./Code.astro";
 const Self = Astro.self;
 
 type Span = { _type: "span"; text: string; marks?: string[] };
@@ -108,7 +109,7 @@ function slugify(text: string): string {
   if (block._type === "code") {
     const c = block as CodeBlock;
     return (
-      <pre><code class={c.language ? `language-${c.language}` : ""}>{c.code ?? ""}</code></pre>
+      <Code code={c.code ?? ""} language={c.language} />
     );
   }
 

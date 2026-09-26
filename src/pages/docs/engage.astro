@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import EngagementBar from "@plugdash/engage/EngagementBar.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
@@ -45,7 +46,7 @@ const tocEntries = [
   <h2 id="install">Install</h2>
   <InstallCommand command={plugin.installCommand} />
   <p>Also install the three plugins it composes:</p>
-  <pre><code>npm install @plugdash/heartpost @plugdash/sharepost @plugdash/shortlink</code></pre>
+  <Code language="bash" code="npm install @plugdash/heartpost @plugdash/sharepost @plugdash/shortlink" />
 
   <h2 id="register">Register the three plugins (not engage)</h2>
   <p>
@@ -56,8 +57,7 @@ const tocEntries = [
     array. <strong>Do not import or register anything from
     <code>@plugdash/engage</code> here.</strong>
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { heartpostPlugin } from "@plugdash/heartpost"
 import { sharepostPlugin } from "@plugdash/sharepost"
@@ -73,13 +73,13 @@ export default defineConfig({
       ],
     }),
   ],
-})`}</code></pre>
+})`} />
 
   <h2 id="add-the-component">Add the component</h2>
-  <pre><code>{`---
+  <Code language="astro" code={`---
 import EngagementBar from "@plugdash/engage/EngagementBar.astro"
 ---
-<EngagementBar post={post} />`}</code></pre>
+<EngagementBar post={post} />`} />
 
   <h2 id="live-demo">Live demo</h2>
   <div class="demo-inline">

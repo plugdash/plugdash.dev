@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import CopyLink from "@plugdash/shortlink/CopyLink.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
@@ -37,8 +38,7 @@ const plugin = getPlugin("shortlink")!;
     array of the <code>emdash()</code> integration - the one that sits
     inside Astro's top-level <code>integrations</code> array:
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { shortlinkPlugin } from "@plugdash/shortlink"
 
@@ -50,13 +50,13 @@ export default defineConfig({
       ],
     }),
   ],
-})`}</code></pre>
+})`} />
 
   <h2 id="add-the-component">Add the component</h2>
-  <pre><code>{`---
+  <Code language="astro" code={`---
 import CopyLink from "@plugdash/shortlink/CopyLink.astro"
 ---
-<CopyLink post={post} />`}</code></pre>
+<CopyLink post={post} />`} />
 
   <h2 id="live-demo">Live demo</h2>
   <div class="demo-inline" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">

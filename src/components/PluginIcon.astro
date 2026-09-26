@@ -7,6 +7,11 @@ import LinkSimple from "phosphor-astro/LinkSimple.astro";
 import MegaphoneSimple from "phosphor-astro/MegaphoneSimple.astro";
 import RocketLaunch from "phosphor-astro/RocketLaunch.astro";
 import HandHeart from "phosphor-astro/HandHeart.astro";
+import CodeBlock from "phosphor-astro/CodeBlock.astro";
+import Sparkle from "phosphor-astro/Sparkle.astro";
+import ImageSquare from "phosphor-astro/ImageSquare.astro";
+import Ghost from "phosphor-astro/Ghost.astro";
+import Newspaper from "phosphor-astro/Newspaper.astro";
 
 interface Props {
   slug: string;
@@ -25,3 +30,8 @@ const { slug, size = 24, class: className } = Astro.props;
 {slug === "callout" && <MegaphoneSimple width={size} height={size} class={className} />}
 {slug === "autobuild" && <RocketLaunch width={size} height={size} class={className} />}
 {slug === "engage" && <HandHeart width={size} height={size} class={className} />}
+{slug === "codeblock" && <CodeBlock width={size} height={size} class={className} />}
+{slug === "enrichkit" && <Sparkle width={size} height={size} class={className} />}
+{slug === "socialcard" && <ImageSquare width={size} height={size} class={className} />}
+{slug === "fromghost" && <Ghost width={size} height={size} class={className} />}
+{slug === "fromsubstack" && <Newspaper width={size} height={size} class={className} />}

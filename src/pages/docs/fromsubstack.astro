@@ -1,0 +1,256 @@
+---
+import Code from "../../components/Code.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("fromsubstack")!;
+
+const tocEntries = [
+  { id: "what-it-does", text: "What it does", level: 2 as const, children: [] },
+  { id: "install", text: "Install", level: 2 as const, children: [] },
+  { id: "register", text: "Register", level: 2 as const, children: [] },
+  {
+    id: "import-your-substack",
+    text: "Import your Substack",
+    level: 2 as const,
+    children: [
+      { id: "download-your-export", text: "Download your export", level: 3 as const, children: [] },
+      { id: "upload-the-zip", text: "Upload the ZIP", level: 3 as const, children: [] },
+      { id: "review-the-analysis", text: "Review the analysis", level: 3 as const, children: [] },
+      { id: "run-the-import", text: "Run the import", level: 3 as const, children: [] },
+    ],
+  },
+  { id: "what-maps-to-what", text: "What maps to what", level: 2 as const, children: [] },
+  { id: "example", text: "A worked example", level: 2 as const, children: [] },
+  { id: "known-limitations", text: "Known limitations", level: 2 as const, children: [] },
+  { id: "props", text: "Options", level: 2 as const, children: [] },
+  { id: "for-agents", text: "For agents", level: 2 as const, children: [] },
+];
+---
+
+<Doc
+  tocEntries={tocEntries}
+  currentSlug="fromsubstack"
+  readingTimeMinutes={5}
+  wordCount={1050}
+  title="fromsubstack"
+  section="@plugdash/fromsubstack"
+  description="Import a Substack export into EmDash."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    Registers Substack as a source in EmDash's admin importer. Upload the
+    export ZIP you get from Substack's <strong>Settings &gt; Exports</strong>,
+    and fromsubstack reads <code>posts.csv</code> plus each post's HTML file,
+    converts the body to Portable Text, and reports images so EmDash's
+    importer can bring them in too.
+  </p>
+  <p>
+    It does not write any content itself. EmDash's importer calls into this
+    plugin to preview and stream posts, then does the actual creating. There
+    is no CLI step - the whole thing runs off the uploaded ZIP, in memory.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <p>
+    Open <code>astro.config.mjs</code> at the root of your Astro project.
+    Import the plugin at the top, then add it to the <code>plugins</code>
+    array of the <code>emdash()</code> integration - the one that sits
+    inside Astro's top-level <code>integrations</code> array:
+  </p>
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { fromsubstackPlugin } from "@plugdash/fromsubstack"
+
+export default defineConfig({
+  integrations: [
+    emdash({
+      plugins: [
+        fromsubstackPlugin({
+          targetCollection: "posts",
+          status: "draft",
+          importImages: true,
+          preserveSlugs: true,
+        }),
+      ],
+    }),
+  ],
+})`} />
+  <p>
+    Once registered, "Substack" appears as a source in EmDash's admin
+    importer. <code>status</code> only decides what happens to posts
+    Substack itself had marked published - a post that was still a draft on
+    Substack always imports as a draft, no matter what you set here. That
+    default is deliberate: review what came across before any of it goes
+    live.
+  </p>
+
+  <h2 id="import-your-substack">Import your Substack</h2>
+
+  <h3 id="download-your-export">Download your export</h3>
+  <p>
+    In Substack, go to <strong>Settings &gt; Exports</strong> and request an
+    export. Substack emails you a link to a ZIP containing
+    <code>posts.csv</code> (one row per post), an HTML file per post, and an
+    attachments folder of images that posts reference by relative path.
+  </p>
+
+  <h3 id="upload-the-zip">Upload the ZIP</h3>
+  <p>
+    Open EmDash's admin importer and pick "Substack" as the source. Upload
+    the ZIP exactly as Substack gave it to you - don't unzip it first, or
+    fromsubstack won't find <code>posts.csv</code> at the root.
+  </p>
+
+  <h3 id="review-the-analysis">Review the analysis</h3>
+  <p>
+    Before anything is imported, EmDash previews the export: how many posts
+    it found, how many distinct images they reference, and whether your
+    target collection's schema can take the import. A collection needs a
+    required <code>title</code> (string) and <code>body</code>
+    (portableText) field, plus optional <code>subtitle</code> (string) and
+    <code>published_at</code> (datetime) fields. If the schema doesn't fit,
+    the preview names which field is missing or the wrong type.
+  </p>
+
+  <h3 id="run-the-import">Run the import</h3>
+  <p>
+    Confirm the import and EmDash streams the posts in, pulling image bytes
+    for anything it decides to keep. Posts that were still drafts on
+    Substack come in as drafts regardless of the <code>status</code>
+    option; posts Substack had published come in as draft or published
+    depending on how you set it.
+  </p>
+
+  <h2 id="what-maps-to-what">What maps to what</h2>
+  <p>
+    For each <code>posts.csv</code> row that has a matching HTML file:
+  </p>
+  <table>
+    <thead>
+      <tr><th>Substack</th><th>EmDash</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>title</code></td><td><code>title</code></td></tr>
+      <tr><td><code>subtitle</code></td><td><code>excerpt</code>, and <code>meta.substackSubtitle</code></td></tr>
+      <tr><td><code>post_date</code> / <code>date</code> / <code>published_at</code></td><td><code>date</code></td></tr>
+      <tr><td>the post's HTML file</td><td><code>content</code>, converted to Portable Text</td></tr>
+      <tr><td>first image found in the body</td><td><code>featuredImage</code></td></tr>
+      <tr><td>slug from the post's URL (or the title, if <code>preserveSlugs: false</code>)</td><td><code>slug</code></td></tr>
+      <tr><td><code>post_id</code> / <code>id</code></td><td><code>sourceId</code>, and <code>meta.substackId</code></td></tr>
+      <tr><td><code>url</code></td><td><code>meta.substackUrl</code></td></tr>
+      <tr><td><code>audience</code> column</td><td><code>meta.substackAudience</code>, and <code>meta.substackPaid</code> (true unless it's <code>everyone</code>)</td></tr>
+      <tr><td><code>is_published: false</code></td><td>status forced to <code>draft</code>, regardless of config</td></tr>
+      <tr><td><code>is_published: true</code></td><td>status follows the <code>status</code> option (<code>draft</code> or <code>publish</code>)</td></tr>
+      <tr><td>type <code>podcast</code> or <code>thread</code></td><td>skipped - no article body to convert</td></tr>
+      <tr><td>row with no matching HTML file</td><td>skipped, with a warning</td></tr>
+      <tr><td>a slug that collides with one already imported</td><td>skipped, with a warning</td></tr>
+    </tbody>
+  </table>
+  <p>
+    The body conversion (headings, bold/italic, links, images, blockquotes,
+    fenced code with language detection, and lists) is handled by
+    <code>@plugdash/html-to-portable-text</code>. Tags it doesn't recognize
+    are unwrapped - their text stays, the tag doesn't.
+  </p>
+
+  <h2 id="example">A worked example</h2>
+  <p>Say <code>posts.csv</code> has this row:</p>
+  <Code language="csv" code={`post_id,post_date,is_published,type,audience,title,subtitle,url
+101,2024-01-05T10:00:00Z,true,newsletter,everyone,"Hello, World",The very first one,https://acme.substack.com/p/hello-world-jan`} />
+  <p>paired with <code>posts/101.hello-world-jan.html</code>:</p>
+  <Code language="html" code={`<h2>A heading</h2>
+<p>Plain text with <strong>bold</strong> and <em>italic</em> and
+<a href="https://example.com">a link</a>.</p>
+<img src="https://substackcdn.com/image/one.png" alt="One">`} />
+  <p>With the default options, that becomes an EmDash item shaped like this:</p>
+  <Code language="yaml" code={`sourceId: "101"
+postType: "post"
+slug: "hello-world-jan"
+title: "Hello, World"
+excerpt: "The very first one"
+date: 2024-01-05T10:00:00.000Z
+status: "draft"          // default status option is "draft"
+featuredImage: "https://substackcdn.com/image/one.png"
+content: [ /* h2 heading, a paragraph with bold/italic/link marks, an image block */ ]
+meta: {
+  substackId: "101",
+  substackUrl: "https://acme.substack.com/p/hello-world-jan",
+  substackAudience: "everyone",
+  substackPaid: false,
+  substackSubtitle: "The very first one"
+}`} />
+  <p>
+    A row with <code>audience: only_paid</code> or <code>founding</code>
+    comes across the same way, except <code>meta.substackPaid</code> is
+    <code>true</code>. EmDash has no native idea of a Substack paywall, so
+    that flag is left for you to act on - gate the post yourself, or pair
+    the import with something like <code>@plugdash/paygate</code> if you
+    need the paywall to carry over.
+  </p>
+
+  <h2 id="known-limitations">Known limitations</h2>
+  <ul>
+    <li>
+      Doesn't create content on its own - it's a source for EmDash's
+      importer, which does the actual writing.
+    </li>
+    <li>
+      Doesn't guarantee pixel-perfect HTML - unknown tags are unwrapped and
+      their text kept, not preserved as markup.
+    </li>
+    <li>
+      Doesn't resolve Substack's paywall into an EmDash paywall - paid and
+      free posts both import, just flagged differently in metadata.
+    </li>
+    <li>
+      Doesn't deduplicate against posts already in EmDash from an earlier,
+      different import - only duplicate slugs within the same export are
+      caught.
+    </li>
+    <li>
+      Doesn't download images during the preview step - it reports their
+      URLs, and only fetches bytes for the ones the importer decides to
+      keep.
+    </li>
+    <li>
+      Doesn't import podcast episodes or other non-article post types -
+      Substack's export lists them, but there's no body to convert.
+    </li>
+    <li>
+      Paid status reflects the export's <code>audience</code> column, not a
+      live check against Substack's subscriber list.
+    </li>
+  </ul>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="for-agents">For agents</h2>
+  <p>After installing @plugdash/fromsubstack and registering it in astro.config.mjs:</p>
+  <ol>
+    <li>Confirm the plugin shows up as "Substack" in the admin importer's source list.</li>
+    <li>Have the user download their export from Substack (Settings &gt; Exports) and upload the ZIP there.</li>
+    <li>
+      Review the analysis: post count, attachment count, and whether the
+      target collection's schema can take the import
+      (<code>schemaStatus.canImport</code>). If it's <code>false</code>,
+      <code>schemaStatus.reason</code> names the missing or mismatched
+      field.
+    </li>
+    <li>
+      Run the import. Metadata written per post: <code>meta.substackId</code>,
+      <code>meta.substackUrl</code>, <code>meta.substackAudience</code>,
+      <code>meta.substackPaid</code>, and <code>meta.substackSubtitle</code>.
+    </li>
+    <li>
+      If a post is missing after import, check the warnings the host
+      surfaced - a duplicate slug, a CSV row with no matching HTML file, or
+      a non-post type are all skipped rather than failing the whole import.
+    </li>
+  </ol>
+</Doc>

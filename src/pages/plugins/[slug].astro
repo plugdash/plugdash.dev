@@ -6,6 +6,10 @@ import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
 import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
 import CopyLink from "@plugdash/shortlink/CopyLink.astro";
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
+import CodeblockSample from "../../components/CodeblockSample.astro";
+import EnrichkitSample from "../../components/EnrichkitSample.astro";
+import Code from "../../components/Code.astro";
+import SocialcardSample from "../../components/SocialcardSample.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginCard from "../../components/PluginCard.astro";
 import { buildDemoPost } from "../../data/demoPost";
@@ -22,7 +26,7 @@ const allPlugins = await resolvePlugins();
 function eyebrowText(p: typeof plugin) {
   if (!p) return "";
   if (p.slug === "engage") return "The engagement bundle";
-  if (p.slug === "autobuild") return "Pure infrastructure";
+  if (!p.componentImport) return "Pure infrastructure";
   if (p.wordpressEquivalent) return `The EmDash alternative to ${p.wordpressEquivalent}`;
   return "Only on EmDash";
 }
@@ -148,24 +152,33 @@ const pagePost = buildDemoPost({
           </div>
         )}
         {p.slug === "sharepost" && (
-          <div class="demo-row">
-            <ShareButtons post={demoPost} variant="circle" />
-            <span class="demo-label">circle</span>
-            <ShareButtons post={demoPost} variant="pill" />
-            <span class="demo-label">pill</span>
+          <div class="demo-grid">
+            {(["circle", "pill", "ghost", "filled"] as const).map((v) => (
+              <div class="demo-cell">
+                <ShareButtons post={demoPost} variant={v} />
+                <span class="demo-label">{v}</span>
+              </div>
+            ))}
           </div>
         )}
         {p.slug === "heartpost" && (
-          <div class="demo-row">
-            <HeartButton post={demoPost} />
-            <span class="demo-label">one click, one count, no account</span>
+          <div class="demo-grid">
+            {(["circle", "pill", "ghost"] as const).map((v) => (
+              <div class="demo-cell">
+                <HeartButton post={demoPost} variant={v} />
+                <span class="demo-label">{v}</span>
+              </div>
+            ))}
           </div>
         )}
         {p.slug === "shortlink" && (
-          <div class="demo-row">
-            <CopyLink post={demoPost} variant="circle" />
-            <CopyLink post={demoPost} variant="pill" />
-            <CopyLink post={demoPost} variant="inline" />
+          <div class="demo-grid">
+            {(["circle", "pill", "ghost", "inline"] as const).map((v) => (
+              <div class="demo-cell">
+                <CopyLink post={demoPost} variant={v} />
+                <span class="demo-label">{v}</span>
+              </div>
+            ))}
           </div>
         )}
         {p.slug === "tocgen" && (
@@ -174,13 +187,18 @@ const pagePost = buildDemoPost({
           </div>
         )}
         {p.slug === "engage" && (
-          <div class="demo-engage">
-            <EngagementBar post={demoPost} attribution />
+          <div class="demo-stack">
+            {(["circle", "pill", "ghost"] as const).map((v) => (
+              <div class="demo-cell">
+                <EngagementBar post={demoPost} variant={v} attribution={v === "circle"} />
+                <span class="demo-label">{v}</span>
+              </div>
+            ))}
           </div>
         )}
         {p.slug === "autobuild" && (
           <div class="demo-sequence">
-            <pre><code>{p.configExample}</code></pre>
+            <Code language="js" code={p.configExample} />
             <div class="sequence">
               <span class="seq-step">publish in admin</span>
               <span class="seq-arrow">-&gt;</span>
@@ -192,8 +210,24 @@ const pagePost = buildDemoPost({
             </div>
           </div>
         )}
+        {p.slug === "codeblock" && <CodeblockSample />}
+        {p.slug === "enrichkit" && <EnrichkitSample />}
+        {p.slug === "socialcard" && <SocialcardSample />}
+        {!p.componentImport && !["autobuild", "enrichkit", "socialcard"].includes(p.slug) && p.configExample && (
+          <div class="demo-sequence">
+            <Code language="js" code={p.configExample} />
+          </div>
+        )}
         <p class="demo-caption">
-          {p.slug === "autobuild" ? "No UI. Pure infrastructure." : "This is the default. No configuration."}
+          {p.slug === "enrichkit"
+            ? "Sample output. No UI of its own - your theme decides how to show it."
+            : p.slug === "socialcard"
+              ? "Real output from renderCard, one card per built-in template."
+              : !p.componentImport
+              ? "No UI. Pure infrastructure."
+              : ["readtime", "sharepost", "heartpost", "shortlink", "engage"].includes(p.slug)
+                ? "Every variant. The first is the default, no configuration."
+                : "This is the default. No configuration."}
         </p>
       </div>
     </section>
@@ -203,13 +237,13 @@ const pagePost = buildDemoPost({
       <ol class="setup-steps">
         <li>
           <h3>Install and register</h3>
-          <pre><code>{p.installCommand}</code></pre>
-          {p.configExample && <pre><code>{p.configExample}</code></pre>}
+          <Code language="bash" code={p.installCommand} />
+          {p.configExample && <Code language="js" code={p.configExample} />}
         </li>
         {p.componentImport && (
           <li>
             <h3>Add to your layout</h3>
-            <pre><code>{`${p.componentImport}\n\n${p.componentUsage}`}</code></pre>
+            <Code language="astro" code={`${p.componentImport}\n\n${p.componentUsage}`} />
           </li>
         )}
       </ol>
@@ -221,9 +255,9 @@ const pagePost = buildDemoPost({
         <h2>It looks right. But it's yours to change.</h2>
       </summary>
       <div class="customise-body">
-        {p.slug === "autobuild" ? (
+        {!p.componentImport ? (
           <>
-            <h3>AutobuildConfig</h3>
+            <h3>Config options</h3>
             <table class="prop-table">
               <thead><tr><th>option</th><th>type</th><th>default</th><th>description</th></tr></thead>
               <tbody>
@@ -508,9 +542,7 @@ const pagePost = buildDemoPost({
   .demo-band .demo-content {
     text-align: center;
   }
-  .demo-variants,
-  .demo-row,
-  .demo-engage {
+  .demo-variants {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -523,6 +555,23 @@ const pagePost = buildDemoPost({
     text-align: left;
     max-width: 40rem;
     margin: 0 auto;
+  }
+  .demo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1.5rem 2rem;
+  }
+  .demo-stack {
+    display: grid;
+    justify-items: center;
+    gap: 1.5rem;
+  }
+  .demo-cell {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
   }
   .demo-label {
     color: var(--muted);
@@ -538,11 +587,8 @@ const pagePost = buildDemoPost({
     margin: 0 auto;
     text-align: left;
   }
-  .demo-sequence pre {
-    background: var(--bg);
-    border-color: var(--border);
-    color: var(--text);
-    margin-bottom: 1.5rem;
+  .demo-sequence :global(.plugdash-codeblock) {
+    margin: 0 0 1.5rem;
   }
   .sequence {
     display: flex;
@@ -588,7 +634,7 @@ const pagePost = buildDemoPost({
     margin-bottom: 0.5rem;
     font-weight: 500;
   }
-  .setup-steps pre {
+  .setup-steps :global(.plugdash-codeblock) {
     margin-block: 0.5rem;
   }
   .setup-note {

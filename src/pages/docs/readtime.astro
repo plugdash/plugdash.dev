@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
@@ -37,8 +38,7 @@ const plugin = getPlugin("readtime")!;
     array of the <code>emdash()</code> integration - the one that sits
     inside Astro's top-level <code>integrations</code> array:
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { readtimePlugin } from "@plugdash/readtime"
 
@@ -50,13 +50,13 @@ export default defineConfig({
       ],
     }),
   ],
-})`}</code></pre>
+})`} />
 
   <h2 id="add-the-component">Add the component</h2>
-  <pre><code>{`---
+  <Code language="astro" code={`---
 import ReadingTime from "@plugdash/readtime/ReadingTime.astro"
 ---
-<ReadingTime post={post} />`}</code></pre>
+<ReadingTime post={post} />`} />
 
   <h2 id="live-demo">Live demo</h2>
   <p>All four variants, rendered against a fixture post:</p>

@@ -20,6 +20,11 @@ export const docs: DocEntry[] = [
   { slug: "shortlink", title: "shortlink", href: "/docs/shortlink", section: "plugins" },
   { slug: "engage", title: "engage", href: "/docs/engage", section: "plugins" },
   { slug: "autobuild", title: "autobuild", href: "/docs/autobuild", section: "plugins" },
+  { slug: "codeblock", title: "codeblock", href: "/docs/codeblock", section: "plugins" },
+  { slug: "enrichkit", title: "enrichkit", href: "/docs/enrichkit", section: "plugins" },
+  { slug: "socialcard", title: "socialcard", href: "/docs/socialcard", section: "plugins" },
+  { slug: "fromghost", title: "fromghost", href: "/docs/fromghost", section: "plugins" },
+  { slug: "fromsubstack", title: "fromsubstack", href: "/docs/fromsubstack", section: "plugins" },
 ];
 
 export function docsBySection(): Record<string, DocEntry[]> {

@@ -1,0 +1,145 @@
+---
+import Code from "../../components/Code.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import SocialcardSample from "../../components/SocialcardSample.astro";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("socialcard")!;
+
+const tocEntries = [
+  { id: "what-it-does", text: "What it does", level: 2 as const, children: [] },
+  { id: "install", text: "Install", level: 2 as const, children: [] },
+  { id: "register", text: "Register", level: 2 as const, children: [] },
+  { id: "configuration", text: "Configuration", level: 2 as const, children: [] },
+  { id: "props", text: "Props", level: 2 as const, children: [] },
+  { id: "templates", text: "Templates", level: 2 as const, children: [] },
+  { id: "using-the-card", text: "Using the card in your layout", level: 2 as const, children: [] },
+  { id: "no-component", text: "No component", level: 2 as const, children: [] },
+  { id: "for-agents", text: "For agents", level: 2 as const, children: [] },
+];
+---
+
+<Doc
+  tocEntries={tocEntries}
+  currentSlug="socialcard"
+  readingTimeMinutes={3}
+  wordCount={470}
+  title="socialcard"
+  section="@plugdash/socialcard"
+  description="Open Graph share images for EmDash posts, generated on publish."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    On every publish, socialcard reads the post's title, author, and
+    publish date, renders one of three SVG card templates, uploads it,
+    and writes the URL to <code>post.data.metadata.ogImage</code>. Your
+    theme points <code>og:image</code> at that URL. No design tool, no
+    third-party image service.
+  </p>
+  <p>
+    It only runs for content with status <code>published</code>. Drafts,
+    archived, and scheduled content are skipped. A rendering or upload
+    error is logged, never thrown - a bad card is never a reason to fail
+    a publish.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <p>
+    Open <code>astro.config.mjs</code> at the root of your Astro project.
+    Import the plugin at the top, then add it to the <code>plugins</code>
+    array of the <code>emdash()</code> integration - the one that sits
+    inside Astro's top-level <code>integrations</code> array:
+  </p>
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { socialcardPlugin } from "@plugdash/socialcard"
+
+export default defineConfig({
+  integrations: [
+    emdash({
+      plugins: [
+        socialcardPlugin({
+          template: "bold",
+          background: "#111827",
+          foreground: "#fef3c7",
+        }),
+      ],
+    }),
+  ],
+})`} />
+
+  <h2 id="configuration">Configuration</h2>
+  <p>
+    Pass options at register time. They are seeded into the plugin's KV
+    store on install, and reseeded automatically whenever the config
+    object in <code>astro.config.mjs</code> changes - so editing the
+    file and restarting is enough, you don't need to touch the admin.
+  </p>
+  <PluginReference plugin={plugin} />
+
+  <h2 id="templates">Templates</h2>
+  <p>There are three built-in layouts:</p>
+  <ul>
+    <li><strong>default</strong> - large title, small author + date byline, subtle gradient over the background colour</li>
+    <li><strong>minimal</strong> - title only, on a clean paper background (the palette is inverted from the other two, so the defaults read as dark text on light paper)</li>
+    <li><strong>bold</strong> - large type set against a strong colour block down the left edge</li>
+  </ul>
+  <p>Here's the same post rendered with each one:</p>
+  <SocialcardSample />
+  <p>
+    Titles over 80 characters are truncated with an ellipsis. The byline
+    is author and date joined by a middle dot - if either is missing, that
+    half is dropped; if both are missing, the byline line is omitted
+    entirely rather than left blank.
+  </p>
+
+  <h2 id="using-the-card">Using the card in your layout</h2>
+  <p>
+    Read <code>metadata.ogImage</code> from the post and point your
+    meta tags at it:
+  </p>
+  <Code language="astro" code={`---
+const post = await emdash.content.get("posts", Astro.params.id)
+const { ogImage } = post.data.metadata ?? {}
+---
+
+{ogImage && <meta property="og:image" content={ogImage} />}
+{ogImage && <meta property="og:image:width" content="1200" />}
+{ogImage && <meta property="og:image:height" content="630" />}
+{ogImage && <meta name="twitter:image" content={ogImage} />}`} />
+  <p>
+    One real limitation worth knowing before you rely on this: the card
+    is an <code>image/svg+xml</code> file, not a PNG. Most OG consumers
+    accept SVG fine, but Twitter/X and Facebook specifically reject
+    <code>image/svg+xml</code> for <code>og:image</code> and
+    <code>twitter:image</code>. Treat this as an interim format until a
+    rasterised version ships - see the package README for why (a
+    sandboxed plugin bundle has no way to load the font binary or wasm
+    blob that a PNG renderer needs).
+  </p>
+
+  <h2 id="no-component">No component</h2>
+  <p>
+    socialcard has no companion Astro component. It is pure
+    infrastructure - it writes a URL to metadata and gets out of the
+    way. Wiring that URL into your <code>&lt;head&gt;</code> is a couple
+    of meta tags in your own layout, shown above.
+  </p>
+
+  <h2 id="for-agents">For agents</h2>
+  <p>
+    After installing and registering the plugin, publish a test post and
+    confirm <code>post.data.metadata.ogImage</code> is populated with a
+    URL ending in <code>.svg</code>. If it is not:
+  </p>
+  <ul>
+    <li>Check the post status is "published", not draft</li>
+    <li>Confirm the plugin declares <code>content:read</code>, <code>content:write</code>, and <code>media:write</code></li>
+    <li>Republish - existing posts saved before the plugin was installed need a new save to pick it up</li>
+  </ul>
+</Doc>

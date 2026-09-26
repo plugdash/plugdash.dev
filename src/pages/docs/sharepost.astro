@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
@@ -37,8 +38,7 @@ const plugin = getPlugin("sharepost")!;
     array of the <code>emdash()</code> integration - the one that sits
     inside Astro's top-level <code>integrations</code> array:
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { sharepostPlugin } from "@plugdash/sharepost"
 
@@ -50,15 +50,15 @@ export default defineConfig({
       ],
     }),
   ],
-})`}</code></pre>
+})`} />
   <p>The <code>via</code> option is your Twitter/X handle (without the @).
   It appears in the pre-filled tweet text.</p>
 
   <h2 id="add-the-component">Add the component</h2>
-  <pre><code>{`---
+  <Code language="astro" code={`---
 import ShareButtons from "@plugdash/sharepost/ShareButtons.astro"
 ---
-<ShareButtons post={post} />`}</code></pre>
+<ShareButtons post={post} />`} />
 
   <h2 id="live-demo">Live demo</h2>
   <div class="demo-inline">
