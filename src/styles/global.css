@@ -308,20 +308,17 @@ p {
   border-color: var(--accent) !important;
 }
 
-/* @plugdash/codeblock. Its light palette keys off the OS setting, so follow
-   the site's theme toggle here instead. */
+/* @plugdash/codeblock. Follows data-theme on <html>. */
 .plugdash-codeblock {
   border: 1px solid var(--border);
   --plugdash-codeblock-header-bg: var(--surface);
   --plugdash-codeblock-header-color: var(--muted);
 }
+/* No terminal dots here, the block has its own header. */
 .plugdash-codeblock .shiki {
   border: 0;
   border-radius: 0;
-}
-/* Undo the package's prefers-color-scheme rule while the site is dark. */
-:root:not([data-theme="light"]) .plugdash-codeblock--dual .shiki span {
-  background-color: transparent;
+  background-image: none;
 }
 [data-theme="light"] .plugdash-codeblock--dual .shiki,
 [data-theme="light"] .plugdash-codeblock--dual .shiki span {
