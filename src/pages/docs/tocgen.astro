@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
@@ -41,8 +42,7 @@ const plugin = getPlugin("tocgen")!;
     array of the <code>emdash()</code> integration - the one that sits
     inside Astro's top-level <code>integrations</code> array:
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { tocgenPlugin } from "@plugdash/tocgen"
 
@@ -54,13 +54,13 @@ export default defineConfig({
       ],
     }),
   ],
-})`}</code></pre>
+})`} />
 
   <h2 id="add-the-component">Add the component</h2>
-  <pre><code>{`---
+  <Code language="astro" code={`---
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro"
 ---
-<TableOfContents post={post} sticky />`}</code></pre>
+<TableOfContents post={post} sticky />`} />
 
   <h2 id="live-demo">Live demo</h2>
   <div class="demo-inline">

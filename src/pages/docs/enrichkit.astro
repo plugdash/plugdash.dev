@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import EnrichkitSample from "../../components/EnrichkitSample.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
@@ -55,8 +56,7 @@ const tocEntries = [
     array of the <code>emdash()</code> integration - the one that sits
     inside Astro's top-level <code>integrations</code> array:
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { enrichkitPlugin } from "@plugdash/enrichkit"
 
@@ -71,7 +71,7 @@ export default defineConfig({
       ],
     }),
   ],
-})`}</code></pre>
+})`} />
   <p>
     Set <code>ANTHROPIC_API_KEY</code> (or <code>OPENAI_API_KEY</code> if
     you pick OpenAI) as a secret in your build environment. You can also
@@ -111,27 +111,27 @@ export default defineConfig({
     draft - reading level is off unless you turn it on. To also get the
     reading level and skip the tweet draft:
   </p>
-  <pre><code>{`enrichkitPlugin({
+  <Code language="js" code={`enrichkitPlugin({
   provider: "anthropic",
   apiKey: process.env.ANTHROPIC_API_KEY,
   enrichments: {
     readingLevel: true,
     tweetDraft: false,
   },
-})`}</code></pre>
+})`} />
   <p>Or run it against OpenAI instead, with an explicit model override:</p>
-  <pre><code>{`enrichkitPlugin({
+  <Code language="js" code={`enrichkitPlugin({
   provider: "openai",
   apiKey: process.env.OPENAI_API_KEY,
   model: "gpt-4o",
-})`}</code></pre>
+})`} />
 
   <h3 id="reading-the-metadata">Reading the metadata</h3>
   <p>
     Since there's no component, you read <code>post.data.metadata.enrichkit</code>
     directly wherever you want it - typically the post layout:
   </p>
-  <pre><code>{`---
+  <Code language="astro" code={`---
 const enrichkit = post.data.metadata?.enrichkit
 ---
 {enrichkit?.summary && <p class="summary">{enrichkit.summary}</p>}
@@ -139,7 +139,7 @@ const enrichkit = post.data.metadata?.enrichkit
   <ul class="tags">
     {enrichkit.autoTags.map((tag) => <li>{tag}</li>)}
   </ul>
-)}`}</code></pre>
+)}`} />
 
   <h3 id="sample-output">Sample output</h3>
   <EnrichkitSample />
@@ -147,14 +147,14 @@ const enrichkit = post.data.metadata?.enrichkit
     A published post with all default enrichments on ends up with this
     under <code>post.data.metadata.enrichkit</code>:
   </p>
-  <pre><code>{`{
+  <Code language="json" code={`{
   "summary": "A look at how static sites evolved from plain HTML to full content platforms, and what that means for publishers choosing a stack today.",
   "keyTopics": ["static site generators", "content management", "web performance"],
   "autoTags": ["ssg", "cms", "performance", "web-dev"],
   "tweetDraft": "Static sites grew up. Here's what changed and why it matters for your next project.",
   "generatedAt": "2026-04-01T12:00:00Z",
   "model": "claude-haiku-4-5"
-}`}</code></pre>
+}`} />
   <p>
     Only fields that were enabled and that passed validation get written -
     a field the model omitted, or returned in the wrong shape, is left out

@@ -23,9 +23,9 @@
 
 /* plugdash component tokens - consumed by all @plugdash/* companion components */
 :root {
-  --plugdash-font-ui: "Manrope", system-ui, sans-serif;
-  --plugdash-font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --plugdash-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --plugdash-font-ui: "Figtree", system-ui, sans-serif;
+  --plugdash-font-body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --plugdash-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --plugdash-muted: var(--muted);
   --plugdash-accent: var(--accent);
   --plugdash-accent-fg: var(--accent-fg);

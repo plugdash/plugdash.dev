@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import CalloutBlock from "@plugdash/callout/Callout.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
@@ -45,8 +46,7 @@ const plugin = getPlugin("callout")!;
     array of the <code>emdash()</code> integration - the one that sits
     inside Astro's top-level <code>integrations</code> array:
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { calloutPlugin } from "@plugdash/callout"
 
@@ -56,15 +56,15 @@ export default defineConfig({
       plugins: [calloutPlugin()],
     }),
   ],
-})`}</code></pre>
+})`} />
 
   <h2 id="add-the-component">Add the component</h2>
   <p>Use the component in your Portable Text renderer for blocks with
   <code>_type === "callout"</code>:</p>
-  <pre><code>{`import Callout from "@plugdash/callout/Callout.astro"
+  <Code language="astro" code={`import Callout from "@plugdash/callout/Callout.astro"
 <Callout variant="info" title="Heads up">
   <p>Content goes here.</p>
-</Callout>`}</code></pre>
+</Callout>`} />
 
   <h2 id="live-demo">Live demo</h2>
   <div class="demo-inline" style="display:flex;flex-direction:column;gap:0.75rem">

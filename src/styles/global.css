@@ -280,3 +280,24 @@ p {
   color: var(--accent);
   border-color: var(--accent) !important;
 }
+
+/* @plugdash/codeblock. Its light palette keys off the OS setting, so follow
+   the site's theme toggle here instead. */
+.plugdash-codeblock {
+  border: 1px solid var(--border);
+  --plugdash-codeblock-header-bg: var(--surface);
+  --plugdash-codeblock-header-color: var(--muted);
+}
+.plugdash-codeblock .shiki {
+  border: 0;
+  border-radius: 0;
+}
+/* Undo the package's prefers-color-scheme rule while the site is dark. */
+:root:not([data-theme="light"]) .plugdash-codeblock--dual .shiki span {
+  background-color: transparent;
+}
+[data-theme="light"] .plugdash-codeblock--dual .shiki,
+[data-theme="light"] .plugdash-codeblock--dual .shiki span {
+  color: var(--shiki-light) !important;
+  background-color: var(--shiki-light-bg) !important;
+}

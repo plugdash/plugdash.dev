@@ -8,6 +8,7 @@ import CopyLink from "@plugdash/shortlink/CopyLink.astro";
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
 import CodeblockSample from "../../components/CodeblockSample.astro";
 import EnrichkitSample from "../../components/EnrichkitSample.astro";
+import Code from "../../components/Code.astro";
 import SocialcardSample from "../../components/SocialcardSample.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginCard from "../../components/PluginCard.astro";
@@ -183,7 +184,7 @@ const pagePost = buildDemoPost({
         )}
         {p.slug === "autobuild" && (
           <div class="demo-sequence">
-            <pre><code>{p.configExample}</code></pre>
+            <Code language="js" code={p.configExample} />
             <div class="sequence">
               <span class="seq-step">publish in admin</span>
               <span class="seq-arrow">-&gt;</span>
@@ -200,7 +201,7 @@ const pagePost = buildDemoPost({
         {p.slug === "socialcard" && <SocialcardSample />}
         {!p.componentImport && !["autobuild", "enrichkit", "socialcard"].includes(p.slug) && p.configExample && (
           <div class="demo-sequence">
-            <pre><code>{p.configExample}</code></pre>
+            <Code language="js" code={p.configExample} />
           </div>
         )}
         <p class="demo-caption">
@@ -220,13 +221,13 @@ const pagePost = buildDemoPost({
       <ol class="setup-steps">
         <li>
           <h3>Install and register</h3>
-          <pre><code>{p.installCommand}</code></pre>
-          {p.configExample && <pre><code>{p.configExample}</code></pre>}
+          <Code language="bash" code={p.installCommand} />
+          {p.configExample && <Code language="js" code={p.configExample} />}
         </li>
         {p.componentImport && (
           <li>
             <h3>Add to your layout</h3>
-            <pre><code>{`${p.componentImport}\n\n${p.componentUsage}`}</code></pre>
+            <Code language="astro" code={`${p.componentImport}\n\n${p.componentUsage}`} />
           </li>
         )}
       </ol>
@@ -555,11 +556,8 @@ const pagePost = buildDemoPost({
     margin: 0 auto;
     text-align: left;
   }
-  .demo-sequence pre {
-    background: var(--bg);
-    border-color: var(--border);
-    color: var(--text);
-    margin-bottom: 1.5rem;
+  .demo-sequence :global(.plugdash-codeblock) {
+    margin: 0 0 1.5rem;
   }
   .sequence {
     display: flex;
@@ -605,7 +603,7 @@ const pagePost = buildDemoPost({
     margin-bottom: 0.5rem;
     font-weight: 500;
   }
-  .setup-steps pre {
+  .setup-steps :global(.plugdash-codeblock) {
     margin-block: 0.5rem;
   }
   .setup-note {

@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
 import { getPlugin } from "../../data/plugins";
@@ -62,8 +63,7 @@ const tocEntries = [
     array of the <code>emdash()</code> integration - the one that sits
     inside Astro's top-level <code>integrations</code> array:
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { fromsubstackPlugin } from "@plugdash/fromsubstack"
 
@@ -80,7 +80,7 @@ export default defineConfig({
       ],
     }),
   ],
-})`}</code></pre>
+})`} />
   <p>
     Once registered, "Substack" appears as a source in EmDash's admin
     importer. <code>status</code> only decides what happens to posts
@@ -161,15 +161,15 @@ export default defineConfig({
 
   <h2 id="example">A worked example</h2>
   <p>Say <code>posts.csv</code> has this row:</p>
-  <pre><code>{`post_id,post_date,is_published,type,audience,title,subtitle,url
-101,2024-01-05T10:00:00Z,true,newsletter,everyone,"Hello, World",The very first one,https://acme.substack.com/p/hello-world-jan`}</code></pre>
+  <Code language="csv" code={`post_id,post_date,is_published,type,audience,title,subtitle,url
+101,2024-01-05T10:00:00Z,true,newsletter,everyone,"Hello, World",The very first one,https://acme.substack.com/p/hello-world-jan`} />
   <p>paired with <code>posts/101.hello-world-jan.html</code>:</p>
-  <pre><code>{`<h2>A heading</h2>
+  <Code language="html" code={`<h2>A heading</h2>
 <p>Plain text with <strong>bold</strong> and <em>italic</em> and
 <a href="https://example.com">a link</a>.</p>
-<img src="https://substackcdn.com/image/one.png" alt="One">`}</code></pre>
+<img src="https://substackcdn.com/image/one.png" alt="One">`} />
   <p>With the default options, that becomes an EmDash item shaped like this:</p>
-  <pre><code>{`sourceId: "101"
+  <Code language="yaml" code={`sourceId: "101"
 postType: "post"
 slug: "hello-world-jan"
 title: "Hello, World"
@@ -184,7 +184,7 @@ meta: {
   substackAudience: "everyone",
   substackPaid: false,
   substackSubtitle: "The very first one"
-}`}</code></pre>
+}`} />
   <p>
     A row with <code>audience: only_paid</code> or <code>founding</code>
     comes across the same way, except <code>meta.substackPaid</code> is

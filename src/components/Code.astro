@@ -1,0 +1,14 @@
+---
+// Site-wide code sample: @plugdash/codeblock with a light palette for the
+// light theme. Colours switch on data-theme, see global.css.
+import CodeBlock from "@plugdash/codeblock/CodeBlock.astro";
+
+interface Props {
+  code: string;
+  language?: string;
+  filename?: string;
+  lineNumbers?: boolean;
+}
+---
+
+<CodeBlock {...Astro.props} lightTheme="github-light" />

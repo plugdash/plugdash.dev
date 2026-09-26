@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import CodeblockSample from "../../components/CodeblockSample.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
@@ -56,8 +57,7 @@ const tocEntries = [
     array of the <code>emdash()</code> integration - the one that sits
     inside Astro's top-level <code>integrations</code> array:
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { codeblockPlugin } from "@plugdash/codeblock"
 
@@ -70,7 +70,7 @@ export default defineConfig({
       ],
     }),
   ],
-})`}</code></pre>
+})`} />
 
   <h2 id="configuration">Configuration</h2>
   <p>All options are optional. Defaults cover most sites out of the box.</p>
@@ -96,10 +96,10 @@ export default defineConfig({
     rendering highlighted.
   </p>
   <p>For direct usage outside Portable Text, import the component:</p>
-  <pre><code>{`---
+  <Code language="astro" code={`---
 import CodeBlock from "@plugdash/codeblock/CodeBlock.astro"
 ---
-<CodeBlock code={source} language="python" filename="app.py" lineNumbers />`}</code></pre>
+<CodeBlock code={source} language="python" filename="app.py" lineNumbers />`} />
 
   <h2 id="live-demo">Live demo</h2>
   <p>
@@ -113,22 +113,22 @@ import CodeBlock from "@plugdash/codeblock/CodeBlock.astro"
     A site that wants light and dark themes to switch with the reader's
     system preference passes both:
   </p>
-  <pre><code>{`codeblockPlugin({
+  <Code language="js" code={`codeblockPlugin({
   theme: "github-dark",
   lightTheme: "github-light",
-})`}</code></pre>
+})`} />
   <p>
     In the editor, an author picks a language on the code block and
     writes the source. Nothing about the stored content changes -
     EmDash keeps it as a plain <code>code</code> block in the Portable
     Text body:
   </p>
-  <pre><code>{`{
+  <Code language="json" code={`{
   "_type": "code",
   "code": "def greet(name):\\n    return f\\"hi {name}\\"",
   "language": "python",
   "filename": "greet.py"
-}`}</code></pre>
+}`} />
   <p>
     On the site, that block renders as a header bar with the filename
     and language, followed by Shiki's highlighted markup - a

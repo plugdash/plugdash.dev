@@ -1,4 +1,5 @@
 ---
+import Code from "../../components/Code.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
 import SocialcardSample from "../../components/SocialcardSample.astro";
@@ -54,8 +55,7 @@ const tocEntries = [
     array of the <code>emdash()</code> integration - the one that sits
     inside Astro's top-level <code>integrations</code> array:
   </p>
-  <pre><code>{`// astro.config.mjs
-import { defineConfig } from "astro/config"
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { socialcardPlugin } from "@plugdash/socialcard"
 
@@ -71,7 +71,7 @@ export default defineConfig({
       ],
     }),
   ],
-})`}</code></pre>
+})`} />
 
   <h2 id="configuration">Configuration</h2>
   <p>
@@ -103,7 +103,7 @@ export default defineConfig({
     Read <code>metadata.ogImage</code> from the post and point your
     meta tags at it:
   </p>
-  <pre><code>{`---
+  <Code language="astro" code={`---
 const post = await emdash.content.get("posts", Astro.params.id)
 const { ogImage } = post.data.metadata ?? {}
 ---
@@ -111,7 +111,7 @@ const { ogImage } = post.data.metadata ?? {}
 {ogImage && <meta property="og:image" content={ogImage} />}
 {ogImage && <meta property="og:image:width" content="1200" />}
 {ogImage && <meta property="og:image:height" content="630" />}
-{ogImage && <meta name="twitter:image" content={ogImage} />}`}</code></pre>
+{ogImage && <meta name="twitter:image" content={ogImage} />}`} />
   <p>
     One real limitation worth knowing before you rely on this: the card
     is an <code>image/svg+xml</code> file, not a PNG. Most OG consumers
