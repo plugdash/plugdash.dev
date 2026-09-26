@@ -36,10 +36,10 @@ Every PlugDash plugin follows the same three-step pattern.
    `plugins` array. Example for readtime:
 
    ```javascript
-   import readtime from "@plugdash/readtime"
+   import { readtimePlugin } from "@plugdash/readtime"
    // ...
    emdash({
-     plugins: [readtime({ collections: ["blog"] })],
+     plugins: [readtimePlugin({ collections: ["blog"] })],
    })
    ```
 

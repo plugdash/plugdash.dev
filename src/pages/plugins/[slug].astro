@@ -152,24 +152,33 @@ const pagePost = buildDemoPost({
           </div>
         )}
         {p.slug === "sharepost" && (
-          <div class="demo-row">
-            <ShareButtons post={demoPost} variant="circle" />
-            <span class="demo-label">circle</span>
-            <ShareButtons post={demoPost} variant="pill" />
-            <span class="demo-label">pill</span>
+          <div class="demo-grid">
+            {(["circle", "pill", "ghost", "filled"] as const).map((v) => (
+              <div class="demo-cell">
+                <ShareButtons post={demoPost} variant={v} />
+                <span class="demo-label">{v}</span>
+              </div>
+            ))}
           </div>
         )}
         {p.slug === "heartpost" && (
-          <div class="demo-row">
-            <HeartButton post={demoPost} />
-            <span class="demo-label">one click, one count, no account</span>
+          <div class="demo-grid">
+            {(["circle", "pill", "ghost"] as const).map((v) => (
+              <div class="demo-cell">
+                <HeartButton post={demoPost} variant={v} />
+                <span class="demo-label">{v}</span>
+              </div>
+            ))}
           </div>
         )}
         {p.slug === "shortlink" && (
-          <div class="demo-row">
-            <CopyLink post={demoPost} variant="circle" />
-            <CopyLink post={demoPost} variant="pill" />
-            <CopyLink post={demoPost} variant="inline" />
+          <div class="demo-grid">
+            {(["circle", "pill", "ghost", "inline"] as const).map((v) => (
+              <div class="demo-cell">
+                <CopyLink post={demoPost} variant={v} />
+                <span class="demo-label">{v}</span>
+              </div>
+            ))}
           </div>
         )}
         {p.slug === "tocgen" && (
@@ -178,8 +187,13 @@ const pagePost = buildDemoPost({
           </div>
         )}
         {p.slug === "engage" && (
-          <div class="demo-engage">
-            <EngagementBar post={demoPost} attribution />
+          <div class="demo-stack">
+            {(["circle", "pill", "ghost"] as const).map((v) => (
+              <div class="demo-cell">
+                <EngagementBar post={demoPost} variant={v} attribution={v === "circle"} />
+                <span class="demo-label">{v}</span>
+              </div>
+            ))}
           </div>
         )}
         {p.slug === "autobuild" && (
@@ -211,7 +225,9 @@ const pagePost = buildDemoPost({
               ? "Real output from renderCard, one card per built-in template."
               : !p.componentImport
               ? "No UI. Pure infrastructure."
-              : "This is the default. No configuration."}
+              : ["readtime", "sharepost", "heartpost", "shortlink", "engage"].includes(p.slug)
+                ? "Every variant. The first is the default, no configuration."
+                : "This is the default. No configuration."}
         </p>
       </div>
     </section>
@@ -526,9 +542,7 @@ const pagePost = buildDemoPost({
   .demo-band .demo-content {
     text-align: center;
   }
-  .demo-variants,
-  .demo-row,
-  .demo-engage {
+  .demo-variants {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -541,6 +555,23 @@ const pagePost = buildDemoPost({
     text-align: left;
     max-width: 40rem;
     margin: 0 auto;
+  }
+  .demo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1.5rem 2rem;
+  }
+  .demo-stack {
+    display: grid;
+    justify-items: center;
+    gap: 1.5rem;
+  }
+  .demo-cell {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
   }
   .demo-label {
     color: var(--muted);
