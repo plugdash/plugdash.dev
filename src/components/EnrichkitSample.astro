@@ -1,0 +1,91 @@
+---
+// Renders a sample of what enrichkit writes to post.data.metadata.enrichkit,
+// laid out the way a theme might show it. Static - no LLM call at render time.
+const sample = {
+  summary:
+    "A look at how static sites evolved from plain HTML to full content platforms, and what that means for publishers choosing a stack today.",
+  keyTopics: ["static site generators", "content management", "web performance"],
+  readingLevel: "Grade 9",
+  autoTags: ["ssg", "cms", "performance", "web-dev"],
+  tweetDraft: "Static sites grew up. Here's what changed and why it matters for your next project.",
+};
+---
+
+<div class="ek">
+  <p class="ek-label">Sample output with every enrichment on, rendered the way a theme might show it</p>
+  <div class="ek-row">
+    <span class="ek-key">summary</span>
+    <p class="ek-summary">{sample.summary}</p>
+  </div>
+  <div class="ek-row">
+    <span class="ek-key">keyTopics</span>
+    <p>{sample.keyTopics.join(" · ")}</p>
+  </div>
+  <div class="ek-row">
+    <span class="ek-key">autoTags</span>
+    <ul class="ek-tags">{sample.autoTags.map((t) => <li>#{t}</li>)}</ul>
+  </div>
+  <div class="ek-row">
+    <span class="ek-key">readingLevel</span>
+    <p>{sample.readingLevel}</p>
+  </div>
+  <div class="ek-row">
+    <span class="ek-key">tweetDraft</span>
+    <blockquote class="ek-tweet">{sample.tweetDraft}</blockquote>
+  </div>
+</div>
+
+<style>
+  .ek {
+    text-align: left;
+    max-width: 40rem;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 1rem 1.25rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .ek p { margin: 0; }
+  .ek-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .ek-row {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 0.75rem;
+    align-items: baseline;
+  }
+  .ek-key {
+    font-family: var(--plugdash-font-mono, monospace);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .ek-summary { color: var(--text-strong); }
+  .ek-tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .ek-tags li {
+    font-size: 0.8rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+  .ek-tweet {
+    margin: 0;
+    padding-left: 0.75rem;
+    border-left: 3px solid var(--accent);
+  }
+  @media (max-width: 480px) {
+    .ek-row { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+</style>

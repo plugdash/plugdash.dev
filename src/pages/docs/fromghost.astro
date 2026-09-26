@@ -1,0 +1,275 @@
+---
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("fromghost")!;
+
+const tocEntries = [
+  { id: "what-it-does", text: "What it does", level: 2 as const, children: [] },
+  { id: "install", text: "Install", level: 2 as const, children: [] },
+  { id: "register", text: "Register", level: 2 as const, children: [] },
+  { id: "import-your-ghost-site", text: "Import your Ghost site", level: 2 as const, children: [
+    { id: "step-1-export-your-ghost-site", text: "Step 1: export your Ghost site", level: 3 as const, children: [] },
+    { id: "step-2-upload-and-review", text: "Step 2: upload and review", level: 3 as const, children: [] },
+    { id: "step-3-run-the-import", text: "Step 3: run the import", level: 3 as const, children: [] },
+  ]},
+  { id: "field-mapping", text: "Field mapping", level: 2 as const, children: [] },
+  { id: "example", text: "A Ghost post, mapped", level: 2 as const, children: [] },
+  { id: "known-limitations", text: "Known limitations", level: 2 as const, children: [] },
+  { id: "props", text: "Config options", level: 2 as const, children: [] },
+  { id: "for-agents", text: "For agents", level: 2 as const, children: [] },
+];
+---
+
+<Doc
+  tocEntries={tocEntries}
+  currentSlug="fromghost"
+  readingTimeMinutes={5}
+  wordCount={950}
+  title="fromghost"
+  section="@plugdash/fromghost"
+  description="Import a Ghost JSON export into EmDash."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    Parses a Ghost JSON export and registers a "Ghost Export File" source in
+    EmDash's own admin import screen, next to the built-in WordPress
+    importers. Posts, pages, tags, and authors show up there with no
+    separate CLI step - upload the file, review the analysis, run the
+    import, and the rest of the pipeline (schema checks, media download,
+    content creation) is EmDash's own.
+  </p>
+  <p>
+    It reads every shape Ghost's own exporter and the Admin API produce:
+    the standard <code>{`{ db: [{ meta, data }] }`}</code> wrapper from Ghost
+    2.x through 5.x, and the looser <code>{`{ data }`}</code> or
+    <code>{`{ posts }`}</code> shapes some third-party exporters use. It also
+    handles both post-type flags Ghost has shipped: the <code>type</code>
+    field ("post" or "page") on Ghost 5, and the older boolean
+    <code>page</code> flag from Ghost 4 and earlier.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <p>
+    Open <code>astro.config.mjs</code> at the root of your Astro project.
+    Import the plugin at the top, then add it to the <code>plugins</code>
+    array of the <code>emdash()</code> integration - the one that sits
+    inside Astro's top-level <code>integrations</code> array:
+  </p>
+  <pre><code>{`// astro.config.mjs
+import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { fromghostPlugin } from "@plugdash/fromghost"
+
+export default defineConfig({
+  integrations: [
+    emdash({
+      // must be plugins, not sandboxed - fromghost needs Node fs/JSON
+      plugins: [
+        fromghostPlugin({
+          siteUrl: "https://yourghostsite.com",
+        }),
+      ],
+    }),
+  ],
+})`}</code></pre>
+  <p>
+    fromghost is a Native plugin. It cannot run sandboxed - parsing a
+    site-sized JSON export needs Node, and the plugin registers itself
+    directly into EmDash's import-source registry rather than going
+    through a hook. Once registered, "Ghost Export File" appears as a
+    source at <code>/_emdash/admin/import</code> with no further setup.
+  </p>
+
+  <h2 id="import-your-ghost-site">Import your Ghost site</h2>
+
+  <h3 id="step-1-export-your-ghost-site">Step 1: export your Ghost site</h3>
+  <p>
+    In Ghost admin, go to <strong>Settings -&gt; Labs -&gt; Export your
+    content</strong>. This downloads a single JSON file containing your
+    posts, pages, tags, authors, and settings - no images, since Ghost's
+    export only ever carries image URLs, never the files themselves.
+  </p>
+
+  <h3 id="step-2-upload-and-review">Step 2: upload and review</h3>
+  <p>
+    Open <code>/_emdash/admin/import</code> on your EmDash site, choose
+    "Ghost Export File", and upload the JSON. fromghost parses it and
+    hands back an analysis: how many posts and pages, how many public
+    tags, how many authors and their post counts, and how many images it
+    found feature images for. This is EmDash's standard
+    <code>ImportAnalysis</code> screen - the same one WordPress imports
+    use - so there's no Ghost-specific UI to learn.
+  </p>
+
+  <h3 id="step-3-run-the-import">Step 3: run the import</h3>
+  <p>
+    Confirm the analysis and run the import. Whether drafts come in along
+    with published posts is controlled by the import screen itself, not a
+    plugin setting - fromghost reads each post's status straight from the
+    Ghost export. From there, EmDash's own pipeline downloads images,
+    creates the tag taxonomy, and creates the content records; fromghost's
+    job ends at handing over normalized items.
+  </p>
+
+  <h2 id="field-mapping">Field mapping</h2>
+  <table>
+    <thead>
+      <tr><th>Ghost field</th><th>EmDash field</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>title</code></td><td><code>title</code></td></tr>
+      <tr><td><code>slug</code></td><td><code>slug</code> (or regenerated - see <code>preserveSlugs</code>)</td></tr>
+      <tr><td><code>html</code></td><td><code>content</code>, via <code>htmlToPortableText</code></td></tr>
+      <tr><td><code>custom_excerpt</code> (falls back to <code>excerpt</code>)</td><td><code>excerpt</code></td></tr>
+      <tr><td><code>feature_image</code></td><td><code>featuredImage</code> (after <code>__GHOST_URL__</code> resolution)</td></tr>
+      <tr><td><code>published_at</code> (falls back to <code>created_at</code>)</td><td><code>date</code></td></tr>
+      <tr><td><code>updated_at</code></td><td><code>modified</code></td></tr>
+      <tr><td><code>meta_title</code></td><td><code>meta.seoTitle</code></td></tr>
+      <tr><td><code>meta_description</code></td><td><code>meta.seoDescription</code></td></tr>
+      <tr><td>tags via <code>posts_tags</code></td><td><code>tags</code> (public tags only)</td></tr>
+      <tr><td>author via <code>posts_authors</code></td><td><code>author</code> (first author's slug)</td></tr>
+    </tbody>
+  </table>
+  <p>
+    A few things worth knowing about that table. Body HTML goes through
+    <code>@plugdash/html-to-portable-text</code> - the same shared
+    converter <code>@plugdash/fromsubstack</code> uses - so Ghost's HTML
+    becomes the Portable Text blocks EmDash stores content as, not raw
+    HTML. Only the first author on a post comes across; Ghost's
+    co-authors beyond the first are not imported. Ghost's internal tags
+    (<code>visibility: "internal"</code>) are Ghost's own bookkeeping and
+    are never carried over, even with <code>importTags</code> on.
+  </p>
+  <p>
+    Feature and inline images are handed to EmDash's import pipeline as a
+    URL - fromghost does not download or upload media itself. Ghost
+    writes those URLs as <code>__GHOST_URL__/content/images/...</code>
+    rather than an absolute address, so fromghost needs the
+    <code>siteUrl</code> option to resolve them. Without it, an image
+    path stays site-relative, can't be downloaded, and is skipped with a
+    warning rather than failing the whole post.
+  </p>
+
+  <h2 id="example">A Ghost post, mapped</h2>
+  <p>A single post from a Ghost export (trimmed to the fields that matter):</p>
+  <pre><code>{`{
+  "id": "1",
+  "title": "Hello Ghost",
+  "slug": "hello-ghost",
+  "html": "<p>First <strong>post</strong>.</p>",
+  "feature_image": "__GHOST_URL__/content/images/2024/01/cover.jpg",
+  "feature_image_alt": "A cover",
+  "published_at": "2024-01-15T10:00:00.000Z",
+  "created_at": "2024-01-14T09:00:00.000Z",
+  "updated_at": "2024-01-16T09:00:00.000Z",
+  "status": "published",
+  "custom_excerpt": "An intro",
+  "meta_title": "Hello Ghost | SEO",
+  "meta_description": "SEO description",
+  "type": "post"
+}`}</code></pre>
+  <p>
+    ...with a public tag ("news"), an internal tag ("internal"), and one
+    author (Ada Lovelace, slug "ada") joined in via the export's
+    <code>posts_tags</code> and <code>posts_authors</code> tables. With
+    <code>fromghostPlugin({`{ siteUrl: "https://adasblog.example.com" }`})</code>,
+    the normalized item fromghost hands to EmDash looks like this
+    (Portable Text <code>_key</code> fields left out for readability):
+  </p>
+  <pre><code>{`{
+  sourceId: "1",
+  postType: "post",
+  status: "publish",
+  slug: "hello-ghost",
+  title: "Hello Ghost",
+  content: [
+    {
+      _type: "block",
+      style: "normal",
+      children: [
+        { _type: "span", text: "First " },
+        { _type: "span", text: "post", marks: ["strong"] },
+        { _type: "span", text: "." },
+      ],
+    },
+  ],
+  excerpt: "An intro",
+  date: "2024-01-15T10:00:00.000Z",
+  modified: "2024-01-16T09:00:00.000Z",
+  author: "ada",
+  tags: ["news"],
+  meta: {
+    seoTitle: "Hello Ghost | SEO",
+    seoDescription: "SEO description",
+  },
+  featuredImage: "https://adasblog.example.com/content/images/2024/01/cover.jpg",
+}`}</code></pre>
+  <p>
+    Note what dropped out along the way: the "internal" tag never appears
+    in <code>tags</code>, and without <code>siteUrl</code> set,
+    <code>featuredImage</code> would be <code>undefined</code> instead -
+    the image stays referenced only by its unresolved Ghost path, and
+    fromghost calls <code>onWarn</code> to say so.
+  </p>
+
+  <h2 id="known-limitations">Known limitations</h2>
+  <ul>
+    <li>
+      No Mobiledoc conversion. Ghost 3 and older editor content has no
+      converter - those posts import with an empty body and a warning.
+    </li>
+    <li>
+      Ghost 5 Lexical drafts that were never rendered to HTML
+      (<code>html: null</code>) are recovered as plain-text paragraphs
+      only, with a warning - formatting, links, and embeds are lost.
+    </li>
+    <li>
+      No media download or upload. <code>featuredImage</code> is a URL;
+      EmDash's own import pipeline owns the actual fetch.
+    </li>
+    <li>No import of Ghost members, newsletters, or comments.</li>
+    <li>
+      Ghost's internal-visibility tags are never preserved as taxonomy.
+    </li>
+    <li>
+      Duplicate slugs are skipped (the first occurrence wins) with a
+      warning, rather than overwriting or erroring.
+    </li>
+    <li>
+      Import status (draft vs. published) isn't a plugin option - it
+      comes from each post's own Ghost status, and whether drafts are
+      included at all is controlled by EmDash's import screen.
+    </li>
+    <li>
+      Cannot be sandboxed - it needs Node's <code>fs</code>/JSON parsing
+      and registers directly into EmDash's import-source registry.
+    </li>
+  </ul>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="for-agents">For agents</h2>
+  <p>
+    After installing <code>@plugdash/fromghost</code> and registering it
+    in <code>astro.config.mjs</code>, no further UI setup is needed -
+    "Ghost Export File" appears automatically as a source on the admin
+    import screen. To verify, export a Ghost site as JSON, upload it,
+    confirm the analysis shows the expected post/page/tag counts, then
+    run the import and check the created content.
+  </p>
+  <p>
+    If feature images aren't resolving, check that <code>siteUrl</code>
+    is set in <code>fromghostPlugin({`{ siteUrl: "..." }`})</code> -
+    without it, Ghost's <code>__GHOST_URL__</code>-relative paths are
+    skipped, not guessed at. If a post's body is empty after import,
+    check the <code>onWarn</code> output: it's either an unsupported
+    Mobiledoc post or a Lexical draft with no rendered HTML.
+  </p>
+  <p>Metadata written: none - fromghost is an import source, not a hook, and keeps no persistent state.</p>
+</Doc>

@@ -1,0 +1,31 @@
+---
+import CodeBlock from "@plugdash/codeblock/CodeBlock.astro";
+
+const ts = `import { getEmDashCollection } from "emdash"
+
+export async function latestPosts(limit = 5) {
+  const { entries } = await getEmDashCollection("posts")
+  return entries
+    .filter((p) => p.data.status === "published")
+    .slice(0, limit)
+}`;
+
+const py = `def reading_time(words: int, wpm: int = 238) -> int:
+    return max(1, round(words / wpm))`;
+---
+
+<div class="cb-sample">
+  <CodeBlock code={ts} language="typescript" filename="src/lib/posts.ts" lineNumbers />
+  <CodeBlock code={py} language="python" />
+  <CodeBlock code={"no grammar for this one, so it falls back to plaintext"} language="made-up-lang" />
+</div>
+
+<style>
+  .cb-sample {
+    display: grid;
+    gap: 1rem;
+    text-align: left;
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+</style>

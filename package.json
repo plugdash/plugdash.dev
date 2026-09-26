@@ -23,6 +23,7 @@
     "@emdash-cms/cloudflare": "^0.40.0",
     "@plugdash/autobuild": "^0.2.1",
     "@plugdash/callout": "^0.1.3",
+    "@plugdash/codeblock": "^0.1.0",
     "@plugdash/engage": "^1.0.0",
     "@plugdash/heartpost": "^0.2.1",
     "@plugdash/readtime": "^0.2.1",

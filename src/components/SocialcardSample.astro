@@ -1,0 +1,43 @@
+---
+// Real cards from socialcard's renderCard, one per built-in template.
+// Pre-rendered PNGs in public/demos, same post for all three.
+const templates = ["default", "minimal", "bold"];
+---
+
+<div class="sc-sample">
+  {templates.map((t) => (
+    <figure>
+      <img
+        src={`/demos/socialcard-${t}.png`}
+        alt={`Share card rendered with the ${t} template`}
+        width="1200"
+        height="630"
+        loading="lazy"
+      />
+      <figcaption>{t}</figcaption>
+    </figure>
+  ))}
+</div>
+
+<style>
+  .sc-sample {
+    display: grid;
+    gap: 1rem;
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+  .sc-sample figure { margin: 0; }
+  .sc-sample img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .sc-sample figcaption {
+    margin-top: 0.35rem;
+    font-family: var(--plugdash-font-mono, monospace);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+</style>

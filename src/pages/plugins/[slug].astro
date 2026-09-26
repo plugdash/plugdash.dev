@@ -6,6 +6,9 @@ import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
 import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
 import CopyLink from "@plugdash/shortlink/CopyLink.astro";
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
+import CodeblockSample from "../../components/CodeblockSample.astro";
+import EnrichkitSample from "../../components/EnrichkitSample.astro";
+import SocialcardSample from "../../components/SocialcardSample.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginCard from "../../components/PluginCard.astro";
 import { buildDemoPost } from "../../data/demoPost";
@@ -22,7 +25,7 @@ const allPlugins = await resolvePlugins();
 function eyebrowText(p: typeof plugin) {
   if (!p) return "";
   if (p.slug === "engage") return "The engagement bundle";
-  if (p.slug === "autobuild") return "Pure infrastructure";
+  if (!p.componentImport) return "Pure infrastructure";
   if (p.wordpressEquivalent) return `The EmDash alternative to ${p.wordpressEquivalent}`;
   return "Only on EmDash";
 }
@@ -192,8 +195,22 @@ const pagePost = buildDemoPost({
             </div>
           </div>
         )}
+        {p.slug === "codeblock" && <CodeblockSample />}
+        {p.slug === "enrichkit" && <EnrichkitSample />}
+        {p.slug === "socialcard" && <SocialcardSample />}
+        {!p.componentImport && !["autobuild", "enrichkit", "socialcard"].includes(p.slug) && p.configExample && (
+          <div class="demo-sequence">
+            <pre><code>{p.configExample}</code></pre>
+          </div>
+        )}
         <p class="demo-caption">
-          {p.slug === "autobuild" ? "No UI. Pure infrastructure." : "This is the default. No configuration."}
+          {p.slug === "enrichkit"
+            ? "Sample output. No UI of its own - your theme decides how to show it."
+            : p.slug === "socialcard"
+              ? "Real output from renderCard, one card per built-in template."
+              : !p.componentImport
+              ? "No UI. Pure infrastructure."
+              : "This is the default. No configuration."}
         </p>
       </div>
     </section>
@@ -221,9 +238,9 @@ const pagePost = buildDemoPost({
         <h2>It looks right. But it's yours to change.</h2>
       </summary>
       <div class="customise-body">
-        {p.slug === "autobuild" ? (
+        {!p.componentImport ? (
           <>
-            <h3>AutobuildConfig</h3>
+            <h3>Config options</h3>
             <table class="prop-table">
               <thead><tr><th>option</th><th>type</th><th>default</th><th>description</th></tr></thead>
               <tbody>

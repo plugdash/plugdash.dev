@@ -1,0 +1,188 @@
+---
+import EnrichkitSample from "../../components/EnrichkitSample.astro";
+import InstallCommand from "../../components/InstallCommand.astro";
+import PluginReference from "../../components/PluginReference.astro";
+import { getPlugin } from "../../data/plugins";
+import Doc from "../../layouts/Doc.astro";
+
+const plugin = getPlugin("enrichkit")!;
+
+const tocEntries = [
+  { id: "what-it-does", text: "What it does", level: 2 as const, children: [] },
+  { id: "install", text: "Install", level: 2 as const, children: [] },
+  { id: "register", text: "Register", level: 2 as const, children: [] },
+  { id: "how-it-fires", text: "How it fires", level: 2 as const, children: [] },
+  { id: "examples", text: "Examples", level: 2 as const, children: [
+    { id: "config-variants", text: "Config variants", level: 3 as const, children: [] },
+    { id: "reading-the-metadata", text: "Reading the metadata", level: 3 as const, children: [] },
+    { id: "sample-output", text: "Sample output", level: 3 as const, children: [] },
+  ]},
+  { id: "no-component", text: "No component", level: 2 as const, children: [] },
+  { id: "props", text: "Configuration", level: 2 as const, children: [] },
+  { id: "for-agents", text: "For agents", level: 2 as const, children: [] },
+];
+---
+
+<Doc
+  tocEntries={tocEntries}
+  currentSlug="enrichkit"
+  readingTimeMinutes={3}
+  wordCount={480}
+  title="enrichkit"
+  section="@plugdash/enrichkit"
+  description="AI enrichment for publishers who don't want to think about prompts."
+>
+  <h2 id="what-it-does">What it does</h2>
+  <p>
+    On every publish, enrichkit makes one LLM call and writes a summary,
+    key topics, auto-tags, a reading level estimate, and a tweet draft to
+    post metadata. You choose which of those five fields to generate.
+    Content under 100 words is skipped - not worth the API call.
+  </p>
+  <p>
+    There is no companion component. enrichkit writes metadata, not
+    markup - what you do with a summary or a tweet draft is up to your
+    layout, your search index, or an agent reading the post.
+  </p>
+
+  <h2 id="install">Install</h2>
+  <InstallCommand command={plugin.installCommand} />
+
+  <h2 id="register">Register</h2>
+  <p>
+    Open <code>astro.config.mjs</code> at the root of your Astro project.
+    Import the plugin at the top, then add it to the <code>plugins</code>
+    array of the <code>emdash()</code> integration - the one that sits
+    inside Astro's top-level <code>integrations</code> array:
+  </p>
+  <pre><code>{`// astro.config.mjs
+import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { enrichkitPlugin } from "@plugdash/enrichkit"
+
+export default defineConfig({
+  integrations: [
+    emdash({
+      plugins: [
+        enrichkitPlugin({
+          provider: "anthropic",
+          apiKey: process.env.ANTHROPIC_API_KEY,
+        }),
+      ],
+    }),
+  ],
+})`}</code></pre>
+  <p>
+    Set <code>ANTHROPIC_API_KEY</code> (or <code>OPENAI_API_KEY</code> if
+    you pick OpenAI) as a secret in your build environment. You can also
+    leave <code>apiKey</code> out at build time entirely and set it later
+    from the admin at <code>/_emdash/admin/plugins/enrichkit/settings</code> -
+    either way, the key is only ever read from KV at request time and is
+    never rendered back into the UI (the settings form shows a masked
+    hint like <code>sk-t...1234</code>).
+  </p>
+  <p>
+    <code>allowedHosts</code> is narrowed automatically to the configured
+    provider's API host (<code>api.anthropic.com</code> or
+    <code>api.openai.com</code>). With no provider set yet, both hosts are
+    allowed until the admin page picks one.
+  </p>
+
+  <h2 id="how-it-fires">How it fires</h2>
+  <pre><code>publish (status: published) -&gt; body &gt;= 100 words -&gt; one prompt built for the enabled fields -&gt; provider call (20s timeout) -&gt; parse + validate JSON -&gt; merge into metadata</code></pre>
+  <p>
+    A few things worth knowing before you flip this on:
+  </p>
+  <ul>
+    <li>Only fires on <code>content:afterSave</code> when the content's status is <code>published</code> - drafts, archived, and scheduled content are never enriched.</li>
+    <li>The Portable Text body is flattened to plain text and capped at 12,000 characters before it goes into the prompt - the opening of a long article carries the argument, the tail rarely changes the summary.</li>
+    <li>If the model's reply isn't valid JSON, enrichkit retries once. Two failed parses in a row and it gives up and logs - never more than two provider calls per publish.</li>
+    <li>A rate limit (429) is not retried synchronously - the next publish gets a fresh attempt.</li>
+    <li>An over-length tweet draft is dropped, not truncated. A tweet cut mid-word is worse than no tweet.</li>
+    <li>Every enrichment failure - missing key, timeout, rate limit, invalid JSON, quota error - just skips and logs. It never fails the publish itself.</li>
+    <li>Metadata is read-merge-written, so other plugins' keys under <code>post.data.metadata</code> are preserved.</li>
+  </ul>
+
+  <h2 id="examples">Examples</h2>
+
+  <h3 id="config-variants">Config variants</h3>
+  <p>
+    Default enrichments are summary, key topics, auto-tags, and a tweet
+    draft - reading level is off unless you turn it on. To also get the
+    reading level and skip the tweet draft:
+  </p>
+  <pre><code>{`enrichkitPlugin({
+  provider: "anthropic",
+  apiKey: process.env.ANTHROPIC_API_KEY,
+  enrichments: {
+    readingLevel: true,
+    tweetDraft: false,
+  },
+})`}</code></pre>
+  <p>Or run it against OpenAI instead, with an explicit model override:</p>
+  <pre><code>{`enrichkitPlugin({
+  provider: "openai",
+  apiKey: process.env.OPENAI_API_KEY,
+  model: "gpt-4o",
+})`}</code></pre>
+
+  <h3 id="reading-the-metadata">Reading the metadata</h3>
+  <p>
+    Since there's no component, you read <code>post.data.metadata.enrichkit</code>
+    directly wherever you want it - typically the post layout:
+  </p>
+  <pre><code>{`---
+const enrichkit = post.data.metadata?.enrichkit
+---
+{enrichkit?.summary && <p class="summary">{enrichkit.summary}</p>}
+{enrichkit?.autoTags && (
+  <ul class="tags">
+    {enrichkit.autoTags.map((tag) => <li>{tag}</li>)}
+  </ul>
+)}`}</code></pre>
+
+  <h3 id="sample-output">Sample output</h3>
+  <EnrichkitSample />
+  <p>
+    A published post with all default enrichments on ends up with this
+    under <code>post.data.metadata.enrichkit</code>:
+  </p>
+  <pre><code>{`{
+  "summary": "A look at how static sites evolved from plain HTML to full content platforms, and what that means for publishers choosing a stack today.",
+  "keyTopics": ["static site generators", "content management", "web performance"],
+  "autoTags": ["ssg", "cms", "performance", "web-dev"],
+  "tweetDraft": "Static sites grew up. Here's what changed and why it matters for your next project.",
+  "generatedAt": "2026-04-01T12:00:00Z",
+  "model": "claude-haiku-4-5"
+}`}</code></pre>
+  <p>
+    Only fields that were enabled and that passed validation get written -
+    a field the model omitted, or returned in the wrong shape, is left out
+    entirely rather than written as <code>null</code>.
+  </p>
+
+  <h2 id="no-component">No component</h2>
+  <p>
+    enrichkit ships no companion component. It writes metadata, full
+    stop - rendering a summary or a tag list in your theme is a few lines
+    in your layout, and an agent working against the site can read the
+    same fields through the EmDash MCP server without any UI at all.
+  </p>
+
+  <PluginReference plugin={plugin} />
+
+  <h2 id="for-agents">For agents</h2>
+  <p>After installing @plugdash/enrichkit and registering it in astro.config.mjs:</p>
+  <ol>
+    <li>Set an API key - either at build time via the <code>apiKey</code> option (read from an env var) or later from the admin settings page.</li>
+    <li>Publish a test post with at least 100 words of body text.</li>
+    <li>Verify <code>post.data.metadata.enrichkit</code> is populated: <code>summary</code> (string), <code>keyTopics</code> (string array, if enabled), <code>readingLevel</code> (string, if enabled - off by default), <code>autoTags</code> (lowercase hyphenated string array, if enabled), <code>tweetDraft</code> (string, under 280 chars, if enabled), <code>generatedAt</code> (ISO timestamp), and <code>model</code> (the model id used).</li>
+  </ol>
+  <p>If no <code>enrichkit</code> metadata appears, check in order: the post status is "published" and not a draft; the body has at least 100 words; an API key is configured (look for "apiKey not configured" in the plugin logs); and the post was saved after the plugin was installed or reconfigured.</p>
+  <p>
+    <code>post.data.metadata.enrichkit.tweetDraft</code> in particular is
+    written specifically so an agent with access to the EmDash MCP server
+    can read it and post to social platforms after a human publishes -
+    no further human step required for that part of the workflow.
+  </p>
+</Doc>
