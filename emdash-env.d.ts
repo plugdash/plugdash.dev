@@ -12,9 +12,6 @@ export interface Blog {
   title: string;
   description: string;
   content?: PortableTextBlock[];
-  reading_time_minutes?: number;
-  word_count?: number;
-  metadata?: unknown;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -31,9 +28,6 @@ export interface Doc {
   section: string;
   summary?: string;
   order: number;
-  reading_time_minutes?: number;
-  word_count?: number;
-  metadata?: unknown;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;

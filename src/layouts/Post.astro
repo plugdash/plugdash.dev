@@ -2,23 +2,28 @@
 import EngagementBar from "@plugdash/engage/EngagementBar.astro";
 import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
+import { getSeoMeta } from "emdash";
+import type { Blog } from "../../emdash-env";
 import Base from "./Base.astro";
 
 interface Props {
-  post: Record<string, unknown>;
-  title: string;
-  description?: string;
-  publishedAt?: string;
+  // The entry from getEmDashEntry("blog", slug), passed through unchanged
+  post: { id: string; data: Blog };
 }
 
-const { post, title, description, publishedAt } = Astro.props;
-const date = publishedAt ? new Date(publishedAt) : null;
-const dateLabel = date
-  ? date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+const { post } = Astro.props;
+const { title, publishedAt } = post.data;
+// SEO panel values win; socialcard writes its card to seo.image on publish
+const seo = getSeoMeta(post, {
+  siteUrl: Astro.site?.origin ?? Astro.url.origin,
+  defaultDescription: post.data.description,
+});
+const dateLabel = publishedAt
+  ? publishedAt.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
   : null;
 ---
 
-<Base title={title} description={description}>
+<Base title={seo.ogTitle} description={seo.description ?? undefined} ogImage={seo.ogImage ?? undefined}>
   <article class="post">
     <div class="post-layout container">
       <aside class="post-toc">
@@ -39,7 +44,12 @@ const dateLabel = date
         </div>
 
         <footer class="post-footer">
-          <EngagementBar post={post} attribution />
+          <EngagementBar
+            post={post}
+            via="abhinavs"
+            platforms={["twitter", "linkedin", "whatsapp", "bluesky", "email"]}
+            attribution
+          />
         </footer>
       </div>
     </div>
