@@ -3,77 +3,82 @@ import Code from "../../components/Code.astro";
 import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
-import { demoPost, pluginDocToc } from "../../data/demoPost";
+import { loadDemoEntry } from "../../data/demo-entry";
+import { pluginDocToc } from "../../data/doc-toc";
 import { getPlugin } from "../../data/plugins";
 import Doc from "../../layouts/Doc.astro";
 
 const plugin = getPlugin("readtime")!;
+const demo = await loadDemoEntry();
+const tocEntries = pluginDocToc.filter((e) => e.id !== "register");
 ---
 
 <Doc
-  tocEntries={pluginDocToc}
+  tocEntries={tocEntries}
   currentSlug="readtime"
-  readingTimeMinutes={2}
-  wordCount={280}
   title="readtime"
   section="@plugdash/readtime"
   description="Reading time and word count for EmDash posts."
 >
   <h2 id="what-it-does">What it does</h2>
   <p>
-    Calculates reading time in minutes from the word count of your post's
-    Portable Text body. Writes two fields to metadata on every publish:
-    <code>readingTimeMinutes</code> (integer, min 1) and
-    <code>wordCount</code> (integer). Ships
+    Counts the words in your post's Portable Text body when the page
+    renders and shows the reading time in minutes (238 words per minute,
+    minimum 1). CJK text is counted per character. Nothing is stored and
+    no JavaScript is sent to the browser. Ships
     <code>ReadingTime.astro</code> with four variants.
   </p>
 
   <h2 id="install">Install</h2>
   <InstallCommand command={plugin.installCommand} />
-
-  <h2 id="register">Register</h2>
   <p>
-    Open <code>astro.config.mjs</code> at the root of your Astro project.
-    Import the plugin at the top, then add it to the <code>plugins</code>
-    array of the <code>emdash()</code> integration - the one that sits
-    inside Astro's top-level <code>integrations</code> array:
+    There is nothing to register. readtime has no hooks, so you do not add
+    it to <code>astro.config.mjs</code>. An older config that still calls
+    <code>readtimePlugin()</code> keeps working.
   </p>
-  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
-import emdash from "emdash/astro"
-import { readtimePlugin } from "@plugdash/readtime"
-
-export default defineConfig({
-  integrations: [
-    emdash({
-      plugins: [
-        readtimePlugin({ collections: ["blog"] }),
-      ],
-    }),
-  ],
-})`} />
 
   <h2 id="add-the-component">Add the component</h2>
+  <p>In your post layout, pass the entry from <code>getEmDashEntry()</code>:</p>
   <Code language="astro" code={`---
+import { getEmDashEntry } from "emdash"
 import ReadingTime from "@plugdash/readtime/ReadingTime.astro"
+
+const { entry: post } = await getEmDashEntry("posts", Astro.params.slug)
 ---
 <ReadingTime post={post} />`} />
+  <p>
+    The body field is found on its own: <code>content</code>, then
+    <code>body</code>, then the first Portable Text array. Pass
+    <code>field="..."</code> if yours is named something else.
+  </p>
 
   <h2 id="live-demo">Live demo</h2>
-  <p>All four variants, rendered against a fixture post:</p>
-  <div class="demo-inline">
-    <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center">
-      <ReadingTime post={demoPost} variant="badge" />
-      <ReadingTime post={demoPost} variant="pill" />
-      <ReadingTime post={demoPost} variant="inline" />
-      <ReadingTime post={demoPost} variant="minimal" />
-    </div>
-  </div>
+  {demo ? (
+    <>
+      <p>All four variants, rendered from a real post on this site:</p>
+      <div class="demo-inline">
+        <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center">
+          <ReadingTime post={demo} variant="inline" />
+          <ReadingTime post={demo} variant="badge" />
+          <ReadingTime post={demo} variant="pill" />
+          <ReadingTime post={demo} variant="minimal" />
+        </div>
+      </div>
+    </>
+  ) : (
+    <p>The demo post is not published yet.</p>
+  )}
 
   <PluginReference plugin={plugin} />
 
   <h2 id="for-agents">For agents</h2>
-  <p>After install and registration, verify setup by publishing a test post
-  and checking that <code>post.data.metadata.readingTimeMinutes</code> is
-  populated. If it is not, confirm the post status is "published" and the
-  post's collection appears in the <code>collections</code> option.</p>
+  <p>
+    After installing @plugdash/readtime, import
+    <code>ReadingTime.astro</code> in the post layout and render
+    <code>&lt;ReadingTime post=&#123;post&#125; /&gt;</code>. Do not
+    register a plugin. Open a published post and check the reading time
+    shows. If nothing renders, the post has no Portable Text body the
+    component can find: pass <code>field</code> with the field name.
+    Data stored: none.
+  </p>
 </Doc>

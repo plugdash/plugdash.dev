@@ -76,21 +76,21 @@
 					"name": "readtime",
 					"tagline": "The estimate readers check before they commit to a paragraph.",
 					"headline": "Tell them what they're signing up for before they scroll.",
-					"sub": "readtime counts words at publish time and writes the estimate straight into your post's metadata. No client-side JavaScript, no recalculating on every page view. Four display variants, three sizes, every value bound to a CSS token.",
+					"sub": "readtime counts the words in your post body when the page renders and shows the estimate. Nothing to register, nothing stored, no client JavaScript. Four display variants, three sizes, every value bound to a CSS token.",
 					"home_card_copy": "Readers check the estimate before they read the paragraph.",
 					"npm_package": "@plugdash/readtime",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/readtime",
-					"capabilities": "read:content, write:metadata",
-					"hooks": "content:afterSave",
+					"capabilities": "none - computed at render time",
+					"hooks": "none - computed at render time",
 					"plugin_status": "beta",
 					"install_command": "npm install @plugdash/readtime",
-					"config_example": "import { readtimePlugin } from \"@plugdash/readtime\"\n// in emdash plugins array:\nreadtimePlugin({ collections: [\"blog\"] })",
+					"config_example": "",
 					"wordpress_equivalent": "Reading Time WP",
 					"companion_component": "ReadingTime.astro",
 					"pairs": "heartpost, sharepost",
 					"pairs_note": "someone who finishes a post is your best candidate to share it or heart it. readtime runs before either of those decisions gets made.",
-					"demo_caption": "5 min read - 1,240 words, computed once at publish, served instantly.",
-					"setup_note": "Every published post gets a reading time automatically. Older posts pick it up the next time you hit publish."
+					"demo_caption": "Computed from the post body when the page renders. Nothing stored.",
+					"setup_note": "No registration and nothing stored. Add the component to your post layout and every post, old or new, shows its reading time on the next page view."
 				}
 			},
 			{
@@ -105,8 +105,8 @@
 					"home_card_copy": "Info, warning, tip, danger - four callouts, one native editor block.",
 					"npm_package": "@plugdash/callout",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/callout",
-					"capabilities": "blocks:register",
-					"hooks": "editor:registerBlock",
+					"capabilities": "none",
+					"hooks": "none - registers a Portable Text block type",
 					"plugin_status": "beta",
 					"install_command": "npm install @plugdash/callout",
 					"config_example": "import { calloutPlugin } from \"@plugdash/callout\"\n// in emdash plugins array:\ncalloutPlugin()",
@@ -115,7 +115,7 @@
 					"pairs": "codeblock, tocgen",
 					"pairs_note": "callouts and code blocks are the two things a technical writer reaches for first.",
 					"demo_caption": "Four variants, zero configuration.",
-					"setup_note": "The callout block shows up in your EmDash editor immediately. Wire the component into your layout once, and every callout in every post renders correctly from then on."
+					"setup_note": "The callout block shows up in the EmDash editor right away: type / and pick Callout. Callout.astro is auto-wired into PortableText, so callouts render on your site with no extra code."
 				}
 			},
 			{
@@ -126,21 +126,21 @@
 					"name": "sharepost",
 					"tagline": "If a reader wants to share your post, that should take one click.",
 					"headline": "Make sharing the obvious next move.",
-					"sub": "sharepost generates correct share URLs for X, LinkedIn, WhatsApp, Bluesky, and email on every publish, then renders them as circular icon buttons. No JavaScript SDKs, no tracking pixels, no 200KB of vendor script for five links.",
-					"home_card_copy": "Correct share URLs for five platforms, computed once, at publish.",
+					"sub": "sharepost builds share links for X, LinkedIn, Bluesky, WhatsApp, and email when the page renders, from the page's own URL. No registration, nothing stored, no JavaScript SDKs, no tracking pixels.",
+					"home_card_copy": "Share links for five platforms, built from the page URL. No SDKs.",
 					"npm_package": "@plugdash/sharepost",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/sharepost",
-					"capabilities": "read:content, write:metadata",
-					"hooks": "content:afterSave",
+					"capabilities": "none - computed at render time",
+					"hooks": "none - computed at render time",
 					"plugin_status": "beta",
 					"install_command": "npm install @plugdash/sharepost",
-					"config_example": "import { sharepostPlugin } from \"@plugdash/sharepost\"\n// in emdash plugins array:\nsharepostPlugin({ via: \"abhinavs\" })",
+					"config_example": "",
 					"wordpress_equivalent": "AddToAny",
 					"companion_component": "ShareButtons.astro",
 					"pairs": "heartpost, readtime",
 					"pairs_note": "a share and a heart are different signals from different readers. Run both, and you stop guessing which one you're missing.",
 					"demo_caption": "Circular by default, no configuration, correct in both themes.",
-					"setup_note": "Every published post has share URLs the moment it goes live. Add the component once, and every future post inherits it."
+					"setup_note": "No registration. Set site in astro.config.mjs so the links use your public URL, then add the component to your post layout once."
 				}
 			},
 			{
@@ -151,21 +151,21 @@
 					"name": "heartpost",
 					"tagline": "The lightest thing a reader can do to tell you they liked it.",
 					"headline": "One click, no account, and it still counts.",
-					"sub": "heartpost stores a heart count in Cloudflare KV and updates it with an optimistic client-side increment, so the number moves before the network round-trip finishes. HeartButton.astro ships in four variants, fully restyled through CSS custom properties.",
-					"home_card_copy": "One click, no account, counted in KV.",
+					"sub": "heartpost keeps one count per post in plugin KV and remembers who hearted in the reader's own browser, so a popular post is still one row. HeartButton.astro loads the count only when it scrolls near the viewport, and ships in three variants restyled through CSS custom properties.",
+					"home_card_copy": "One click, no account, one KV row per post.",
 					"npm_package": "@plugdash/heartpost",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/heartpost",
-					"capabilities": "kv:read, kv:write",
-					"hooks": "api:register",
+					"capabilities": "content:read",
+					"hooks": "none - public routes heart-status, heart, heart-remove",
 					"plugin_status": "alpha",
 					"install_command": "npm install @plugdash/heartpost",
-					"config_example": "import { heartpostPlugin } from \"@plugdash/heartpost\"\n// in emdash plugins array:\nheartpostPlugin()",
+					"config_example": "import { heartpostPlugin } from \"@plugdash/heartpost\"\n// in emdash plugins array:\nheartpostPlugin({ collections: [\"blog\"] })",
 					"wordpress_equivalent": "WP ULike",
 					"companion_component": "HeartButton.astro",
 					"pairs": "sharepost, readtime",
 					"pairs_note": "a heart is a quiet yes. A share is a loud one. Run both and you can tell which post readers loved versus which one they wanted other people to see.",
-					"demo_caption": "The count moves the instant you click, before KV even confirms it.",
-					"setup_note": "Every post gets a heart count the moment you add the component. No account system to stand up, no cookies to manage."
+					"demo_caption": "The count moves the instant you click. Click again to take the heart back.",
+					"setup_note": "Pass the collections you want hearted (the default is [\"posts\"]). Only published entries in them can be hearted. For a public site, also add a Cloudflare rate limit rule on the heart routes."
 				}
 			},
 			{
@@ -176,21 +176,21 @@
 					"name": "shortlink",
 					"tagline": "A clean URL for every post, generated the moment you publish.",
 					"headline": "The link you'd actually want to paste in a tweet.",
-					"sub": "shortlink generates a short URL for every published post and stores it in Cloudflare KV. CopyLink.astro ships in three variants - circle, pill, inline - with a green check on copy that resets itself after two seconds.",
+					"sub": "On publish, shortlink adds a native EmDash redirect for every post: /s/<code> to the post, 301. You manage them in the admin's Redirects screen, with hit counts. CopyLink.astro builds the same short URL from the entry id and copies it in one click.",
 					"home_card_copy": "Copy the link in one click. No dashboard, no separate service.",
 					"npm_package": "@plugdash/shortlink",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/shortlink",
-					"capabilities": "kv:read, kv:write",
-					"hooks": "content:afterSave, api:register",
+					"capabilities": "content:read, schema:read, redirects:write",
+					"hooks": "content:afterPublish",
 					"plugin_status": "alpha",
 					"install_command": "npm install @plugdash/shortlink",
-					"config_example": "import { shortlinkPlugin } from \"@plugdash/shortlink\"\n// in emdash plugins array:\nshortlinkPlugin({ autoCreate: true })",
+					"config_example": "import { shortlinkPlugin } from \"@plugdash/shortlink\"\n// in emdash plugins array:\nshortlinkPlugin({ prefix: \"/s/\" })",
 					"wordpress_equivalent": "Pretty Links",
 					"companion_component": "CopyLink.astro",
 					"pairs": "sharepost, heartpost",
 					"pairs_note": "shortlink, sharepost, and heartpost are the three things a reader can do without leaving the page. Most posts ship all three.",
 					"demo_caption": "Click to copy - a green check confirms it, then fades after two seconds.",
-					"setup_note": "Every published post gets a short URL automatically, no separate step. The component handles the clipboard copy."
+					"setup_note": "Every post gets its short link the first time it is published after install. To stop one working, disable it in Redirects instead of deleting it: a deleted one comes back on the next publish."
 				}
 			},
 			{
@@ -201,21 +201,21 @@
 					"name": "tocgen",
 					"tagline": "A 3,000-word post without a table of contents is a post nobody finishes.",
 					"headline": "Show readers the shape of the post before they commit to it.",
-					"sub": "tocgen parses headings out of your Portable Text content at publish time and writes a nested navigation tree into the post's metadata. TableOfContents.astro renders it with a sticky sidebar variant that tracks scroll position. Posts under the heading threshold are skipped automatically.",
+					"sub": "tocgen reads the headings in your Portable Text body when the page renders and builds a nested table of contents. HeadingAnchors gives each heading a matching id. No registration, nothing stored. Posts under the heading threshold get no TOC.",
 					"home_card_copy": "A table of contents, generated from your headings, skipped on short posts.",
 					"npm_package": "@plugdash/tocgen",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/tocgen",
-					"capabilities": "read:content, write:metadata",
-					"hooks": "content:afterSave",
+					"capabilities": "none - computed at render time",
+					"hooks": "none - computed at render time",
 					"plugin_status": "beta",
 					"install_command": "npm install @plugdash/tocgen",
-					"config_example": "import { tocgenPlugin } from \"@plugdash/tocgen\"\n// in emdash plugins array:\ntocgenPlugin({ minHeadings: 3 })",
+					"config_example": "",
 					"wordpress_equivalent": "Table of Contents Plus",
 					"companion_component": "TableOfContents.astro",
 					"pairs": "readtime, callout",
 					"pairs_note": "readtime tells a reader how long the post is. tocgen shows them the shape of it. Together they answer the two questions a reader asks before committing: how long, and about what.",
-					"demo_caption": "Sticky on desktop, nested h2/h3, active section highlighted as you scroll.",
-					"setup_note": "Every post with three or more headings gets a table of contents automatically. Shorter posts are skipped - nothing to configure."
+					"demo_caption": "Nested h2/h3 from the post's own headings. Sticky on desktop.",
+					"setup_note": "No registration. Add TableOfContents and HeadingAnchors to your post layout. Every post with three or more headings gets a table of contents on its next view."
 				}
 			},
 			{
@@ -226,21 +226,21 @@
 					"name": "engage",
 					"tagline": "heartpost, sharepost, and shortlink, wired into one component.",
 					"headline": "Three plugins, one import, one row under every post.",
-					"sub": "engage composes heartpost, sharepost, and shortlink into a single EngagementBar.astro. Install the three underlying plugins, then import the bundle instead of stitching the components together yourself.",
+					"sub": "engage composes heartpost, sharepost, and shortlink into a single EngagementBar.astro. Install the four packages, register heartpost and shortlink, then import the bundle instead of stitching the components together yourself.",
 					"home_card_copy": "One row under every post: heart, share, copy link.",
 					"npm_package": "@plugdash/engage",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/engage",
 					"capabilities": "none - convenience package only",
 					"hooks": "none - convenience package only",
 					"plugin_status": "beta",
-					"install_command": "npm install @plugdash/engage",
-					"config_example": "// engage is not registered in astro.config.mjs.\n// Register heartpost, sharepost, and shortlink instead,\n// then import EngagementBar.astro directly:",
+					"install_command": "npm install @plugdash/engage @plugdash/heartpost @plugdash/shortlink @plugdash/sharepost",
+					"config_example": "import { heartpostPlugin } from \"@plugdash/heartpost\"\nimport { shortlinkPlugin } from \"@plugdash/shortlink\"\n// engage itself is not registered. In the emdash plugins array:\nheartpostPlugin({ collections: [\"blog\"] }),\nshortlinkPlugin(),",
 					"wordpress_equivalent": "",
 					"companion_component": "EngagementBar.astro",
 					"pairs": "heartpost, sharepost, shortlink",
 					"pairs_note": "engage wraps heartpost, sharepost, and shortlink. Install all three plugins, then use engage's component instead of assembling your own layout.",
 					"demo_caption": "Heart, share buttons, and copy link, rendered from one component.",
-					"setup_note": "engage is a bundle, not a plugin of its own. Register heartpost, sharepost, and shortlink, then import EngagementBar.astro from @plugdash/engage into your Post layout."
+					"setup_note": "engage is a bundle, not a plugin. Register heartpost and shortlink (sharepost needs no registration), then import EngagementBar.astro into your post layout."
 				}
 			},
 			{
@@ -251,21 +251,21 @@
 					"name": "autobuild",
 					"tagline": "Hit publish in the admin. The deploy is already running.",
 					"headline": "The admin panel that also deploys your site.",
-					"sub": "autobuild fires your Cloudflare Pages, Netlify, or Vercel build hook on every publish - no git push, no manual redeploy. It debounces for five seconds, so a batch of edits triggers one deploy instead of ten.",
+					"sub": "For static and prerendered sites. autobuild calls your Cloudflare, Netlify, or Vercel deploy hook when a post is published or unpublished, or a published post is deleted. It debounces for five seconds, so a batch of edits triggers one deploy instead of ten. plugdash.dev is server-rendered, so it does not use autobuild.",
 					"home_card_copy": "The plugin that makes the admin the thing that ships the site.",
 					"npm_package": "@plugdash/autobuild",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/autobuild",
-					"capabilities": "read:content, network:fetch",
-					"hooks": "content:afterSave, content:afterDelete",
+					"capabilities": "content:read, network:request",
+					"hooks": "content:afterPublish, content:afterUnpublish, content:afterDelete",
 					"plugin_status": "beta",
 					"install_command": "npm install @plugdash/autobuild",
-					"config_example": "import { autobuildPlugin } from \"@plugdash/autobuild\"\n// in emdash plugins array:\nautobuildPlugin({\n  hookUrl: import.meta.env.CF_PAGES_DEPLOY_HOOK,\n  allowedHosts: [\"api.cloudflare.com\"],\n})",
+					"config_example": "import { autobuildPlugin } from \"@plugdash/autobuild\"\n// in emdash plugins array:\nautobuildPlugin({\n  hookUrl: process.env.DEPLOY_HOOK_URL,\n  collections: [\"posts\"],\n})",
 					"wordpress_equivalent": "",
 					"companion_component": "",
-					"pairs": "readtime, tocgen",
-					"pairs_note": "readtime and tocgen write metadata on publish. autobuild is what gets that metadata onto the live site within a minute, instead of at the next scheduled build.",
-					"demo_caption": "Publish in the admin and the build hook fires - four lines of config, no git push.",
-					"setup_note": "Paste your build hook URL from Cloudflare Pages, Netlify, or Vercel as an env var. Every publish rebuilds the site after that, debounced so a burst of edits fires one deploy, not ten."
+					"pairs": "socialcard, enrichkit",
+					"pairs_note": "socialcard and enrichkit both run on publish. On a static site, autobuild is what gets their output onto the live pages without a manual rebuild.",
+					"demo_caption": "Publish in the admin and the deploy hook fires. Only needed on static or prerendered sites.",
+					"setup_note": "Only for static or prerendered sites; a server-rendered site shows new posts without a rebuild. Pass hookUrl from an env var, or paste it in the admin as the secret Deploy hook URL setting (needs EMDASH_ENCRYPTION_KEY)."
 				}
 			},
 			{
@@ -274,14 +274,14 @@
 				"status": "published",
 				"data": {
 					"name": "codeblock",
-					"tagline": "Server-rendered syntax highlighting for EmDash code blocks. Zero client JavaScript.",
+					"tagline": "Shiki syntax highlighting for EmDash code blocks, done when the post is saved.",
 					"headline": "Highlighted code, rendered on the server.",
-					"sub": "Runs the code blocks EmDash already stores through Shiki at render time, so the page ships coloured HTML with no client JavaScript and no runtime theme switching. Nothing is rewritten on save - change the theme and every existing post picks it up on the next render. Ships CodeBlock.astro, auto-wired into PortableText.",
-					"home_card_copy": "Server-rendered syntax highlighting. Zero client JavaScript.",
+					"sub": "Highlights the code blocks EmDash already stores with Shiki when the post is saved, and keeps the HTML on the block, so page views never load Shiki. The only client JavaScript is a small copy-button listener. Change the theme and old posts still render correctly, highlighted at render time until they are saved again. CodeBlock.astro is auto-wired into PortableText.",
+					"home_card_copy": "Shiki syntax highlighting, done at save time. No highlighter in the browser.",
 					"npm_package": "@plugdash/codeblock",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/codeblock",
-					"capabilities": "content:read",
-					"hooks": "none",
+					"capabilities": "content:write",
+					"hooks": "content:beforeSave",
 					"plugin_status": "alpha",
 					"install_command": "npm install @plugdash/codeblock",
 					"config_example": "import { codeblockPlugin } from \"@plugdash/codeblock\"\n// in emdash plugins array:\ncodeblockPlugin({ theme: \"github-dark\", lineNumbers: true })",
@@ -289,8 +289,8 @@
 					"companion_component": "CodeBlock.astro",
 					"pairs": "callout, tocgen",
 					"pairs_note": "callouts and code blocks are the two blocks every technical writer reaches for.",
-					"demo_caption": "TypeScript, Python, an unknown language - highlighted, plaintext fallback, no client JS either way.",
-					"setup_note": "After this, every existing code block in your posts renders highlighted - no editor changes, no migration. Auto-wired into PortableText, so there's nothing else to add unless you want direct control outside Portable Text."
+					"demo_caption": "TypeScript, Python, an unknown language - highlighted, with a plaintext fallback.",
+					"setup_note": "Existing code blocks render highlighted right away, at render time. Saving a post stores the HTML so later views skip Shiki. Auto-wired into PortableText, so there is nothing else to add."
 				}
 			},
 			{
@@ -301,21 +301,21 @@
 					"name": "enrichkit",
 					"tagline": "AI enrichment for publishers who don't want to think about prompts.",
 					"headline": "One publish, one LLM call, five new fields.",
-					"sub": "Adds a summary, key topics, auto-tags, a reading level estimate, and a tweet draft to post metadata - one LLM call per publish, choose which enrichments you need. Skips anything under 100 words. Never fails a publish, whatever the API does.",
+					"sub": "On publish, one LLM call adds a summary, key topics, tags, a reading level, and a tweet draft - pick the ones you need. Results go to plugin KV, and the summary fills an empty SEO description. Skips posts under 100 words and posts that have not changed. Never fails a publish.",
 					"home_card_copy": "AI enrichment for publishers who don't want to think about prompts.",
 					"npm_package": "@plugdash/enrichkit",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/enrichkit",
 					"capabilities": "content:read, content:write, network:request",
-					"hooks": "content:afterSave",
+					"hooks": "content:afterPublish",
 					"plugin_status": "alpha",
 					"install_command": "npm install @plugdash/enrichkit",
-					"config_example": "import { enrichkitPlugin } from \"@plugdash/enrichkit\"\n// in emdash plugins array:\nenrichkitPlugin({\n  provider: \"anthropic\",\n  apiKey: process.env.ANTHROPIC_API_KEY,\n})",
+					"config_example": "import { enrichkitPlugin } from \"@plugdash/enrichkit\"\n// in emdash plugins array:\nenrichkitPlugin({ provider: \"anthropic\" })\n// then paste the API key in the admin:\n// Plugins > enrichkit > Settings > API key",
 					"wordpress_equivalent": "",
 					"companion_component": "",
-					"pairs": "sharepost, autobuild",
-					"pairs_note": "the tweetDraft enrichkit writes is exactly what an agent needs to post automatically - sharepost covers the human share path, autobuild gets the new metadata live within a minute.",
+					"pairs": "sharepost, socialcard",
+					"pairs_note": "the tweet draft enrichkit stores is what an agent needs to post for you. sharepost covers the human share path, and socialcard gives the same post a share image.",
 					"demo_caption": "One LLM call on publish - summary, topics, tags, reading level, and a tweet draft.",
-					"setup_note": "Set an API key at build time or later from the admin. After that, every published post over 100 words gets enriched automatically - nothing to do per post."
+					"setup_note": "Set the API key in the admin as a secret setting (needs the EMDASH_ENCRYPTION_KEY env var). After that every published post over 100 words is enriched once, and republishing an unchanged post costs nothing. Results and a Regenerate button are on the enrichkit admin page."
 				}
 			},
 			{
@@ -326,21 +326,21 @@
 					"name": "socialcard",
 					"tagline": "A good share preview is often the only reason someone clicks. Give every post one.",
 					"headline": "Every post gets a share image. Automatically.",
-					"sub": "Renders an Open Graph card for every published post - title, author, and date, in one of three templates. Uploads it and writes the URL to metadata.ogImage on publish. No design tool, no third-party image API, no manual export.",
+					"sub": "On publish, renders a 1200x630 PNG card for the post - title, author, and date, in one of three templates - uploads it to the media library, and sets it as the post's SEO image. getSeoMeta and EmDashHead then put it in og:image. No design tool, no third-party image API.",
 					"home_card_copy": "A good share preview is often the only reason someone clicks. Give every post one.",
 					"npm_package": "@plugdash/socialcard",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/socialcard",
-					"capabilities": "content:read, content:write, media:write",
-					"hooks": "plugin:install, content:afterSave",
+					"capabilities": "content:read, content:write, media:write, schema:read",
+					"hooks": "content:afterPublish",
 					"plugin_status": "alpha",
 					"install_command": "npm install @plugdash/socialcard",
 					"config_example": "import { socialcardPlugin } from \"@plugdash/socialcard\"\n// in emdash plugins array:\nsocialcardPlugin({ template: \"bold\" })",
 					"wordpress_equivalent": "Social Image Generator",
 					"companion_component": "",
-					"pairs": "sharepost, autobuild",
-					"pairs_note": "a card that actually represents the post makes sharepost's links worth clicking, and autobuild makes sure it's live within a minute of publish.",
-					"demo_caption": "Publish a post, get a card - title, author, and date rendered as an SVG, no image service required.",
-					"setup_note": "After this, every published post gets an OG card automatically. Existing posts need a republish to pick it up - socialcard only runs on content:afterSave."
+					"pairs": "sharepost, enrichkit",
+					"pairs_note": "a card that represents the post makes sharepost's links worth clicking, and enrichkit fills the description that sits under it.",
+					"demo_caption": "Publish a post, get a PNG card - title, author, and date, no image service required.",
+					"setup_note": "Every post gets a card the next time it is published; unchanged posts are skipped. Your layout must write og:image from getSeoMeta or EmDashHead. A hand-set SEO image is kept unless overwriteSeoImage is true."
 				}
 			},
 			{
@@ -349,22 +349,22 @@
 				"status": "published",
 				"data": {
 					"name": "fromghost",
-					"tagline": "Your Ghost posts, in EmDash's admin, no CLI step.",
-					"headline": "Bring your Ghost site over without leaving the admin.",
-					"sub": "Registers a Ghost source in EmDash's own import screen, next to the built-in WordPress importers. Upload the JSON export from Ghost's Settings > Labs, and it reads posts, pages, tags, and authors, converts post bodies to Portable Text, and resolves feature images so EmDash's own pipeline can download them.",
+					"tagline": "Your Ghost posts, tags, and images, moved in one command.",
+					"headline": "Bring your Ghost site over in one command.",
+					"sub": "The @plugdash/import CLI reads the JSON export from Ghost's Settings > Labs and creates posts, pages, and tags on your EmDash site, with Portable Text bodies, images in the media library, SEO fields, and the original dates. It runs from your laptop, so nothing is added to your site. @plugdash/fromghost holds the same parser for your own scripts.",
 					"home_card_copy": "Bring your Ghost site over - posts, tags, authors, and images included.",
 					"npm_package": "@plugdash/fromghost",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/fromghost",
-					"capabilities": "content:write, media:write",
-					"hooks": "none - registers an ImportSource, not a content hook",
+					"capabilities": "none on your site - the import CLI uses an API token with content:read, content:write, media:read, media:write, schema:read",
+					"hooks": "none - the import runs from your laptop over the EmDash REST API",
 					"plugin_status": "alpha",
-					"install_command": "npm install @plugdash/fromghost",
-					"config_example": "import { fromghostPlugin } from \"@plugdash/fromghost\"\n// in emdash plugins array:\nfromghostPlugin({ siteUrl: \"https://yourghostsite.com\" })",
+					"install_command": "npm install -D @plugdash/import",
+					"config_example": "# dry run first, then the same command without --dry-run\nnpx plugdash-import ghost ./my-blog.ghost.json \\\n  --url https://your-site.com --token ec_pat_... \\\n  --site-url https://old-blog.ghost.io --dry-run",
 					"wordpress_equivalent": "",
 					"companion_component": "",
 					"pairs": "",
-					"demo_caption": "One JSON export in - post/page/tag/author counts ready to review before you import.",
-					"setup_note": "After this, \"Ghost Export File\" appears as a source in EmDash's admin import screen. Upload the export there - there's no separate CLI step."
+					"demo_caption": "One JSON export in - posts, pages, and tags, counted before anything is written.",
+					"setup_note": "Create an API token under Settings > API Tokens, run the import with --dry-run, then without. Everything lands as a draft unless you pass --publish. Running it twice is safe: entries that already exist are skipped."
 				}
 			},
 			{
@@ -373,22 +373,22 @@
 				"status": "published",
 				"data": {
 					"name": "fromsubstack",
-					"tagline": "Migrate from Substack to EmDash in minutes, not a rewrite.",
+					"tagline": "Migrate from Substack to EmDash in one command, not a rewrite.",
 					"headline": "Bring your Substack archive with you.",
-					"sub": "Registers Substack as a source in EmDash's admin importer. Upload the export ZIP from Substack's Settings > Exports, and it reads posts.csv plus each post's HTML, converts bodies to Portable Text, and reports images so EmDash can bring them in too. Paid and draft posts are flagged in metadata, not hidden.",
+					"sub": "The @plugdash/import CLI reads the export ZIP from Substack's Settings > Exports and creates the posts on your EmDash site, with Portable Text bodies, images in the media library, and the original dates. Paid posts import as drafts so you can review them. It runs from your laptop, so nothing is added to your site. @plugdash/fromsubstack holds the same parser for your own scripts.",
 					"home_card_copy": "Bring your Substack archive with you - posts, images, and paywall status included.",
 					"npm_package": "@plugdash/fromsubstack",
 					"github_url": "https://github.com/plugdash/plugdash/tree/main/packages/fromsubstack",
-					"capabilities": "content:write, media:write",
-					"hooks": "none - registers an import source, not a content hook",
+					"capabilities": "none on your site - the import CLI uses an API token with content:read, content:write, media:read, media:write, schema:read",
+					"hooks": "none - the import runs from your laptop over the EmDash REST API",
 					"plugin_status": "alpha",
-					"install_command": "npm install @plugdash/fromsubstack",
-					"config_example": "import { fromsubstackPlugin } from \"@plugdash/fromsubstack\"\n// in emdash plugins array:\nfromsubstackPlugin({ targetCollection: \"posts\", status: \"draft\" })",
+					"install_command": "npm install -D @plugdash/import",
+					"config_example": "# dry run first, then the same command without --dry-run\nnpx plugdash-import substack ./substack-export.zip \\\n  --url https://your-site.com --token ec_pat_... --dry-run",
 					"wordpress_equivalent": "",
 					"companion_component": "",
 					"pairs": "",
 					"demo_caption": "One export ZIP in - posts, images, and paid/free status ready to review.",
-					"setup_note": "After this, \"Substack\" appears as a source in EmDash's admin importer. Upload the export ZIP there - there's no separate CLI step."
+					"setup_note": "Create an API token under Settings > API Tokens, run the import with --dry-run, then without. Everything lands as a draft unless you pass --publish. Running it twice is safe: entries that already exist are skipped."
 				}
 			}
 		],
@@ -459,6 +459,241 @@
 							{ "_type": "span", "_key": "s10k", "text": " for native, no-external-script analytics." }
 						]},
 						{ "_type": "block", "_key": "b11", "style": "normal", "children": [{ "_type": "span", "_key": "s11", "text": "We hold everything we ship to the same bar as these eight: small enough to read in one sitting, open enough to fork, and live on plugdash.dev before we ever ask you to install it." }] }
+					]
+				}
+			},
+			{
+				"id": "blog-plugdash-demo",
+				"slug": "plugdash-demo",
+				"status": "published",
+				"data": {
+					"title": "PlugDash demo post",
+					"description": "A real EmDash post that shows readtime, tocgen, sharepost, heartpost, shortlink and socialcard working.",
+					"content": [
+						{
+							"_type": "block",
+							"_key": "d1",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d1s",
+									"text": "This post exists so you can see PlugDash plugins working on a real EmDash entry. It is a normal blog post. Nothing on this page is mocked, and nothing was written into the post by hand to make the plugins look good.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d2",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d2s",
+									"text": "The reading time at the top is worked out from the words below when the page renders. The table of contents on the left is built from the headings in this post. The heart button, the share buttons and the copy link button at the bottom all use this post's real id and real URL.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d3",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d3s",
+									"text": "Reading time and the table of contents",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d4",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d4s",
+									"text": "readtime counts the words in the Portable Text body and divides by 238 words per minute, then rounds up. It does not store anything, so editing a post changes the estimate on the next page view. There is no hook to run and no plugin to register.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d5",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d5s",
+									"text": "tocgen reads the same body and lists every h2 and h3 once a post has three or more headings. HeadingAnchors gives each heading an id that matches the link in the table of contents, so every entry jumps to its section. Try clicking one.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d6",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d6s",
+									"text": "Both plugins run while the page is rendered on the server. The measured cost of readtime, tocgen and sharepost together is about a quarter of a millisecond per page view, which is far below what a Cloudflare Worker allows.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d7",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d7s",
+									"text": "Hearts, short links and sharing",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d8",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d8s",
+									"text": "heartpost keeps one count per post in plugin storage. The count is not part of the page. The button asks for it only when it comes within 200 pixels of the screen, so a reader who never scrolls this far never makes that request.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d9",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d9s",
+									"text": "shortlink creates a native EmDash redirect the first time a post is published. The code is the last eight characters of the post id. The redirect shows up under Redirects in the admin, keeps a hit count, and follows the post if its slug changes.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d10",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d10s",
+									"text": "sharepost builds the share links from the public URL of the page. They are plain links with no scripts from the networks, so nothing loads from X, LinkedIn or Bluesky until a reader clicks.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d11",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d11s",
+									"text": "The social card",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d12",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d12s",
+									"text": "socialcard draws a PNG for each post when it is published and sets it as the post's SEO image. The page head writes it to og:image, so a link to this post shows a card with its title when it is pasted into a chat or a feed.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d13",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d13s",
+									"text": "If an editor sets an SEO image by hand, socialcard leaves it alone. Republishing a post that has not changed does not draw a new card.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d14",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d14s",
+									"text": "How this page is checked",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d15",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d15s",
+									"text": "A smoke test opens this post after every deploy and once a day. It checks that the reading time matches the word count, that the share link carries the public URL, that the short link redirects here, that the heart count matches the server, that every table of contents link has a target, and that the social card is a real image.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "d16",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "d16s",
+									"text": "When a check fails, the run fails and opens an issue on the site repository. That is how we know the plugins work on a live site, not only in unit tests.",
+									"marks": []
+								}
+							]
+						}
 					]
 				}
 			}

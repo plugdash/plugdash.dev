@@ -3,41 +3,38 @@ import Code from "../../components/Code.astro";
 import CopyLink from "@plugdash/shortlink/CopyLink.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
-import { demoPost, pluginDocToc } from "../../data/demoPost";
+import { loadDemoEntry } from "../../data/demo-entry";
+import { pluginDocToc } from "../../data/doc-toc";
 import { getPlugin } from "../../data/plugins";
 import Doc from "../../layouts/Doc.astro";
 
 const plugin = getPlugin("shortlink")!;
+const demo = await loadDemoEntry();
 ---
 
 <Doc
   tocEntries={pluginDocToc}
   currentSlug="shortlink"
-  readingTimeMinutes={2}
-  wordCount={260}
   title="shortlink"
   section="@plugdash/shortlink"
-  description="Short URLs per post, stored in KV."
+  description="A short URL for every post, as a native EmDash redirect."
 >
   <h2 id="what-it-does">What it does</h2>
   <p>
-    On publish, generates a short code for each post and stores the
-    mapping in KV under <code>shortlink:[code]:data</code>. Registers a
-    redirect route so <code>/l/[code]</code> sends visitors to the full
-    post URL. Ships <code>CopyLink.astro</code> with three variants and a
-    green check confirmation on copy.
+    On publish, adds one native EmDash redirect per post:
+    <code>/s/&lt;code&gt;</code> to the post, 301. The code is the last 8
+    characters of the entry id, lowercased. There is no route or page to
+    add. You see hits and can edit or turn off each link in the admin's
+    <strong>Redirects</strong> screen (group <code>shortlink</code>). When a
+    slug changes, EmDash moves the short link to the new URL on its own.
+    Ships <code>CopyLink.astro</code>, which builds the same short URL from
+    the entry id and copies it.
   </p>
 
   <h2 id="install">Install</h2>
   <InstallCommand command={plugin.installCommand} />
 
   <h2 id="register">Register</h2>
-  <p>
-    Open <code>astro.config.mjs</code> at the root of your Astro project.
-    Import the plugin at the top, then add it to the <code>plugins</code>
-    array of the <code>emdash()</code> integration - the one that sits
-    inside Astro's top-level <code>integrations</code> array:
-  </p>
   <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { shortlinkPlugin } from "@plugdash/shortlink"
@@ -46,11 +43,17 @@ export default defineConfig({
   integrations: [
     emdash({
       plugins: [
-        shortlinkPlugin({ autoCreate: true }),
+        shortlinkPlugin({ prefix: "/s/" }),
       ],
     }),
   ],
 })`} />
+  <p>
+    Options: <code>prefix</code> (default <code>"/s/"</code>) and
+    <code>pathPattern</code> (default <code>"/&#123;collection&#125;/&#123;slug&#125;"</code>),
+    used only when a collection has no URL pattern. If you change
+    <code>prefix</code>, pass the same value to <code>CopyLink</code>.
+  </p>
 
   <h2 id="add-the-component">Add the component</h2>
   <Code language="astro" code={`---
@@ -59,17 +62,29 @@ import CopyLink from "@plugdash/shortlink/CopyLink.astro"
 <CopyLink post={post} />`} />
 
   <h2 id="live-demo">Live demo</h2>
-  <div class="demo-inline" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
-    <CopyLink post={demoPost} variant="circle" />
-    <CopyLink post={demoPost} variant="pill" />
-    <CopyLink post={demoPost} variant="inline" />
-  </div>
+  {demo ? (
+    <div class="demo-inline" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <CopyLink post={demo} variant="circle" />
+      <CopyLink post={demo} variant="pill" showUrl />
+      <CopyLink post={demo} variant="ghost" />
+      <CopyLink post={demo} variant="inline" />
+    </div>
+  ) : (
+    <p>The demo post is not published yet.</p>
+  )}
 
   <PluginReference plugin={plugin} />
 
   <h2 id="for-agents">For agents</h2>
-  <p>After install, publish a post and verify
-  <code>post.data.metadata.shortlink.url</code> is populated. Hit the
-  short URL in a browser and confirm it redirects to the canonical post.
-  Codes are generated at publish time, not lazily.</p>
+  <p>
+    After installing @plugdash/shortlink, register
+    <code>shortlinkPlugin()</code>, import <code>CopyLink.astro</code> in
+    the post layout and render
+    <code>&lt;CopyLink post=&#123;post&#125; /&gt;</code>. Publish a post
+    (or republish an old one), then request
+    <code>/s/&lt;last 8 chars of the entry id, lowercased&gt;</code>: it
+    should answer 301 to the post. Posts published before install get
+    their link on their next publish. Data stored: one redirect per post,
+    in EmDash's redirects table.
+  </p>
 </Doc>

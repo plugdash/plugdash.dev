@@ -3,7 +3,7 @@ import Code from "../../components/Code.astro";
 import CalloutBlock from "@plugdash/callout/Callout.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
-import { pluginDocToc } from "../../data/demoPost";
+import { pluginDocToc } from "../../data/doc-toc";
 import { getPlugin } from "../../data/plugins";
 import Doc from "../../layouts/Doc.astro";
 
@@ -13,8 +13,6 @@ const plugin = getPlugin("callout")!;
 <Doc
   tocEntries={pluginDocToc}
   currentSlug="callout"
-  readingTimeMinutes={2}
-  wordCount={240}
   title="callout"
   section="@plugdash/callout"
   description="Info, warning, tip, and danger blocks for the EmDash editor."
@@ -22,19 +20,18 @@ const plugin = getPlugin("callout")!;
   <h2 id="what-it-does">What it does</h2>
   <p>
     Registers a <code>callout</code> block type in the EmDash Portable
-    Text editor. Authors pick one of four variants - info, warning, tip,
-    danger - and optionally add a title. Ships
-    <code>Callout.astro</code> for rendering in your theme.
+    Text editor. Authors type <code>/</code>, pick Callout, choose one of
+    four variants (info, warning, tip, danger) and add an optional title.
+    <code>Callout.astro</code> is wired into EmDash's PortableText
+    renderer automatically, so callouts show on your site with no theme
+    code. The plugin declares no capabilities and stores nothing outside
+    the post.
   </p>
   <p>
-    callout is a Native plugin (it registers an editor block) - it runs
-    unsandboxed.
+    callout is a Native plugin, because it ships an Astro block renderer.
   </p>
 
-  <CalloutBlock variant="tip" title="Tip">
-    <p>Use the tip variant for the non-obvious thing that makes a task
-    easier. This block is the plugin rendering itself on its own doc page.</p>
-  </CalloutBlock>
+  <CalloutBlock variant="tip" title="Tip" body="Use the tip variant for the non-obvious thing that makes a task easier. This block is the plugin rendering itself on its own doc page." />
 
   <h2 id="install">Install</h2>
   <InstallCommand command={plugin.installCommand} />
@@ -59,30 +56,30 @@ export default defineConfig({
 })`} />
 
   <h2 id="add-the-component">Add the component</h2>
-  <p>Use the component in your Portable Text renderer for blocks with
-  <code>_type === "callout"</code>:</p>
-  <Code language="astro" code={`import Callout from "@plugdash/callout/Callout.astro"
-<Callout variant="info" title="Heads up">
-  <p>Content goes here.</p>
-</Callout>`} />
+  <p>
+    Nothing to add for callouts written in the editor: EmDash renders them
+    with <code>Callout.astro</code> on its own. To use one by hand in a
+    page, pass the text as <code>body</code>. A blank line starts a new
+    paragraph. Without <code>body</code> the component renders nothing.
+  </p>
+  <Code language="astro" code={`---
+import Callout from "@plugdash/callout/Callout.astro"
+---
+<Callout variant="info" title="Heads up" body="Content goes here." />`} />
 
   <h2 id="live-demo">Live demo</h2>
   <div class="demo-inline" style="display:flex;flex-direction:column;gap:0.75rem">
-    <CalloutBlock variant="info" title="Info">
-      <p>Background context readers might want but don't strictly need.</p>
-    </CalloutBlock>
-    <CalloutBlock variant="warning" title="Warning">
-      <p>Something that will bite them if they skip it.</p>
-    </CalloutBlock>
-    <CalloutBlock variant="danger" title="Danger">
-      <p>Something that will break things if they get it wrong.</p>
-    </CalloutBlock>
+    <CalloutBlock variant="info" title="Info" body="Background context readers might want but don't strictly need." />
+    <CalloutBlock variant="warning" title="Warning" body="Something that will bite them if they skip it." />
+    <CalloutBlock variant="danger" title="Danger" body="Something that will break things if they get it wrong." />
   </div>
 
   <PluginReference plugin={plugin} />
 
   <h2 id="for-agents">For agents</h2>
-  <p>After install, open the EmDash admin editor and confirm the
-  <code>callout</code> block type appears in the block menu. The plugin
-  does not write metadata - it only registers the block type.</p>
+  <p>After installing @plugdash/callout and registering
+  <code>calloutPlugin()</code>, open a post in the EmDash editor, type
+  <code>/</code> and confirm Callout is in the block menu. Add one, save,
+  and check it renders on the page. No layout change is needed. Data
+  stored: the callout block inside the post's Portable Text.</p>
 </Doc>

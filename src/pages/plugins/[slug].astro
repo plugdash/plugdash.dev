@@ -12,7 +12,7 @@ import Code from "../../components/Code.astro";
 import SocialcardSample from "../../components/SocialcardSample.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginCard from "../../components/PluginCard.astro";
-import { buildDemoPost } from "../../data/demoPost";
+import { DEMO_URL, loadDemoEntry } from "../../data/demo-entry";
 import { resolvePlugin, resolvePlugins } from "../../lib/content";
 import Base from "../../layouts/Base.astro";
 
@@ -33,14 +33,11 @@ function eyebrowText(p: typeof plugin) {
 
 const eyebrow = eyebrowText(plugin);
 
-// Fixture post for live demos with a real share message and URL per plugin.
-const demoPost = buildDemoPost({
-  id: `demo-${plugin!.slug}`,
-  slug: "the-plugdash-launch",
-  title: `Shipping with @plugdash/${plugin!.name}`,
-  url: `https://plugdash.dev/plugins/${plugin!.slug}`,
-  message: `${plugin!.tagline} - @plugdash/${plugin!.name}`,
-});
+// Live demos render on a real published post (src/data/demo-entry.ts), so
+// reading time, TOC, hearts and the short link are real values. When the
+// post does not exist the post-based demos are hidden.
+const demo = await loadDemoEntry();
+const postDemo = ["readtime", "sharepost", "heartpost", "shortlink", "tocgen", "engage"].includes(plugin!.slug);
 
 const relatedPlugins = plugin!.pairs
   .map((name) => allPlugins.find((p) => p.slug === name))
@@ -51,23 +48,12 @@ const navPlugins = allPlugins;
 
 const pageToc = [
   { id: "overview", text: "Overview" },
-  { id: "demo", text: "Demo" },
+  ...(!postDemo || demo ? [{ id: "demo", text: "Demo" }] : []),
   { id: "setup", text: "Setup" },
   { id: "customise", text: "Customise" },
   ...(relatedPlugins.length > 0 ? [{ id: "pairs", text: "Pairs well with" }] : []),
 ];
 
-const pagePost = buildDemoPost({
-  id: `plugin-page-${p.slug}`,
-  slug: p.slug,
-  title: `${p.name} - EmDash plugin - plugdash`,
-  url: `https://plugdash.dev/plugins/${p.slug}`,
-  message: `${p.tagline} - @plugdash/${p.name}`,
-  heartCount: 0,
-  wordCount: 320,
-  readingTimeMinutes: 2,
-  metadata: p.metadata,
-});
 ---
 
 <Base
@@ -103,9 +89,7 @@ const pagePost = buildDemoPost({
           <p class="eyebrow">{eyebrow}</p>
           <h1 class="plugin-headline">{p.headline}</h1>
           <div class="plugin-meta">
-            <ReadingTime post={pagePost} variant="inline" showWords />
-            <span class="meta-sep" aria-hidden="true">•</span>
-            <ShareButtons post={pagePost} variant="circle" size="sm" />
+            <ShareButtons title={`${p.name} - EmDash plugin - plugdash`} via="abhinavs" variant="circle" size="sm" />
           </div>
           <p class="plugin-sub">{p.sub}</p>
           <div class="install-strip">
@@ -117,14 +101,15 @@ const pagePost = buildDemoPost({
           </div>
         </header>
 
+        {(!postDemo || demo) && (
         <section class="demo-band" id="demo">
       <div class="demo-content">
         {p.slug === "readtime" && (
           <div class="demo-variants">
-            <ReadingTime post={demoPost} variant="badge" />
-            <ReadingTime post={demoPost} variant="pill" />
-            <ReadingTime post={demoPost} variant="inline" />
-            <ReadingTime post={demoPost} variant="minimal" />
+            <ReadingTime post={demo!} variant="badge" />
+            <ReadingTime post={demo!} variant="pill" />
+            <ReadingTime post={demo!} variant="inline" />
+            <ReadingTime post={demo!} variant="minimal" />
           </div>
         )}
         {p.slug === "callout" && (
@@ -155,7 +140,7 @@ const pagePost = buildDemoPost({
           <div class="demo-grid">
             {(["circle", "pill", "ghost", "filled"] as const).map((v) => (
               <div class="demo-cell">
-                <ShareButtons post={demoPost} variant={v} />
+                <ShareButtons post={demo!} url={DEMO_URL} via="abhinavs" variant={v} />
                 <span class="demo-label">{v}</span>
               </div>
             ))}
@@ -165,7 +150,7 @@ const pagePost = buildDemoPost({
           <div class="demo-grid">
             {(["circle", "pill", "ghost"] as const).map((v) => (
               <div class="demo-cell">
-                <HeartButton post={demoPost} variant={v} />
+                <HeartButton post={demo!} variant={v} />
                 <span class="demo-label">{v}</span>
               </div>
             ))}
@@ -175,7 +160,7 @@ const pagePost = buildDemoPost({
           <div class="demo-grid">
             {(["circle", "pill", "ghost", "inline"] as const).map((v) => (
               <div class="demo-cell">
-                <CopyLink post={demoPost} variant={v} />
+                <CopyLink post={demo!} variant={v} />
                 <span class="demo-label">{v}</span>
               </div>
             ))}
@@ -183,14 +168,14 @@ const pagePost = buildDemoPost({
         )}
         {p.slug === "tocgen" && (
           <div class="demo-toc">
-            <TableOfContents post={demoPost} />
+            <TableOfContents post={demo!} />
           </div>
         )}
         {p.slug === "engage" && (
           <div class="demo-stack">
             {(["circle", "pill", "ghost"] as const).map((v) => (
               <div class="demo-cell">
-                <EngagementBar post={demoPost} variant={v} attribution={v === "circle"} />
+                <EngagementBar post={demo!} url={DEMO_URL} via="abhinavs" variant={v} attribution={v === "circle"} />
                 <span class="demo-label">{v}</span>
               </div>
             ))}
@@ -215,7 +200,7 @@ const pagePost = buildDemoPost({
         {p.slug === "socialcard" && <SocialcardSample />}
         {!p.componentImport && !["autobuild", "enrichkit", "socialcard"].includes(p.slug) && p.configExample && (
           <div class="demo-sequence">
-            <Code language="js" code={p.configExample} />
+            <Code language={p.configExample.startsWith("#") ? "bash" : "js"} code={p.configExample} />
           </div>
         )}
         <p class="demo-caption">
@@ -226,11 +211,12 @@ const pagePost = buildDemoPost({
               : !p.componentImport
               ? "No UI. Pure infrastructure."
               : ["readtime", "sharepost", "heartpost", "shortlink", "engage"].includes(p.slug)
-                ? "Every variant. The first is the default, no configuration."
+                ? "Every variant, rendered from a real post on this site. The first is the default."
                 : "This is the default. No configuration."}
         </p>
       </div>
     </section>
+        )}
 
         <section class="setup" id="setup">
       <h2>Setup</h2>
@@ -238,7 +224,7 @@ const pagePost = buildDemoPost({
         <li>
           <h3>Install and register</h3>
           <Code language="bash" code={p.installCommand} />
-          {p.configExample && <Code language="js" code={p.configExample} />}
+          {p.configExample && <Code language={p.configExample.startsWith("#") ? "bash" : "js"} code={p.configExample} />}
         </li>
         {p.componentImport && (
           <li>
@@ -336,7 +322,7 @@ const pagePost = buildDemoPost({
         )}
 
         <footer class="plugin-footer">
-          <EngagementBar post={pagePost} />
+          <ShareButtons title={`${p.name} - EmDash plugin - plugdash`} via="abhinavs" />
           <a href="https://plugdash.dev" class="plugin-attribution" rel="noopener">
             built with plugdash.dev
           </a>

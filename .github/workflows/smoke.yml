@@ -1,0 +1,63 @@
+name: Smoke
+
+# Checks the plugins on the live demo post after each production deploy and
+# once a day. On failure the run fails and opens (or comments on) an issue.
+on:
+  workflow_run:
+    workflows: [Deploy]
+    types: [completed]
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Site to check
+        default: https://plugdash.dev
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  smoke:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: ${{ inputs.base_url || 'https://plugdash.dev' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      # Cloudflare can take a few seconds to serve a new deploy everywhere
+      - if: github.event_name == 'workflow_run'
+        run: sleep 30
+
+      - name: Run smoke checks
+        run: node scripts/smoke.mjs 2>&1 | tee smoke.log; exit ${PIPESTATUS[0]}
+        shell: bash
+
+      - name: Open an issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        shell: bash
+        run: |
+          title="Smoke check failed on ${BASE_URL}"
+          { echo "Run: ${RUN_URL}"; echo; echo '```'; cat smoke.log 2>/dev/null || echo "no log"; echo '```'; } > body.md
+          existing=$(gh issue list --state open --search "\"${title}\" in:title" --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file body.md
+          else
+            gh issue create --title "$title" --body-file body.md
+          fi

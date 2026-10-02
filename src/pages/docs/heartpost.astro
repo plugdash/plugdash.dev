@@ -3,29 +3,34 @@ import Code from "../../components/Code.astro";
 import HeartButton from "@plugdash/heartpost/HeartButton.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
-import { demoPost, extendPluginDocToc } from "../../data/demoPost";
+import { loadDemoEntry } from "../../data/demo-entry";
+import { extendPluginDocToc } from "../../data/doc-toc";
 import { getPlugin } from "../../data/plugins";
 import Doc from "../../layouts/Doc.astro";
 
 const plugin = getPlugin("heartpost")!;
-const tocEntries = extendPluginDocToc({ id: "known-limits", text: "Known limits" });
+const demo = await loadDemoEntry();
+const tocEntries = extendPluginDocToc(
+  { id: "options", text: "Options" },
+  { id: "known-limits", text: "Known limits" },
+);
 ---
 
 <Doc
   tocEntries={tocEntries}
   currentSlug="heartpost"
-  readingTimeMinutes={2}
-  wordCount={240}
   title="heartpost"
   section="@plugdash/heartpost"
-  description="KV-backed heart counter. One click, one count."
+  description="A heart counter with one KV row per post."
 >
   <h2 id="what-it-does">What it does</h2>
   <p>
-    Registers a POST route that increments a counter in
-    Cloudflare KV (or local KV in dev), keyed by post ID and a
-    browser-side fingerprint to prevent duplicate clicks. Ships
-    <code>HeartButton.astro</code> with optimistic updates.
+    Keeps one count per post in plugin KV (<code>count:&lt;entry id&gt;</code>),
+    so a post with 1,000 hearts is still one row. Whether a reader hearted
+    is kept in their own browser (<code>localStorage</code>), so clicking
+    again takes the heart back. Ships <code>HeartButton.astro</code>, which
+    loads the count only when it comes within 200px of the viewport. A page
+    that is never scrolled that far makes no request.
   </p>
 
   <h2 id="install">Install</h2>
@@ -33,10 +38,11 @@ const tocEntries = extendPluginDocToc({ id: "known-limits", text: "Known limits"
 
   <h2 id="register">Register</h2>
   <p>
-    Open <code>astro.config.mjs</code> at the root of your Astro project.
-    Import the plugin at the top, then add it to the <code>plugins</code>
-    array of the <code>emdash()</code> integration - the one that sits
-    inside Astro's top-level <code>integrations</code> array:
+    Open <code>astro.config.mjs</code> and add the plugin to the
+    <code>plugins</code> array of the <code>emdash()</code> integration.
+    Pass the collections whose entries can be hearted. The default is
+    <code>["posts"]</code>; the blog template on this site uses
+    <code>blog</code>.
   </p>
   <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
@@ -45,7 +51,9 @@ import { heartpostPlugin } from "@plugdash/heartpost"
 export default defineConfig({
   integrations: [
     emdash({
-      plugins: [heartpostPlugin()],
+      plugins: [
+        heartpostPlugin({ collections: ["blog"] }),
+      ],
     }),
   ],
 })`} />
@@ -55,28 +63,54 @@ export default defineConfig({
 import HeartButton from "@plugdash/heartpost/HeartButton.astro"
 ---
 <HeartButton post={post} />`} />
+  <p>
+    Hearts are keyed on <code>post.data.id</code>. Only published entries
+    in one of the <code>collections</code> can be hearted; anything else is
+    rejected.
+  </p>
 
   <h2 id="live-demo">Live demo</h2>
-  <div class="demo-inline" style="display:flex;align-items:center;gap:1rem">
-    <HeartButton post={demoPost} />
-    <span style="color:var(--muted);font-size:0.875rem">One click, one count, no account.</span>
-  </div>
+  {demo ? (
+    <div class="demo-inline" style="display:flex;align-items:center;gap:1rem">
+      <HeartButton post={demo} />
+      <span style="color:var(--muted);font-size:0.875rem">The count for a real post on this site. Click again to take the heart back.</span>
+    </div>
+  ) : (
+    <p>The demo post is not published yet.</p>
+  )}
 
   <PluginReference plugin={plugin} />
 
-  <h2 id="known-limits">Known limits (as of 0.1.0)</h2>
+  <h2 id="options">Options</h2>
+  <table>
+    <thead><tr><th>option</th><th>type</th><th>default</th><th>description</th></tr></thead>
+    <tbody>
+      <tr><td><code>collections</code></td><td><code>string[]</code></td><td><code>["posts"]</code></td><td>Collections whose entries can be hearted</td></tr>
+      <tr><td><code>rateLimitPerMinute</code></td><td><code>number</code></td><td><code>10</code></td><td>Hearts per client IP per minute. <code>0</code> turns the limit off</td></tr>
+      <tr><td><code>trustProxyHeader</code></td><td><code>string | null</code></td><td><code>null</code></td><td>Header to read the client IP from behind your own proxy</td></tr>
+      <tr><td><code>label</code></td><td><code>string</code></td><td><code>"hearts"</code></td><td>Label for the heart count</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="known-limits">Known limits</h2>
   <ul>
-    <li><strong>No unheart</strong>: the plugin exposes an increment route but no decrement route. A click only counts up.</li>
-    <li><strong>No persisted "I liked this" state</strong>: the button's filled appearance does not persist across page reloads. The fingerprint prevents double-counting server-side, but the UI does not read it back on render.</li>
+    <li>The count is a soft count, not a vote. Clearing site data or switching browsers lets the same person heart again.</li>
+    <li>The built-in rate limit is a speed bump. For a public site, add a platform rate limit (for example a Cloudflare rule) on <code>POST /_emdash/api/plugins/heartpost/heart</code> and <code>heart-remove</code>.</li>
+    <li>No admin page for viewing counts. The Heart Post admin page only removes visitor rows left by 0.2.x.</li>
   </ul>
-  <p>
-    Both are scoped for the next release. For now, treat the heart as a
-    one-shot counter, not a toggle.
-  </p>
 
   <h2 id="for-agents">For agents</h2>
-  <p>After install, click the heart on any rendered post and verify the
-  count increments. The KV key pattern is
-  <code>heartpost:[postId]:[fingerprint]</code>. The plugin declares no
-  capabilities - KV is auto-available to every plugin.</p>
+  <p>
+    After installing @plugdash/heartpost, register
+    <code>heartpostPlugin(&#123; collections: [...] &#125;)</code> with the
+    site's post collection, import <code>HeartButton.astro</code> in the
+    post layout and render
+    <code>&lt;HeartButton post=&#123;post&#125; /&gt;</code>. Verify with
+    <code>GET /_emdash/api/plugins/heartpost/heart-status?id=&lt;entry id&gt;</code>,
+    which returns <code>&#123; success: true, data: &#123; count &#125; &#125;</code>.
+    If a click does not raise the count, the heart request was rejected:
+    the entry is not published or its collection is not in
+    <code>collections</code>. Data stored: one KV row per post,
+    <code>count:&lt;entry id&gt;</code>.
+  </p>
 </Doc>

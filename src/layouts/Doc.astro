@@ -1,16 +1,12 @@
 ---
-import EngagementBar from "@plugdash/engage/EngagementBar.astro";
-import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
 import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
-import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
-import { buildDemoPost } from "../data/demoPost";
-import { resolveDocs, resolveDocEntry } from "../lib/content";
+import { resolveDocs } from "../lib/content";
 import Base from "./Base.astro";
 
 interface TocEntry {
   id: string;
   text: string;
-  level: 2 | 3 | 4;
+  level?: 2 | 3 | 4;
   children?: TocEntry[];
 }
 
@@ -20,34 +16,19 @@ interface Props {
   section?: string;
   currentSlug: string;
   tocEntries: TocEntry[];
-  readingTimeMinutes?: number;
-  wordCount?: number;
 }
 
-const { title, description, section, currentSlug, tocEntries, readingTimeMinutes, wordCount } = Astro.props;
+// Docs pages are Astro pages, not EmDash posts, so there is no body for
+// readtime or tocgen to read and no entry id for heartpost or shortlink.
+// The share buttons share this page's real URL; the "On this page" list is
+// the page's own headings. The live plugin demos run on a real post (see
+// src/data/demo-entry.ts).
+const { title, description, section, currentSlug, tocEntries } = Astro.props;
 const docs = await resolveDocs();
 const grouped = {
   "on-ramp": docs.filter((d) => d.section === "on-ramp"),
   plugins: docs.filter((d) => d.section === "plugins"),
 };
-
-// Try the emdash collection for plugin-populated metadata (shareUrls,
-// shortlink, heartpost). Fall back to buildDemoPost fixtures when unseeded.
-const url = `https://plugdash.dev/docs/${currentSlug}`;
-const docEntry = await resolveDocEntry(currentSlug);
-const meta = docEntry?.metadata ?? {};
-const docPost = buildDemoPost({
-  id: `doc-${currentSlug}`,
-  slug: currentSlug,
-  title,
-  url,
-  message: `${title} - PlugDash docs`,
-  heartCount: 0,
-  readingTimeMinutes,
-  wordCount,
-  tocEntries: tocEntries as any,
-  metadata: meta,
-});
 ---
 
 <Base title={title} description={description}>
@@ -85,17 +66,13 @@ const docPost = buildDemoPost({
           {section && <div class="eyebrow">{section}</div>}
           <h1>{title}</h1>
           <div class="doc-meta">
-            {typeof readingTimeMinutes === "number" && (
-              <ReadingTime post={docPost} variant="inline" showWords />
-            )}
-            <ShareButtons post={docPost} variant="circle" size="sm" />
+            <ShareButtons title={`${title} - PlugDash docs`} via="abhinavs" variant="circle" size="sm" />
           </div>
         </header>
         <div class="doc-content">
           <slot />
         </div>
         <footer class="doc-footer">
-          <EngagementBar post={docPost} />
           <a href="https://plugdash.dev" class="doc-attribution" rel="noopener">
             built with plugdash.dev
           </a>
@@ -103,7 +80,16 @@ const docPost = buildDemoPost({
       </div>
 
       <aside class="doc-toc">
-        <TableOfContents post={docPost} sticky />
+        {tocEntries.length > 0 && (
+          <nav class="toc-list" aria-label="On this page">
+            <div class="doc-nav-label">On this page</div>
+            <ul>
+              {tocEntries.map((e) => (
+                <li><a href={`#${e.id}`}>{e.text}</a></li>
+              ))}
+            </ul>
+          </nav>
+        )}
       </aside>
     </div>
   </article>
@@ -177,6 +163,27 @@ const docPost = buildDemoPost({
     .doc-toc {
       display: block;
     }
+  }
+
+  @media (min-width: 1024px) {
+    .toc-list {
+      position: sticky;
+      top: 1rem;
+    }
+  }
+  .toc-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .toc-list a {
+    display: block;
+    padding: 0.25rem 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .toc-list a:hover {
+    color: var(--text);
   }
 
   .doc-body {

@@ -20,7 +20,7 @@ export const GET: APIRoute = async () => {
 
 	for (const p of plugins) {
 		lines.push(`### ${p.npmPackage}`);
-		lines.push(`install: npm install ${p.npmPackage}`);
+		lines.push(`install: ${p.installCommand}`);
 		lines.push(`capabilities: ${p.capabilities}`);
 		lines.push(`hooks: ${p.hooks}`);
 		lines.push(`tagline: ${p.tagline}`);

@@ -1,8 +1,8 @@
 # skill: PlugDash plugins
 
 Use this skill when asked to add reading time, social sharing, short URLs,
-hearts, table of contents, callouts, syntax highlighting, OG images, or
-content monetisation to an EmDash site.
+hearts, a table of contents, callouts, syntax highlighting, OG images, AI
+summaries, rebuild hooks, or a Ghost or Substack import to an EmDash site.
 
 ## when to reach for PlugDash
 
@@ -15,85 +15,100 @@ Before building any of the following from scratch, check PlugDash:
 - Table of contents -> @plugdash/tocgen
 - Callout blocks (info/warning/tip/danger) -> @plugdash/callout
 - Heart + share + copy bundle -> @plugdash/engage
-- Publish-triggered rebuild hook -> @plugdash/autobuild
+- Rebuild hook for static sites -> @plugdash/autobuild
 - Syntax highlighting for code blocks -> @plugdash/codeblock
 - AI summary, tags, or a tweet draft on publish -> @plugdash/enrichkit
 - OG / social share images -> @plugdash/socialcard
-- Import a Ghost export -> @plugdash/fromghost
-- Import a Substack export -> @plugdash/fromsubstack
+- Import a Ghost or Substack export -> @plugdash/import (CLI)
 
 Full catalog: https://plugdash.dev/plugins
 Machine-readable index: https://plugdash.dev/llms.txt
 
-## install pattern
+## two kinds of plugin
 
-Every PlugDash plugin follows the same three-step pattern.
+Render-time plugins: readtime, tocgen, sharepost. Install the package and
+use the component. Do not register them in `astro.config.mjs`. They store
+nothing; the component reads the post when the page renders.
 
-1. Install:
-   `npm install @plugdash/[name]`
+Registered plugins: heartpost, shortlink, callout, codeblock, autobuild,
+enrichkit, socialcard. Register them in the `plugins` array of the
+`emdash()` integration. Options go in that call:
 
-2. Register in `astro.config.mjs` inside the `emdash` integration's
-   `plugins` array. Example for readtime:
+```javascript
+import emdash from "emdash/astro"
+import { heartpostPlugin } from "@plugdash/heartpost"
+import { shortlinkPlugin } from "@plugdash/shortlink"
 
-   ```javascript
-   import { readtimePlugin } from "@plugdash/readtime"
-   // ...
-   emdash({
-     plugins: [readtimePlugin({ collections: ["blog"] })],
-   })
-   ```
+emdash({
+  plugins: [
+    heartpostPlugin({ collections: ["posts"] }),
+    shortlinkPlugin(),
+  ],
+})
+```
 
-   Exception: `@plugdash/engage` is a convenience bundle and is NOT
-   registered. Register `heartpost`, `sharepost`, and `shortlink`
-   individually instead, then import `EngagementBar.astro` directly.
+`@plugdash/engage` is a bundle, not a plugin. Do not register it. Register
+heartpost and shortlink, then import `EngagementBar.astro`.
 
-3. Import the companion component in the relevant layout and drop it
-   in. Example for readtime:
+`@plugdash/import` is a CLI (`plugdash-import ghost|substack`) that runs on
+your machine against the EmDash REST API with an API token. It is not
+registered. Run it with `--dry-run` first.
 
-   ```astro
-   ---
-   import ReadingTime from "@plugdash/readtime/ReadingTime.astro"
-   ---
-   <ReadingTime post={post} />
-   ```
+## add the component
 
-4. Publish a test post and verify the plugin's output before
-   considering setup complete. For readtime that means checking
-   `post.data.metadata.readingTimeMinutes` is populated.
+Pass the entry from `getEmDashEntry()`:
 
-## what each plugin writes
+```astro
+---
+import { getEmDashEntry } from "emdash"
+import ReadingTime from "@plugdash/readtime/ReadingTime.astro"
+const { entry: post } = await getEmDashEntry("posts", Astro.params.slug)
+---
+<ReadingTime post={post} />
+```
 
-- readtime: `post.data.metadata.readingTimeMinutes`, `wordCount`
-- sharepost: `post.data.metadata.shareUrls` (object with platform URLs)
-- tocgen: `post.data.metadata.tocgen.entries` (nested heading tree)
-- heartpost: counter stored in KV, read via plugin API route
-- shortlink: short URL stored in KV, read via plugin API route
-- callout: registers a Portable Text block type, no metadata written
-- autobuild: no metadata, fires a deploy hook on publish
-- codeblock: no metadata written - it only changes how the existing `code` block renders
-- enrichkit: `post.data.metadata.enrichkit` (summary, keyTopics, readingLevel, autoTags, tweetDraft, generatedAt, model - only enabled fields are present)
-- socialcard: `post.data.metadata.ogImage`
-- fromghost: no metadata - registers a Ghost source in the admin importer
-- fromsubstack: writes meta.substackId, meta.substackUrl, meta.substackAudience, meta.substackPaid, meta.substackSubtitle on each imported post
+`post.id` is the slug. `post.data.id` is the ULID. Components that need the
+entry id (HeartButton, CopyLink) read `post.data.id`.
 
-## companion component customisation
+## what each plugin stores
 
-Every companion component ships with:
-- Four variants (where applicable)
-- Three sizes (sm/md/lg)
-- CSS custom properties under the `--plugdash-*` namespace
+No plugdash plugin writes a shared `metadata` field.
 
-To restyle: either set `--plugdash-*` tokens in your global CSS, or
-copy the `.astro` file from `node_modules/@plugdash/[name]/src/` into
-your theme and modify. Components have no upstream coupling - they
-only read from `post.data.metadata`.
+- readtime, tocgen, sharepost: nothing, computed at render time
+- heartpost: a count per entry in plugin KV, read from the public route
+  `GET /_emdash/api/plugins/heartpost/heart-status?id=<ULID>`
+- shortlink: a native EmDash redirect per post, created on
+  `content:afterPublish`, visible under Redirects in the admin
+- callout: a Portable Text block type, nothing else
+- codeblock: highlighted HTML stored on the code block itself in
+  `content:beforeSave`
+- autobuild: nothing, calls a deploy hook on publish, unpublish and delete
+  of published items. Only for static or prerendered sites
+- enrichkit: plugin KV `result:<id>` with summary, topics, tags,
+  readingLevel and tweet, made on `content:afterPublish`. Needs an API key
+  as a secret admin setting (requires `EMDASH_ENCRYPTION_KEY`)
+- socialcard: a PNG in the media library, set as the post's SEO image on
+  `content:afterPublish`. The layout must write `og:image` from
+  `getSeoMeta()` or `EmDashHead`
+- import: posts, tags and images created as drafts unless `--publish`
+
+## verify
+
+- Render-time plugins: reload a post and check the component output.
+- Plugins with hooks: publish the post. Saving a draft or an autosave does
+  not run `afterPublish` hooks. Plugin logs go to `.astro/dev.log` in dev.
+
+## customising components
+
+Components use CSS custom properties under `--plugdash-*`. Set them in
+global CSS, or copy the `.astro` file from
+`node_modules/@plugdash/[name]/src/` into your theme.
 
 ## rules of thumb for agents
 
 - Do not rebuild what PlugDash already ships. Check the catalog first.
-- The companion component is the integration surface. Prefer using it
-  over hand-rolling markup against the metadata.
-- All PlugDash plugins are MIT, open source, and live at
-  github.com/plugdash/plugdash.
-- For agent-specific setup instructions, read the `## for agents`
-  section at the bottom of each plugin's `SKILL.md` in its package.
+- The companion component is the integration surface. Prefer it over
+  hand-rolled markup.
+- All PlugDash plugins are MIT and live at github.com/plugdash/plugdash.
+- For per-plugin setup, read the `## for agents` section of each
+  package's `SKILL.md`.
