@@ -5,7 +5,6 @@ interface __BaseEnv_Env {
 	SESSION: KVNamespace;
 	MEDIA: R2Bucket;
 	DB: D1Database;
-	HEART_LIMITER: RateLimit;
 }
 declare namespace Cloudflare {
 	interface Env extends __BaseEnv_Env {}

@@ -1,27 +1,23 @@
 import cloudflare from "@astrojs/cloudflare";
 import react from "@astrojs/react";
 import { d1, r2 } from "@emdash-cms/cloudflare";
-import { autobuildPlugin } from "@plugdash/autobuild";
 import { calloutPlugin } from "@plugdash/callout";
 import { codeblockPlugin } from "@plugdash/codeblock";
 import { enrichkitPlugin } from "@plugdash/enrichkit";
-import { fromghostPlugin } from "@plugdash/fromghost";
-import { fromsubstackPlugin } from "@plugdash/fromsubstack";
 import { heartpostPlugin } from "@plugdash/heartpost";
-import { readtimePlugin } from "@plugdash/readtime";
-import { sharepostPlugin } from "@plugdash/sharepost";
 import { shortlinkPlugin } from "@plugdash/shortlink";
 import { socialcardPlugin } from "@plugdash/socialcard";
-import { tocgenPlugin } from "@plugdash/tocgen";
 import { defineConfig } from "astro/config";
 import emdash from "emdash/astro";
 
-// engage is NOT registered here. It is a convenience bundle with no plugin
-// logic - Post.astro imports EngagementBar.astro from @plugdash/engage directly.
-// The three underlying engagement plugins (heartpost, sharepost, shortlink)
-// are registered below.
+// readtime, tocgen and sharepost render in their components and need no
+// registration. engage is a component bundle, not a plugin.
+// The importers (fromghost, fromsubstack) are one-time tools, so they are
+// not part of the runtime config. autobuild is not used: the site is
+// server-rendered on Workers, so a publish is live without a rebuild.
 
 export default defineConfig({
+	site: "https://plugdash.dev",
 	output: "server",
 	adapter: cloudflare({ imageService: "compile" }),
 	image: { layout: "constrained", responsiveStyles: true },
@@ -31,19 +27,18 @@ export default defineConfig({
 			database: d1({ binding: "DB", session: "auto" }),
 			storage: r2({ binding: "MEDIA" }),
 			plugins: [
-				readtimePlugin(),
-				tocgenPlugin(),
-				sharepostPlugin(),
-				heartpostPlugin(),
-				shortlinkPlugin(),
+				// Cloudflare sets cf-connecting-ip and a client cannot override it
+				heartpostPlugin({
+					collections: ["blog"],
+					rateLimitPerMinute: 10,
+					trustProxyHeader: "cf-connecting-ip",
+				}),
+				shortlinkPlugin({ prefix: "/s/" }),
 				calloutPlugin(),
 				codeblockPlugin({ lightTheme: "github-light" }),
 				socialcardPlugin(),
-				// provider and API key are picked in the admin, no key lives in this repo
-				enrichkitPlugin(),
-				fromghostPlugin(),
-				fromsubstackPlugin({ targetCollection: "posts", status: "draft" }),
-				autobuildPlugin({ hookUrl: import.meta.env.CF_PAGES_DEPLOY_HOOK }),
+				// the API key is an encrypted admin setting (Plugins > enrichkit > Settings)
+				enrichkitPlugin({ provider: "anthropic" }),
 			],
 		}),
 	],
