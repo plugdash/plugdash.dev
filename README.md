@@ -30,12 +30,16 @@ Bindings (already configured in `wrangler.jsonc`):
 - **D1** database `plugdash` for all content and plugin state
 - **R2** bucket `plugdash-media` for uploaded media
 - **KV** namespace `SESSION` for auth sessions
-- **Rate Limiter** `HEART_LIMITER` (10 req/min per IP on heartpost routes)
+- **Rate limiting**: add a Cloudflare Rate Limiting rule on `POST /_emdash/api/plugins/heartpost/*`. heartpost also limits each IP to 10 hearts a minute on its own.
 
-Set the deploy hook secret after first deploy:
-```bash
-wrangler secret put CF_PAGES_DEPLOY_HOOK
-```
+Secrets:
+- `EMDASH_ENCRYPTION_KEY` encrypts plugin secret settings (the enrichkit
+  API key). Generate one with `pnpm exec emdash secrets generate`, then
+  `wrangler secret put EMDASH_ENCRYPTION_KEY`. After that, paste the
+  Anthropic key in the admin under Plugins > enrichkit > Settings.
+
+The site is server-rendered, so a publish is live at once. There is no
+rebuild hook and no autobuild plugin.
 
 ## what is here
 
@@ -67,24 +71,25 @@ a fresh clone with no database.
 
 ## plugins installed
 
-All eight PlugDash plugins are registered in `astro.config.mjs`:
+Plugins in use (readtime, tocgen, sharepost and engage are components only; the rest are registered in `astro.config.mjs`):
 
 | Plugin | What it does |
 |---|---|
 | readtime | Estimates reading time on every published post |
 | tocgen | Generates a table of contents from headings |
 | sharepost | Share URLs for Twitter/X, LinkedIn, Bluesky, email |
-| heartpost | Per-post heart counter with fingerprint dedup |
-| shortlink | Short URLs for every post |
+| heartpost | Per-post heart counter with a per-IP rate limit |
+| shortlink | `/s/<code>` short links, served by EmDash redirects |
 | callout | Info, warning, tip, danger block type in the editor |
-| autobuild | Fires a deploy webhook on every publish |
+| codeblock | Syntax-highlighted code blocks |
+| socialcard | Draws an Open Graph image on publish |
+| enrichkit | AI summary and tags on publish |
 | engage | Convenience bundle - renders heartpost + sharepost + shortlink together |
 
 `engage` is not registered as a plugin. It is imported directly as
 `EngagementBar.astro` from `@plugdash/engage` in the post and doc layouts.
-The three underlying plugins (heartpost, sharepost, shortlink) are registered
-individually.
+Of its three children, heartpost and shortlink are registered as plugins;
+sharepost needs no registration.
 
-Plugin config lives in the EmDash admin dashboard, not in `astro.config.mjs`.
-The only exception is `autobuild({ hookUrl })` because the hook URL is an
-environment secret.
+Plugin options live in `astro.config.mjs`. Secrets (the enrichkit API key)
+live in the admin as encrypted settings.
