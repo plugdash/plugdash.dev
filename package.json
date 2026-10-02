@@ -15,6 +15,7 @@
     "bootstrap": "emdash init && emdash seed",
     "seed": "emdash seed",
     "typecheck": "astro check",
+    "og:cards": "node scripts/og-cards.mjs",
     "lint:plugins": "bash scripts/lint-plugin-hygiene.sh",
     "cf-typegen": "wrangler types"
   },

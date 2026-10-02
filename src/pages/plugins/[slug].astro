@@ -71,6 +71,7 @@ const pagePost = buildDemoPost({
 ---
 
 <Base
+  ogImage={new URL(`/og/plugins/${p.slug}.png`, Astro.site ?? Astro.url.origin).href}
   title={`${p.name} - EmDash plugin - plugdash`}
   description={`${p.tagline}${p.wordpressEquivalent ? ` The EmDash alternative to ${p.wordpressEquivalent}.` : ` Available for EmDash via ${p.npmPackage}.`}`}
 >
