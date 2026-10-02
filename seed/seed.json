@@ -50,10 +50,7 @@
 				{ "slug": "title", "label": "Title", "type": "string", "required": true, "searchable": true },
 				{ "slug": "section", "label": "Section", "type": "select", "required": true, "options": { "choices": ["on-ramp", "plugins"] } },
 				{ "slug": "summary", "label": "Summary", "type": "text", "searchable": true },
-				{ "slug": "order", "label": "Order", "type": "integer", "required": true, "defaultValue": 0 },
-				{ "slug": "reading_time_minutes", "label": "Reading time (minutes)", "type": "integer" },
-				{ "slug": "word_count", "label": "Word count", "type": "integer" },
-				{ "slug": "metadata", "label": "Metadata (plugin-written)", "type": "json" }
+				{ "slug": "order", "label": "Order", "type": "integer", "required": true, "defaultValue": 0 }
 			]
 		},
 		{
@@ -65,10 +62,7 @@
 			"fields": [
 				{ "slug": "title", "label": "Title", "type": "string", "required": true, "searchable": true },
 				{ "slug": "description", "label": "Description", "type": "text", "required": true, "searchable": true },
-				{ "slug": "content", "label": "Content", "type": "portableText", "searchable": true },
-				{ "slug": "reading_time_minutes", "label": "Reading time (minutes)", "type": "integer" },
-				{ "slug": "word_count", "label": "Word count", "type": "integer" },
-				{ "slug": "metadata", "label": "Metadata (plugin-written)", "type": "json" }
+				{ "slug": "content", "label": "Content", "type": "portableText", "searchable": true }
 			]
 		}
 	],
@@ -399,22 +393,22 @@
 			}
 		],
 		"docs": [
-			{ "id": "doc-getting-started", "slug": "getting-started", "status": "published", "data": { "title": "Getting started", "section": "on-ramp", "summary": "Spin up a plugdash-ready EmDash site in under ten minutes.", "order": 10, "reading_time_minutes": 4, "word_count": 520 } },
-			{ "id": "doc-what-is-emdash", "slug": "what-is-emdash", "status": "published", "data": { "title": "What is EmDash", "section": "on-ramp", "summary": "The CMS plugdash plugs into. What it is, what it is not.", "order": 20, "reading_time_minutes": 3, "word_count": 340 } },
-			{ "id": "doc-installing-plugins", "slug": "installing-plugins", "status": "published", "data": { "title": "Installing plugins", "section": "on-ramp", "summary": "Add a plugin, register it, drop the component into your layout.", "order": 30, "reading_time_minutes": 4, "word_count": 540 } },
-			{ "id": "doc-readtime", "slug": "readtime", "status": "published", "data": { "title": "readtime", "section": "plugins", "order": 110, "reading_time_minutes": 2, "word_count": 280 } },
-			{ "id": "doc-tocgen", "slug": "tocgen", "status": "published", "data": { "title": "tocgen", "section": "plugins", "order": 120, "reading_time_minutes": 2, "word_count": 260 } },
-			{ "id": "doc-callout", "slug": "callout", "status": "published", "data": { "title": "callout", "section": "plugins", "order": 130, "reading_time_minutes": 2, "word_count": 240 } },
-			{ "id": "doc-sharepost", "slug": "sharepost", "status": "published", "data": { "title": "sharepost", "section": "plugins", "order": 140, "reading_time_minutes": 2, "word_count": 260 } },
-			{ "id": "doc-heartpost", "slug": "heartpost", "status": "published", "data": { "title": "heartpost", "section": "plugins", "order": 150, "reading_time_minutes": 2, "word_count": 240 } },
-			{ "id": "doc-shortlink", "slug": "shortlink", "status": "published", "data": { "title": "shortlink", "section": "plugins", "order": 160, "reading_time_minutes": 2, "word_count": 260 } },
-			{ "id": "doc-engage", "slug": "engage", "status": "published", "data": { "title": "engage", "section": "plugins", "order": 170, "reading_time_minutes": 3, "word_count": 340 } },
-			{ "id": "doc-autobuild", "slug": "autobuild", "status": "published", "data": { "title": "autobuild", "section": "plugins", "order": 180, "reading_time_minutes": 3, "word_count": 320 } },
-			{ "id": "doc-codeblock", "slug": "codeblock", "status": "published", "data": { "title": "codeblock", "section": "plugins", "order": 190, "reading_time_minutes": 3, "word_count": 420 } },
-			{ "id": "doc-enrichkit", "slug": "enrichkit", "status": "published", "data": { "title": "enrichkit", "section": "plugins", "order": 200, "reading_time_minutes": 3, "word_count": 480 } },
-			{ "id": "doc-socialcard", "slug": "socialcard", "status": "published", "data": { "title": "socialcard", "section": "plugins", "order": 210, "reading_time_minutes": 3, "word_count": 470 } },
-			{ "id": "doc-fromghost", "slug": "fromghost", "status": "published", "data": { "title": "fromghost", "section": "plugins", "order": 220, "reading_time_minutes": 5, "word_count": 950 } },
-			{ "id": "doc-fromsubstack", "slug": "fromsubstack", "status": "published", "data": { "title": "fromsubstack", "section": "plugins", "order": 230, "reading_time_minutes": 5, "word_count": 1050 } }
+			{ "id": "doc-getting-started", "slug": "getting-started", "status": "published", "data": { "title": "Getting started", "section": "on-ramp", "summary": "Spin up a plugdash-ready EmDash site in under ten minutes.", "order": 10 } },
+			{ "id": "doc-what-is-emdash", "slug": "what-is-emdash", "status": "published", "data": { "title": "What is EmDash", "section": "on-ramp", "summary": "The CMS plugdash plugs into. What it is, what it is not.", "order": 20 } },
+			{ "id": "doc-installing-plugins", "slug": "installing-plugins", "status": "published", "data": { "title": "Installing plugins", "section": "on-ramp", "summary": "Add a plugin, register it, drop the component into your layout.", "order": 30 } },
+			{ "id": "doc-readtime", "slug": "readtime", "status": "published", "data": { "title": "readtime", "section": "plugins", "order": 110 } },
+			{ "id": "doc-tocgen", "slug": "tocgen", "status": "published", "data": { "title": "tocgen", "section": "plugins", "order": 120 } },
+			{ "id": "doc-callout", "slug": "callout", "status": "published", "data": { "title": "callout", "section": "plugins", "order": 130 } },
+			{ "id": "doc-sharepost", "slug": "sharepost", "status": "published", "data": { "title": "sharepost", "section": "plugins", "order": 140 } },
+			{ "id": "doc-heartpost", "slug": "heartpost", "status": "published", "data": { "title": "heartpost", "section": "plugins", "order": 150 } },
+			{ "id": "doc-shortlink", "slug": "shortlink", "status": "published", "data": { "title": "shortlink", "section": "plugins", "order": 160 } },
+			{ "id": "doc-engage", "slug": "engage", "status": "published", "data": { "title": "engage", "section": "plugins", "order": 170 } },
+			{ "id": "doc-autobuild", "slug": "autobuild", "status": "published", "data": { "title": "autobuild", "section": "plugins", "order": 180 } },
+			{ "id": "doc-codeblock", "slug": "codeblock", "status": "published", "data": { "title": "codeblock", "section": "plugins", "order": 190 } },
+			{ "id": "doc-enrichkit", "slug": "enrichkit", "status": "published", "data": { "title": "enrichkit", "section": "plugins", "order": 200 } },
+			{ "id": "doc-socialcard", "slug": "socialcard", "status": "published", "data": { "title": "socialcard", "section": "plugins", "order": 210 } },
+			{ "id": "doc-fromghost", "slug": "fromghost", "status": "published", "data": { "title": "fromghost", "section": "plugins", "order": 220 } },
+			{ "id": "doc-fromsubstack", "slug": "fromsubstack", "status": "published", "data": { "title": "fromsubstack", "section": "plugins", "order": 230 } }
 		],
 		"blog": [
 			{
@@ -424,8 +418,6 @@
 				"data": {
 					"title": "The PlugDash launch: eight plugins, one live site",
 					"description": "Announcing PlugDash: eight MIT-licensed plugins for EmDash, all installed on the catalog site itself.",
-					"reading_time_minutes": 3,
-					"word_count": 612,
 					"content": [
 						{ "_type": "block", "_key": "b1", "style": "normal", "children": [{ "_type": "span", "_key": "s1", "text": "Today PlugDash ships with eight plugins for EmDash, all MIT-licensed, all on npm, and all installed on the site you're reading right now." }] },
 						{ "_type": "block", "_key": "b2", "style": "h2", "children": [{ "_type": "span", "_key": "s2", "text": "What PlugDash is" }] },

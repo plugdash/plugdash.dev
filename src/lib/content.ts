@@ -106,42 +106,6 @@ export async function resolveDocEntry(slug: string): Promise<StaticDocEntry | un
 	}
 }
 
-/**
- * Resolve a blog post by slug. Blog bodies are Portable Text stored in
- * the collection; when unseeded, returns undefined and the page can
- * handle the miss (blog has only the one launch post).
- */
-export interface BlogPost {
-	id: string;
-	slug: string;
-	title: string;
-	description: string;
-	content: unknown[]; // PortableTextBlock[]
-	publishedAt?: Date;
-	/** Plugin-populated metadata (readingTimeMinutes, shareUrls, shortlink, etc.) */
-	metadata?: Record<string, unknown>;
-}
-
-export async function resolveBlogPost(slug: string): Promise<BlogPost | undefined> {
-	try {
-		const { entry, error } = await getEmDashEntry("blog", slug);
-		if (error || !entry || !entry.data) return undefined;
-		const data = entry.data;
-		const metadata = (data.metadata as Record<string, unknown> | undefined) ?? {};
-		return {
-			id: entry.id,
-			slug,
-			title: data.title ?? "",
-			description: data.description ?? "",
-			content: (data.content as unknown[]) ?? [],
-			publishedAt: data.publishedAt instanceof Date ? data.publishedAt : undefined,
-			metadata,
-		};
-	} catch {
-		return undefined;
-	}
-}
-
 // -- internal helpers ----------------------------------------------------
 
 function mergePlugin(fallback: Plugin, data: Record<string, unknown>): Plugin {
