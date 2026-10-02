@@ -43,6 +43,7 @@
     "@astrojs/check": "^0.9.10",
     "@cloudflare/workers-types": "^5.20260926.1",
     "@types/node": "^26.6.3",
+    "playwright": "^1.63.0",
     "wrangler": "^4.141.0"
   },
   "pnpm": {

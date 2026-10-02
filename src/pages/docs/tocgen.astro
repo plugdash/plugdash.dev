@@ -3,74 +3,79 @@ import Code from "../../components/Code.astro";
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
-import { demoPost, pluginDocToc } from "../../data/demoPost";
+import { loadDemoEntry } from "../../data/demo-entry";
+import { pluginDocToc } from "../../data/doc-toc";
 import { getPlugin } from "../../data/plugins";
 import Doc from "../../layouts/Doc.astro";
 
 const plugin = getPlugin("tocgen")!;
+const demo = await loadDemoEntry();
+const tocEntries = pluginDocToc.filter((e) => e.id !== "register");
 ---
 
 <Doc
-  tocEntries={pluginDocToc}
+  tocEntries={tocEntries}
   currentSlug="tocgen"
-  readingTimeMinutes={2}
-  wordCount={260}
   title="tocgen"
   section="@plugdash/tocgen"
   description="Nested table of contents from Portable Text headings."
 >
   <h2 id="what-it-does">What it does</h2>
   <p>
-    Walks your Portable Text body on publish, picks out h2/h3/h4 blocks,
-    and writes a nested <code>entries</code> tree to
-    <code>post.data.metadata.tocgen</code>. Short posts (fewer than
-    <code>minHeadings</code>) are skipped. Ships
-    <code>TableOfContents.astro</code> with a sticky sidebar variant.
-  </p>
-  <p>
-    The docs sidebar on the right is <code>tocgen</code> running on this
-    page. If you can see it, the plugin works.
+    Reads the h2, h3 and h4 blocks in your Portable Text body when the
+    page renders and builds a nested table of contents. Posts with fewer
+    than <code>minHeadings</code> headings (default 3) get nothing.
+    Nothing is stored. Ships <code>TableOfContents.astro</code>, with a
+    sticky option, and <code>HeadingAnchors.astro</code>, which gives each
+    rendered heading the id the TOC links to.
   </p>
 
   <h2 id="install">Install</h2>
   <InstallCommand command={plugin.installCommand} />
-
-  <h2 id="register">Register</h2>
   <p>
-    Open <code>astro.config.mjs</code> at the root of your Astro project.
-    Import the plugin at the top, then add it to the <code>plugins</code>
-    array of the <code>emdash()</code> integration - the one that sits
-    inside Astro's top-level <code>integrations</code> array:
+    There is nothing to register. tocgen has no hooks, so you do not add
+    it to <code>astro.config.mjs</code>.
   </p>
-  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
-import emdash from "emdash/astro"
-import { tocgenPlugin } from "@plugdash/tocgen"
 
-export default defineConfig({
-  integrations: [
-    emdash({
-      plugins: [
-        tocgenPlugin({ minHeadings: 3 }),
-      ],
-    }),
-  ],
-})`} />
-
-  <h2 id="add-the-component">Add the component</h2>
+  <h2 id="add-the-component">Add the components</h2>
   <Code language="astro" code={`---
 import TableOfContents from "@plugdash/tocgen/TableOfContents.astro"
+import HeadingAnchors from "@plugdash/tocgen/HeadingAnchors.astro"
 ---
-<TableOfContents post={post} sticky />`} />
+<TableOfContents post={post} sticky />
+<article>
+  <PortableText value={post.data.content} />
+</article>
+<HeadingAnchors selector="article" />`} />
+  <p>
+    <code>HeadingAnchors</code> sets ids on the headings inside the
+    element that <code>selector</code> matches. Without it, the TOC links
+    have nothing to jump to unless your theme already adds matching ids.
+  </p>
 
   <h2 id="live-demo">Live demo</h2>
-  <div class="demo-inline">
-    <TableOfContents post={demoPost} />
-  </div>
+  {demo ? (
+    <>
+      <p>Built from the headings of a real post on this site:</p>
+      <div class="demo-inline">
+        <TableOfContents post={demo} />
+      </div>
+    </>
+  ) : (
+    <p>The demo post is not published yet.</p>
+  )}
 
   <PluginReference plugin={plugin} />
 
   <h2 id="for-agents">For agents</h2>
-  <p>After install, publish a post with at least <code>minHeadings</code>
-  h2 headings. Verify <code>post.data.metadata.tocgen.entries</code> is a
-  non-empty array. Heading IDs come from slugifying the heading text.</p>
+  <p>
+    After installing @plugdash/tocgen, add
+    <code>&lt;TableOfContents post=&#123;post&#125; /&gt;</code> to the
+    post layout and <code>&lt;HeadingAnchors selector="article" /&gt;</code>
+    after the element that holds the body. Do not register a plugin.
+    Open a post with three or more headings and check that every TOC
+    link jumps to its heading. If no TOC renders, the post has too few
+    headings or the body field is not found: pass <code>field</code>.
+    Data stored: none.
+  </p>
 </Doc>

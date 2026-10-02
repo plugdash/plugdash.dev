@@ -8,8 +8,8 @@ const tocEntries = [
   { id: "how-emdash-plugins-work", text: "How EmDash plugins work", level: 2 as const, children: [] },
   { id: "install-readtime", text: "Install readtime", level: 2 as const, children: [
     { id: "step-1-install", text: "Step 1: install", level: 3 as const, children: [] },
-    { id: "step-2-register", text: "Step 2: register", level: 3 as const, children: [] },
-    { id: "step-3-add-the-component", text: "Step 3: add the component", level: 3 as const, children: [] },
+    { id: "step-2-add-the-component", text: "Step 2: add the component", level: 3 as const, children: [] },
+    { id: "step-3-register-plugins-with-hooks", text: "Step 3: register plugins with hooks", level: 3 as const, children: [] },
   ] },
   { id: "change-the-look", text: "Change the look", level: 2 as const, children: [] },
   { id: "next-steps", text: "Next steps", level: 2 as const, children: [] },
@@ -19,8 +19,6 @@ const tocEntries = [
 <Doc
   tocEntries={tocEntries}
   currentSlug="getting-started"
-  readingTimeMinutes={4}
-  wordCount={520}
   title="Getting started"
   section="on-ramp"
   description="Install your first plugdash plugin in five minutes."
@@ -33,66 +31,71 @@ const tocEntries = [
     see the result.
   </p>
   <p>
-    This site runs on EmDash with every PlugDash plugin installed. The
-    reading time on this page, the sidebar you're reading it from, the
-    engagement bar on blog posts - all of them are plugins. If they work
-    here, they work for you.
+    This site runs on EmDash with the plugins a server-rendered blog
+    needs. The share buttons on this page are sharepost. The demo post
+    on the home page shows reading time, table of contents, hearts,
+    short links and share buttons on a real post.
   </p>
 
   <h2 id="how-emdash-plugins-work">How EmDash plugins work</h2>
   <p>
-    An EmDash plugin is a small module that runs inside your Astro site.
-    It listens to lifecycle hooks (like "a post was just published") and
-    writes data back to your content - usually onto
-    <code>post.data.metadata</code>. That data is then read by a companion
-    component that renders it in your theme.
+    PlugDash plugins come in two kinds. Render-time plugins (readtime,
+    tocgen, sharepost) are only a component: it reads the post when the
+    page renders and stores nothing. Plugins with hooks run inside
+    EmDash when content changes, usually on publish, and store their
+    result somewhere the component can read it: plugin KV for heart
+    counts, native redirects for short links, the post's SEO image for
+    social cards, the code block itself for highlighted code.
   </p>
   <p>
-    You do not need to know how the hook fires. You just install the
-    plugin, register it in <code>astro.config.mjs</code>, and drop the
-    companion component into your layout.
+    Plugins never write to a shared <code>metadata</code> field. The
+    official EmDash templates do not have one.
   </p>
 
   <h2 id="install-readtime">Install readtime</h2>
   <p>
-    readtime is the simplest plugin in the catalog. It calculates reading
-    time on every publish and ships a component that shows it. Use it as
-    your worked example.
+    readtime is the simplest plugin in the catalog. Its component counts
+    the words in the post when the page renders. Nothing is stored and
+    nothing needs registering. Use it as your worked example.
   </p>
 
   <h3 id="step-1-install">Step 1: install</h3>
   <InstallCommand command="npm install @plugdash/readtime" />
 
-  <h3 id="step-2-register">Step 2: register</h3>
-  <p>
-    Open <code>astro.config.mjs</code> at the root of your Astro project.
-    Import the plugin at the top, then add it to the <code>plugins</code>
-    array of the <code>emdash()</code> integration - the one that sits
-    inside Astro's top-level <code>integrations</code> array:
-  </p>
-  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
-import emdash from "emdash/astro"
-import { readtimePlugin } from "@plugdash/readtime"
-
-export default defineConfig({
-  integrations: [
-    emdash({
-      plugins: [
-        readtimePlugin({ collections: ["blog"] }),
-      ],
-    }),
-  ],
-})`} />
-
-  <h3 id="step-3-add-the-component">Step 3: add the component</h3>
+  <h3 id="step-2-add-the-component">Step 2: add the component</h3>
   <p>In your post layout:</p>
   <Code language="astro" code={`---
 import ReadingTime from "@plugdash/readtime/ReadingTime.astro"
 ---
 <ReadingTime post={post} />`} />
   <p>
-    Publish a post in the EmDash admin. Reload the page. The reading time
-    appears. No other configuration needed.
+    Reload a post. The reading time appears. There is no
+    <code>astro.config.mjs</code> change for readtime, tocgen or
+    sharepost.
+  </p>
+
+  <h3 id="step-3-register-plugins-with-hooks">Step 3: register plugins with hooks</h3>
+  <p>
+    Plugins that store data or react to publishing (heartpost, shortlink,
+    codeblock, socialcard, enrichkit, autobuild, callout) are registered
+    in the <code>plugins</code> array of the <code>emdash()</code>
+    integration:
+  </p>
+  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
+import emdash from "emdash/astro"
+import { heartpostPlugin } from "@plugdash/heartpost"
+
+export default defineConfig({
+  integrations: [
+    emdash({
+      plugins: [
+        heartpostPlugin({ collections: ["posts"] }),
+      ],
+    }),
+  ],
+})`} />
+  <p>
+    Each plugin doc has the exact snippet and options.
   </p>
 
   <h2 id="change-the-look">Change the look</h2>
@@ -126,11 +129,11 @@ import ReadingTime from "@plugdash/readtime/ReadingTime.astro"
     <li><a href="/docs/heartpost">heartpost</a> - KV-backed heart counter</li>
     <li><a href="/docs/shortlink">shortlink</a> - short URLs per post</li>
     <li><a href="/docs/engage">engage</a> - heart + share + copy bundle</li>
-    <li><a href="/docs/autobuild">autobuild</a> - publish-triggered rebuilds</li>
-    <li><a href="/docs/codeblock">codeblock</a> - server-rendered syntax highlighting</li>
-    <li><a href="/docs/enrichkit">enrichkit</a> - AI summaries, tags and tweet drafts on publish</li>
-    <li><a href="/docs/socialcard">socialcard</a> - OG share images on publish</li>
-    <li><a href="/docs/fromghost">fromghost</a> - import a Ghost export</li>
-    <li><a href="/docs/fromsubstack">fromsubstack</a> - import a Substack export</li>
+    <li><a href="/docs/autobuild">autobuild</a> - publish-triggered rebuilds for static sites</li>
+    <li><a href="/docs/codeblock">codeblock</a> - syntax highlighting done at save time</li>
+    <li><a href="/docs/enrichkit">enrichkit</a> - AI summaries, tags and tweet drafts on publish, stored in plugin KV</li>
+    <li><a href="/docs/socialcard">socialcard</a> - OG share PNGs on publish, set as the post's SEO image</li>
+    <li><a href="/docs/fromghost">fromghost</a> - import a Ghost export with the @plugdash/import CLI</li>
+    <li><a href="/docs/fromsubstack">fromsubstack</a> - import a Substack export with the @plugdash/import CLI</li>
   </ul>
 </Doc>

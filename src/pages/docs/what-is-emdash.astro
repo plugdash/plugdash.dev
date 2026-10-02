@@ -16,8 +16,6 @@ const tocEntries = [
   title="What is EmDash"
   section="on-ramp"
   description="A short intro to EmDash, the open-source CMS built on Astro and Cloudflare."
-  readingTimeMinutes={3}
-  wordCount={340}
 >
   <h2 id="what-it-is">What it is</h2>
   <p>
@@ -45,7 +43,7 @@ const tocEntries = [
   <h2 id="the-stack">The stack</h2>
   <ul>
     <li><strong>Astro</strong> for rendering (server output mode)</li>
-    <li><strong>Cloudflare Pages</strong> or Node for hosting</li>
+    <li><strong>Cloudflare Workers</strong> or Node for hosting</li>
     <li><strong>D1</strong> (or SQLite locally) for the content database</li>
     <li><strong>R2</strong> for media storage</li>
     <li><strong>Portable Text</strong> for rich content bodies</li>
@@ -56,21 +54,21 @@ const tocEntries = [
   <p>
     EmDash plugins can declare capabilities (read/write content, fetch
     from external networks, register API routes, register editor block
-    types), subscribe to lifecycle hooks (<code>content:afterSave</code>,
-    <code>content:afterDelete</code>), and ship companion Astro components
+    types), subscribe to lifecycle hooks (<code>content:afterPublish</code>,
+    <code>content:beforeSave</code>, <code>content:afterDelete</code>), and ship companion Astro components
     that render plugin data in your theme.
   </p>
   <p>
     The admin surfaces plugins automatically. When you install
     <code>@plugdash/callout</code>, the callout block shows up in the
-    editor. When you install <code>@plugdash/readtime</code>, reading-time
-    metadata appears on every post.
+    editor. When you register <code>@plugdash/heartpost</code>, its heart
+    route is served under <code>/_emdash/api/plugins/heartpost/</code>.
   </p>
 
   <h2 id="where-to-go-next">Where to go next</h2>
   <ul>
     <li><a href="https://emdashcms.com">emdashcms.com</a> - official docs</li>
     <li><a href="/docs/getting-started">PlugDash getting started</a> - install your first plugin</li>
-    <li><a href="/docs/installing-plugins">Installing plugins</a> - code vs admin walkthrough</li>
+    <li><a href="/docs/installing-plugins">Installing plugins</a> - code and admin settings</li>
   </ul>
 </Doc>

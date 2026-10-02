@@ -3,73 +3,76 @@ import Code from "../../components/Code.astro";
 import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
 import InstallCommand from "../../components/InstallCommand.astro";
 import PluginReference from "../../components/PluginReference.astro";
-import { demoPost, pluginDocToc } from "../../data/demoPost";
+import { DEMO_URL, loadDemoEntry } from "../../data/demo-entry";
+import { pluginDocToc } from "../../data/doc-toc";
 import { getPlugin } from "../../data/plugins";
 import Doc from "../../layouts/Doc.astro";
 
 const plugin = getPlugin("sharepost")!;
+const demo = await loadDemoEntry();
+const tocEntries = pluginDocToc.filter((e) => e.id !== "register");
 ---
 
 <Doc
-  tocEntries={pluginDocToc}
+  tocEntries={tocEntries}
   currentSlug="sharepost"
-  readingTimeMinutes={2}
-  wordCount={260}
   title="sharepost"
   section="@plugdash/sharepost"
   description="Social share buttons with no JavaScript libraries."
 >
   <h2 id="what-it-does">What it does</h2>
   <p>
-    On every publish, generates share URLs for Twitter/X, LinkedIn,
-    WhatsApp, Bluesky, and email and writes them to
-    <code>post.data.metadata.shareUrls</code>. Ships
-    <code>ShareButtons.astro</code> with four variants. No third-party
-    JavaScript, no tracking.
+    Builds share links for X, LinkedIn, Bluesky, WhatsApp and email when
+    the page renders, from the page URL and the post title. Nothing is
+    stored, no third-party JavaScript loads, nothing tracks the reader.
+    Ships <code>ShareButtons.astro</code> with four variants.
   </p>
 
   <h2 id="install">Install</h2>
   <InstallCommand command={plugin.installCommand} />
-
-  <h2 id="register">Register</h2>
   <p>
-    Open <code>astro.config.mjs</code> at the root of your Astro project.
-    Import the plugin at the top, then add it to the <code>plugins</code>
-    array of the <code>emdash()</code> integration - the one that sits
-    inside Astro's top-level <code>integrations</code> array:
+    There is nothing to register. Set <code>site</code> in
+    <code>astro.config.mjs</code> so the links point at your public URL
+    and not at the request host:
   </p>
-  <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
-import emdash from "emdash/astro"
-import { sharepostPlugin } from "@plugdash/sharepost"
-
-export default defineConfig({
-  integrations: [
-    emdash({
-      plugins: [
-        sharepostPlugin({ via: "abhinavs" }),
-      ],
-    }),
-  ],
+  <Code language="js" filename="astro.config.mjs" code={`export default defineConfig({
+  site: "https://example.com",
+  // ...
 })`} />
-  <p>The <code>via</code> option is your Twitter/X handle (without the @).
-  It appears in the pre-filled tweet text.</p>
 
   <h2 id="add-the-component">Add the component</h2>
   <Code language="astro" code={`---
 import ShareButtons from "@plugdash/sharepost/ShareButtons.astro"
 ---
-<ShareButtons post={post} />`} />
+<ShareButtons post={post} via="yourhandle" />`} />
+  <p>
+    <code>via</code> is your X handle without the @. It is added to the X
+    link only. Pass <code>url</code> to share a different address than the
+    current page.
+  </p>
 
   <h2 id="live-demo">Live demo</h2>
-  <div class="demo-inline">
-    <ShareButtons post={demoPost} />
-  </div>
+  {demo ? (
+    <>
+      <p>Links for a real post on this site:</p>
+      <div class="demo-inline">
+        <ShareButtons post={demo} url={DEMO_URL} via="abhinavs" />
+      </div>
+    </>
+  ) : (
+    <p>The demo post is not published yet.</p>
+  )}
 
   <PluginReference plugin={plugin} />
 
   <h2 id="for-agents">For agents</h2>
-  <p>After install, publish a post and verify
-  <code>post.data.metadata.shareUrls</code> is an object with one URL per
-  configured platform. The share URLs are pre-filled with the post title
-  and canonical URL - no browser-side share SDK needed.</p>
+  <p>
+    After installing @plugdash/sharepost, set <code>site</code> in
+    <code>astro.config.mjs</code>, import <code>ShareButtons.astro</code>
+    in the post layout and render
+    <code>&lt;ShareButtons post=&#123;post&#125; /&gt;</code>. Do not
+    register a plugin. Open a published post and check that the X link
+    contains the encoded post URL. If the links point at localhost or a
+    preview host, <code>site</code> is missing. Data stored: none.
+  </p>
 </Doc>

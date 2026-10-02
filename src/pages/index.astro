@@ -4,22 +4,15 @@ import ReadingTime from "@plugdash/readtime/ReadingTime.astro";
 import ShareButtons from "@plugdash/sharepost/ShareButtons.astro";
 import CopyLink from "@plugdash/shortlink/CopyLink.astro";
 import PluginCard from "../components/PluginCard.astro";
-import { buildDemoPost } from "../data/demoPost";
+import { DEMO_URL, loadDemoEntry } from "../data/demo-entry";
 import { resolvePlugins } from "../lib/content";
 import Base from "../layouts/Base.astro";
 
 const plugins = await resolvePlugins();
 
-// Fixture post with a real message + URL so share buttons share something
-// worth sharing. The heart counter reads post.id, so it must be top-level.
-const demoPost = buildDemoPost({
-  id: "plugdash-home",
-  slug: "index",
-  title: "PlugDash - drop-in plugins for EmDash",
-  url: "https://plugdash.dev",
-  message: "PlugDash: eight small, MIT-licensed plugins for EmDash - reading time, share buttons, hearts, short links, a table of contents, callouts, and a deploy hook that fires the moment you publish. Every one of them is running on this exact page.",
-  heartCount: 4,
-});
+// A real published post (see src/data/demo-entry.ts). Every value in the
+// demo bar comes from the plugins themselves, computed from that post.
+const demo = await loadDemoEntry();
 ---
 
 <Base title="PlugDash - drop-in plugins for EmDash">
@@ -29,10 +22,11 @@ const demoPost = buildDemoPost({
       The plugins your readers<br />notice without knowing why.
     </h1>
     <p class="hero-sub">
-      Eight EmDash plugins that each do one small thing: reading time, share
+      Small EmDash plugins that each do one thing: reading time, share
       buttons, a heart counter, short links, a table of contents, callouts,
-      and a build hook that fires the moment you publish. MIT licensed, and
-      every one of them is running on the page in front of you.
+      code highlighting, social cards, AI summaries, and a rebuild hook for
+      static sites. MIT licensed, and the ones a server-rendered blog needs
+      are running on this site.
     </p>
     <div class="hero-cta">
       <a href="/plugins" class="btn btn-primary">Browse plugins</a>
@@ -48,23 +42,26 @@ const demoPost = buildDemoPost({
 └────────────┘</pre>
   </section>
 
-  <section class="demo-strip container-narrow">
-    <div class="demo-box">
-      <div class="demo-row">
-        <ReadingTime post={demoPost} variant="inline" />
-        <span class="demo-sep" aria-hidden="true">•</span>
-        <ShareButtons post={demoPost} />
-        <span class="demo-sep" aria-hidden="true">•</span>
-        <HeartButton post={demoPost} />
-        <span class="demo-sep" aria-hidden="true">•</span>
-        <CopyLink post={demoPost} variant="pill" showUrl />
+  {demo && (
+    <section class="demo-strip container-narrow">
+      <div class="demo-box">
+        <div class="demo-row">
+          <ReadingTime post={demo} variant="inline" />
+          <span class="demo-sep" aria-hidden="true">•</span>
+          <ShareButtons post={demo} url={DEMO_URL} via="abhinavs" />
+          <span class="demo-sep" aria-hidden="true">•</span>
+          <HeartButton post={demo} />
+          <span class="demo-sep" aria-hidden="true">•</span>
+          <CopyLink post={demo} variant="pill" showUrl />
+        </div>
+        <p class="demo-caption">
+          This bar is readtime, sharepost, heartpost and shortlink running on
+          a real post, <a href={DEMO_URL}>{String((demo.data as Record<string, unknown>)?.title ?? "the demo post")}</a>.
+          The heart count and the short link are live.
+        </p>
       </div>
-      <p class="demo-caption">
-        This bar is readtime, sharepost, heartpost, and shortlink, rendered the
-        same way they'd render on your site. No screenshot, no mockup.
-      </p>
-    </div>
-  </section>
+    </section>
+  )}
 
   <section class="grid-section container">
     <h2 class="grid-heading">Everything a blog expects</h2>
@@ -87,7 +84,7 @@ const demoPost = buildDemoPost({
       <p class="built-lede">
         You can install any of this in a minute, restyle every pixel with CSS
         variables, and check our work just by looking at the page you're on -
-        it's running all eight plugins right now.
+        it runs every plugin a server-rendered blog needs.
       </p>
     </header>
     <div class="built-grid">

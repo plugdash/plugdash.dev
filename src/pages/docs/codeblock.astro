@@ -26,25 +26,33 @@ const tocEntries = [
 <Doc
   tocEntries={tocEntries}
   currentSlug="codeblock"
-  readingTimeMinutes={3}
-  wordCount={420}
   title="codeblock"
   section="@plugdash/codeblock"
-  description="Shiki syntax highlighting for EmDash code blocks, rendered server-side with zero client JavaScript."
+  description="Shiki syntax highlighting for EmDash code blocks, done when the post is saved."
 >
   <h2 id="what-it-does">What it does</h2>
   <p>
-    Renders the <code>code</code> blocks EmDash already stores using Shiki
-    syntax highlighting. Highlighting runs server-side at render time, so
-    the browser gets plain coloured HTML and no JavaScript. Nothing is
-    rewritten on save - change the theme and every existing post picks it
-    up on the next render.
+    Highlights the <code>code</code> blocks EmDash already stores with
+    Shiki. On save, a <code>content:beforeSave</code> hook runs each block
+    through Shiki and stores the HTML on the block
+    (<code>pdHighlight</code>), so a page view prints stored HTML and never
+    loads Shiki. The only client JavaScript is a small click listener for
+    the copy button.
+  </p>
+  <p>
+    The stored HTML carries a key built from the code, language, themes,
+    line numbers setting and plugin version. Change any of them and the
+    block is highlighted at render time until the post is saved again. So
+    after a theme change old posts still render correctly, and re-saving
+    makes them fast again. Highlighting never blocks a save: if Shiki fails
+    or takes over 30 seconds, the post saves without stored HTML.
   </p>
   <p>
     codeblock is a Native plugin - it needs Shiki, which is a Node
     dependency, so it can't be sandboxed or published to the marketplace.
     It registers no new editor block type; it renders the <code>code</code>
-    block EmDash already has.
+    block EmDash already has. It declares <code>content:write</code>,
+    which the save hook needs.
   </p>
 
   <h2 id="install">Install</h2>
@@ -78,7 +86,7 @@ export default defineConfig({
     <thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td><code>theme</code></td><td><code>string</code></td><td><code>github-dark</code></td><td>Shiki theme name. Unknown names fall back to the default.</td></tr>
-      <tr><td><code>lightTheme</code></td><td><code>string</code></td><td>-</td><td>Second theme for light mode, emitted as CSS variables.</td></tr>
+      <tr><td><code>lightTheme</code></td><td><code>string</code></td><td><code>github-light</code> when no theme is set</td><td>Second theme for light mode, emitted as CSS variables. Setting <code>theme</code> alone turns light mode off.</td></tr>
       <tr><td><code>langs</code></td><td><code>string[]</code></td><td>common set</td><td>Languages loaded up front. Anything else loads on first use.</td></tr>
       <tr><td><code>lineNumbers</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Render line numbers in the gutter.</td></tr>
     </tbody>
@@ -93,7 +101,7 @@ export default defineConfig({
     The component is auto-wired into <code>&lt;PortableText&gt;</code>
     through <code>componentsEntry</code> - no manual block mapping needed.
     Once the plugin is registered, existing <code>code</code> blocks start
-    rendering highlighted.
+    rendering highlighted, at render time until each post is next saved.
   </p>
   <p>For direct usage outside Portable Text, import the component:</p>
   <Code language="astro" code={`---
@@ -119,15 +127,16 @@ import CodeBlock from "@plugdash/codeblock/CodeBlock.astro"
 })`} />
   <p>
     In the editor, an author picks a language on the code block and
-    writes the source. Nothing about the stored content changes -
-    EmDash keeps it as a plain <code>code</code> block in the Portable
-    Text body:
+    writes the source. EmDash keeps it as a <code>code</code> block in the
+    Portable Text body, and on save codeblock adds the highlighted HTML
+    next to it:
   </p>
   <Code language="json" code={`{
   "_type": "code",
   "code": "def greet(name):\\n    return f\\"hi {name}\\"",
   "language": "python",
-  "filename": "greet.py"
+  "filename": "greet.py",
+  "pdHighlight": { "key": "...", "html": "<pre class=\\"shiki github-dark\\">..." }
 }`} />
   <p>
     On the site, that block renders as a header bar with the filename
@@ -147,11 +156,12 @@ import CodeBlock from "@plugdash/codeblock/CodeBlock.astro"
     <li>Empty code renders an empty <code>&lt;pre&gt;</code> block.</li>
     <li>Code over 10,000 lines is cut off with a trailing truncation notice.</li>
     <li>Unknown theme names fall back to <code>github-dark</code>.</li>
+    <li>Blocks whose HTML is over 100,000 characters are not stored; they are highlighted at render time.</li>
   </ul>
   <p>
-    No copy button, line highlighting, or diff view. No client-side
-    highlighting, so no runtime theme or language switching - pick a
-    theme (or a light/dark pair) at registration time.
+    No line highlighting or diff view. No client-side highlighting, so no
+    runtime theme or language switching: pick a theme (or a light/dark
+    pair) at registration time.
   </p>
 
   <h2 id="for-agents">For agents</h2>
@@ -159,7 +169,7 @@ import CodeBlock from "@plugdash/codeblock/CodeBlock.astro"
     After installing and registering the plugin, no further setup is
     needed for rendering - block components are auto-wired into
     <code>&lt;PortableText&gt;</code> and existing <code>code</code>
-    blocks start rendering highlighted immediately. To verify, publish a
+    blocks start rendering highlighted immediately. To verify, save a
     post containing a code block with a language set, then view the
     page source: it should contain <code>class="shiki github-dark"</code>
     (or whatever theme was configured) with coloured <code>style</code>

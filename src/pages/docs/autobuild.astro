@@ -21,34 +21,31 @@ const tocEntries = [
 <Doc
   tocEntries={tocEntries}
   currentSlug="autobuild"
-  readingTimeMinutes={3}
-  wordCount={320}
   title="autobuild"
   section="@plugdash/autobuild"
-  description="Publish in the admin, live in 60 seconds."
+  description="Rebuild a static EmDash site when you publish."
 >
   <h2 id="what-it-does">What it does</h2>
   <p>
-    On every content publish and delete, POSTs (or GETs) a deploy hook
-    URL - typically a Cloudflare Pages, Netlify, or Vercel build webhook.
-    Debounces rapid publishes so a batch of edits triggers one deploy,
-    not ten. No UI, no companion component.
+    For static and prerendered sites that read EmDash content at build
+    time. autobuild calls a Cloudflare Pages, Netlify or Vercel deploy
+    hook when a post is published or unpublished, or when a published post
+    is deleted. Autosaves do not trigger it. It waits
+    <code>debounceMs</code> (default 5 seconds), so a burst of publishes
+    makes one request. A failed request is logged and never fails the
+    publish. No companion component.
   </p>
   <p>
-    This is the plugin that makes plugdash.dev's core promise real - the
-    admin becomes the thing that moves the site.
+    A server-rendered EmDash site (<code>output: "server"</code>, the
+    default in every template) shows new content at once and does not
+    need it. plugdash.dev is server-rendered, so it does not use
+    autobuild.
   </p>
 
   <h2 id="install">Install</h2>
   <InstallCommand command={plugin.installCommand} />
 
   <h2 id="register">Register</h2>
-  <p>
-    Open <code>astro.config.mjs</code> at the root of your Astro project.
-    Import the plugin at the top, then add it to the <code>plugins</code>
-    array of the <code>emdash()</code> integration - the one that sits
-    inside Astro's top-level <code>integrations</code> array:
-  </p>
   <Code language="js" filename="astro.config.mjs" code={`import { defineConfig } from "astro/config"
 import emdash from "emdash/astro"
 import { autobuildPlugin } from "@plugdash/autobuild"
@@ -58,37 +55,52 @@ export default defineConfig({
     emdash({
       plugins: [
         autobuildPlugin({
-          hookUrl: import.meta.env.CF_PAGES_DEPLOY_HOOK,
-          allowedHosts: ["api.cloudflare.com"],
+          hookUrl: process.env.DEPLOY_HOOK_URL,
+          collections: ["posts"],
         }),
       ],
     }),
   ],
 })`} />
   <p>
-    Get the hook URL from your Cloudflare Pages project under
-    <strong>Settings -> Builds & deployments -> Deploy hooks</strong>.
-    Store it as <code>CF_PAGES_DEPLOY_HOOK</code> in the Pages dashboard
-    environment variables (mark it encrypted).
+    Keep the hook URL in an environment variable and never commit it. Or
+    leave <code>hookUrl</code> out and paste the URL in the admin under
+    Plugins, Autobuild, field <strong>Deploy hook URL</strong>. That is a
+    secret setting, so the server needs <code>EMDASH_ENCRYPTION_KEY</code>
+    (<code>pnpm exec emdash secrets generate</code>; a Worker secret on
+    Cloudflare). The admin value wins over the option.
+  </p>
+  <p>
+    The URL must be https and its host must be
+    <code>api.cloudflare.com</code>, <code>api.netlify.com</code>,
+    <code>api.vercel.com</code>, the host of the <code>hookUrl</code>
+    option, or a host you add to <code>allowedHosts</code>.
   </p>
 
   <h2 id="how-it-fires">How it fires</h2>
-  <pre><code>publish in admin -&gt; hook fires -&gt; deploy kicks off -&gt; live</code></pre>
+  <pre><code>publish in admin -&gt; wait debounceMs -&gt; hook fires -&gt; your host builds -&gt; live</code></pre>
+  <p>
+    Hooks: <code>content:afterPublish</code>,
+    <code>content:afterUnpublish</code> and <code>content:afterDelete</code>
+    (only for entries that were published). It does not retry a failed
+    deploy; the next publish does.
+  </p>
 
   <h2 id="no-component">No component</h2>
   <p>
-    autobuild has no companion component. It is pure infrastructure.
+    autobuild has no companion component. It is infrastructure only.
   </p>
 
   <PluginReference plugin={plugin} />
 
   <h2 id="for-agents">For agents</h2>
   <p>
-    After install, the env var <code>CF_PAGES_DEPLOY_HOOK</code> must be
-    set for the plugin to do anything. Gate registration on the env var
-    being present - when it is missing, skip the plugin entirely.
-    Verify by publishing a content edit in the admin and confirming a
-    new build starts within the <code>debounceMs</code> window (default
-    5 seconds).
+    Only install autobuild on a static or prerendered site. On a
+    server-rendered site, skip it. After registering
+    <code>autobuildPlugin(&#123; hookUrl: process.env.DEPLOY_HOOK_URL &#125;)</code>,
+    publish a post and confirm a build starts on the host within a few
+    seconds. With no hook URL the plugin logs
+    <code>no hook URL configured, deploys are off</code> once and does
+    nothing. Data stored: a debounce token in plugin KV.
   </p>
 </Doc>
