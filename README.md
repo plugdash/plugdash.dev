@@ -30,7 +30,7 @@ Bindings (already configured in `wrangler.jsonc`):
 - **D1** database `plugdash` for all content and plugin state
 - **R2** bucket `plugdash-media` for uploaded media
 - **KV** namespace `SESSION` for auth sessions
-- **Rate Limiter** `HEART_LIMITER` (10 req/min per IP on heartpost routes)
+- **Rate limiting**: add a Cloudflare Rate Limiting rule on `POST /_emdash/api/plugins/heartpost/*`. heartpost also limits each IP to 10 hearts a minute on its own.
 
 Secrets:
 - `EMDASH_ENCRYPTION_KEY` encrypts plugin secret settings (the enrichkit
